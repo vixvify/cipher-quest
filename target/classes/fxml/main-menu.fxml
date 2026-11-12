@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane
+    xmlns:fx="http://javafx.com/fxml"
+    fx:controller="com.cipherquest.ui.MainMenuController"
+    styleClass="main-menu">
+
+    <VBox alignment="CENTER" spacing="35">
+        <Label
+            text="CIPHERQUEST"
+            styleClass="game-title"/>
+
+        <Button
+            text="▶ START GAME"
+            styleClass="start-button"
+            onAction="#onStartGame"/>
+    </VBox>
+
+</StackPane>
