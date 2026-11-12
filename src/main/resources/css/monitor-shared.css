@@ -1,0 +1,113 @@
+/* ============================================================
+   SHARED MONITOR / DESK STYLES
+   ใช้ร่วมกันทั้ง 3 หน้าจอเกม
+   ============================================================ */
+
+.desk-surface {
+  -fx-background-color: linear-gradient(to bottom, #1a1209, #0d0a05);
+}
+
+.monitor-frame {
+  -fx-background-color: #1c1c1e;
+  -fx-background-radius: 12px;
+  -fx-border-color: #3a3a3c;
+  -fx-border-width: 3px;
+  -fx-border-radius: 12px;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 40, 0.5, 0, 12);
+  -fx-pref-width: 1100px;
+  -fx-pref-height: 680px;
+}
+
+.monitor-bezel {
+  -fx-background-color: #0d0d0f;
+  -fx-background-radius: 9px;
+  -fx-padding: 0;
+}
+
+.monitor-chin {
+  -fx-background-color: #1c1c1e;
+  -fx-border-color: #3a3a3c;
+  -fx-border-width: 0 3px 3px 3px;
+  -fx-border-radius: 0 0 10px 10px;
+  -fx-background-radius: 0 0 10px 10px;
+}
+
+.monitor-stand-neck {
+  -fx-background-color: #2a2a2c;
+}
+
+.monitor-stand-base {
+  -fx-background-color: #2a2a2c;
+  -fx-background-radius: 4px;
+}
+
+/* Top bar (macOS-style title bar) */
+.monitor-screen-top-bar {
+  -fx-background-color: #1e1e20;
+  -fx-border-color: #2c2c2e;
+  -fx-border-width: 0 0 1px 0;
+  -fx-background-radius: 9px 9px 0 0;
+}
+
+.monitor-screen-bottom-bar {
+  -fx-background-color: #141416;
+  -fx-border-color: #252528;
+  -fx-border-width: 1px 0 0 0;
+  -fx-background-radius: 0 0 9px 9px;
+  -fx-padding: 0 0 0 0;
+}
+
+.dot-red {
+  -fx-background-color: #ff5f56;
+  -fx-background-radius: 6px;
+  -fx-pref-width: 12px;
+  -fx-pref-height: 12px;
+  -fx-margin: 0 4px 0 0;
+}
+
+.dot-yellow {
+  -fx-background-color: #ffbd2e;
+  -fx-background-radius: 6px;
+  -fx-pref-width: 12px;
+  -fx-pref-height: 12px;
+  -fx-margin: 0 4px;
+}
+
+.dot-green {
+  -fx-background-color: #27c93f;
+  -fx-background-radius: 6px;
+  -fx-pref-width: 12px;
+  -fx-pref-height: 12px;
+}
+
+.screen-title-bar {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-text-fill: #666670;
+  -fx-padding: 0 0 0 10px;
+}
+
+.screen-status-text {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 11px;
+  -fx-text-fill: #55667a;
+}
+
+.screen-status-ok {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 11px;
+  -fx-text-fill: #3ec97e;
+}
+
+.screen-status-locked {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 11px;
+  -fx-text-fill: #e05252;
+}
+
+.screen-status-warn {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 11px;
+  -fx-text-fill: #d4a230;
+}
+

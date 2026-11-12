@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.cipherquest.ui.SqlWorkbenchController"
+           styleClass="sql-root">
+
+    <Region styleClass="desk-surface" />
+
+    <VBox alignment="CENTER" spacing="0">
+
+        <StackPane styleClass="monitor-frame">
+
+            <VBox styleClass="monitor-bezel" spacing="0">
+
+                <Region styleClass="monitor-screen-top-bar" prefHeight="28">
+                    <HBox alignment="CENTER_LEFT" spacing="0">
+                        <padding>
+                            <Insets left="6" />
+                        </padding>
+                        <Region styleClass="dot-red" />
+                        <Region styleClass="dot-yellow" />
+                        <Region styleClass="dot-green" />
+                        <HBox spacing="0" styleClass="sql-menu-bar">
+                            <Label text="  File" styleClass="sql-menu-item" />
+                            <Label text="  Edit" styleClass="sql-menu-item" />
+                            <Label text="  Query" styleClass="sql-menu-item" />
+                            <Label text="  Database" styleClass="sql-menu-item" />
+                            <Label text="  Help" styleClass="sql-menu-item" />
+                        </HBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label text="CQ-SQL Workbench  " styleClass="screen-title-bar" />
+                    </HBox>
+                </Region>
+
+                <HBox VBox.vgrow="ALWAYS" styleClass="sql-layout">
+
+                    <VBox styleClass="sql-sidebar" prefWidth="200" spacing="0">
+                        <Label text="SCHEMAS" styleClass="sql-sidebar-header" />
+                        <VBox styleClass="sql-schema-tree" spacing="2">
+                            <padding>
+                                <Insets top="8" left="8" />
+                            </padding>
+                            <Label text="▾ 🗄  cipherquest_db" styleClass="sql-schema-db" />
+                            <VBox styleClass="sql-schema-tables" spacing="1">
+                                <padding>
+                                    <Insets left="16" />
+                                </padding>
+                                <Label text="▾ Tables" styleClass="sql-schema-group" />
+                                <VBox spacing="1">
+                                    <padding>
+                                        <Insets left="12" />
+                                    </padding>
+                                    <Label fx:id="tableItem1" text="📋 users" styleClass="sql-table-item" />
+                                    <Label fx:id="tableItem2" text="📋 access_logs" styleClass="sql-table-item" />
+                                    <Label fx:id="tableItem3" text="📋 files" styleClass="sql-table-item" />
+                                </VBox>
+                            </VBox>
+                        </VBox>
+                    </VBox>
+
+                    <VBox VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" styleClass="sql-main-area" spacing="0">
+
+                        <HBox styleClass="sql-toolbar" spacing="6" alignment="CENTER_LEFT">
+                            <padding>
+                                <Insets top="6" right="10" bottom="6" left="10" />
+                            </padding>
+                            <Button text="▶  Run Query" onAction="#onRunQuery" styleClass="sql-run-btn" />
+                            <Button text="⌫  Clear" onAction="#onClearQuery" styleClass="sql-toolbar-btn" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Label fx:id="checkpointLabel" text="CHECKPOINT 3 / 7" styleClass="screen-status-text" />
+                        </HBox>
+
+                        <VBox styleClass="sql-editor-pane" VBox.vgrow="ALWAYS" spacing="0">
+                            <HBox styleClass="sql-editor-header" alignment="CENTER_LEFT" spacing="6">
+                                <padding>
+                                    <Insets top="4" left="10" bottom="4" />
+                                </padding>
+                                <Label text="query.sql" styleClass="sql-tab-active" />
+                            </HBox>
+
+                            <HBox VBox.vgrow="ALWAYS">
+                                <VBox styleClass="sql-line-numbers" prefWidth="40" alignment="TOP_RIGHT">
+                                    <padding>
+                                        <Insets top="10" right="8" />
+                                    </padding>
+                                    <Label fx:id="lineNumbers" text="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8" styleClass="sql-line-num" />
+                                </VBox>
+                                <TextArea fx:id="queryArea"
+                                          promptText="-- Write your SQL query here..."
+                                          styleClass="sql-editor"
+                                          HBox.hgrow="ALWAYS"
+                                          wrapText="false" />
+                            </HBox>
+                        </VBox>
+
+                        <VBox styleClass="sql-result-pane" prefHeight="200" spacing="0">
+                            <HBox styleClass="sql-result-header" alignment="CENTER_LEFT" spacing="12">
+                                <padding>
+                                    <Insets top="4" left="10" bottom="4" />
+                                </padding>
+                                <Label text="Result Grid" styleClass="sql-result-tab-active" />
+                                <Label text="Output" styleClass="sql-result-tab" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="resultStatusLabel" text="Ready" styleClass="sql-result-status" />
+                            </HBox>
+
+                            <ScrollPane styleClass="sql-result-scroll" VBox.vgrow="ALWAYS" fitToWidth="true">
+                                <TableView fx:id="resultTable" styleClass="sql-result-table" VBox.vgrow="ALWAYS">
+                                    <placeholder>
+                                        <Label text="Run a query to see results here" styleClass="sql-result-placeholder" />
+                                    </placeholder>
+                                </TableView>
+                            </ScrollPane>
+
+                            <HBox styleClass="sql-status-bar" alignment="CENTER_LEFT" spacing="20">
+                                <padding>
+                                    <Insets top="4" right="12" bottom="4" left="12" />
+                                </padding>
+                                <Label fx:id="feedbackLabel" text="" styleClass="sql-feedback" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label fx:id="rowCountLabel" text="0 rows" styleClass="sql-row-count" />
+                            </HBox>
+                        </VBox>
+
+                    </VBox>
+
+                </HBox>
+
+                <Region styleClass="monitor-screen-bottom-bar" prefHeight="22">
+                    <HBox alignment="CENTER_RIGHT" spacing="16">
+                        <padding>
+                            <Insets right="14" />
+                        </padding>
+                        <Label text="cipherquest_db@localhost" styleClass="screen-status-text" />
+                        <Label fx:id="statusLabel" text="●  CONNECTED" styleClass="screen-status-ok" />
+                    </HBox>
+                </Region>
+
+            </VBox>
+
+        </StackPane>
+
+        <Region styleClass="monitor-chin" prefHeight="22" />
+
+    </VBox>
+
+</StackPane>
+

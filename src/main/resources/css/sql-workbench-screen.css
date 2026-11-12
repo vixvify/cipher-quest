@@ -1,0 +1,276 @@
+/* ============================================================
+   SQL WORKBENCH SCREEN STYLES
+   ด่าน 3–7 — SQL Query
+   ============================================================ */
+
+.sql-root {
+  -fx-background-color: linear-gradient(to bottom, #1a1209, #0d0a05);
+}
+
+.sql-layout {
+  -fx-background-color: #1e1e22;
+}
+
+/* Sidebar */
+.sql-sidebar {
+  -fx-background-color: #191b1f;
+  -fx-border-color: #2a2d34;
+  -fx-border-width: 0 1px 0 0;
+}
+
+.sql-sidebar-header {
+  -fx-background-color: #141618;
+  -fx-text-fill: #55667a;
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 11px;
+  -fx-font-weight: bold;
+  -fx-letter-spacing: 1px;
+  -fx-padding: 8px 10px;
+  -fx-border-color: #2a2d34;
+  -fx-border-width: 0 0 1px 0;
+}
+
+.sql-schema-db {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-text-fill: #9eaabc;
+  -fx-cursor: hand;
+}
+
+.sql-schema-group {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-text-fill: #6a7a8e;
+}
+
+.sql-table-item {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-text-fill: #7a9ec0;
+  -fx-cursor: hand;
+  -fx-padding: 2px 0;
+}
+
+.sql-table-item:hover {
+  -fx-text-fill: #a8c8e8;
+}
+
+/* Main area */
+.sql-main-area {
+  -fx-background-color: #1e1e22;
+}
+
+.sql-toolbar {
+  -fx-background-color: #19191d;
+  -fx-border-color: #2a2d34;
+  -fx-border-width: 0 0 1px 0;
+}
+
+.sql-run-btn {
+  -fx-background-color: rgba(0, 140, 70, 0.9);
+  -fx-text-fill: #ffffff;
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-border-color: rgba(0, 180, 90, 0.7);
+  -fx-border-width: 1px;
+  -fx-border-radius: 4px;
+  -fx-background-radius: 4px;
+  -fx-padding: 5px 14px;
+  -fx-cursor: hand;
+}
+
+.sql-run-btn:hover {
+  -fx-background-color: rgba(0, 170, 85, 0.95);
+  -fx-effect: dropshadow(gaussian, rgba(0, 180, 90, 0.5), 8, 0.4, 0, 0);
+}
+
+.sql-toolbar-btn {
+  -fx-background-color: rgba(40, 44, 54, 0.8);
+  -fx-text-fill: #8a9ab0;
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-border-color: rgba(60, 70, 85, 0.6);
+  -fx-border-width: 1px;
+  -fx-border-radius: 4px;
+  -fx-background-radius: 4px;
+  -fx-padding: 5px 10px;
+  -fx-cursor: hand;
+}
+
+.sql-toolbar-btn:hover {
+  -fx-background-color: rgba(60, 70, 90, 0.9);
+  -fx-text-fill: #c0cfe0;
+}
+
+/* Editor pane */
+.sql-editor-pane {
+  -fx-background-color: #1a1b1f;
+  -fx-border-color: #2a2d34;
+  -fx-border-width: 0 0 1px 0;
+}
+
+.sql-editor-header {
+  -fx-background-color: #141618;
+  -fx-border-color: #2a2d34;
+  -fx-border-width: 0 0 1px 0;
+}
+
+.sql-tab-active {
+  -fx-background-color: #1e1e22;
+  -fx-text-fill: #9eaabc;
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-border-color: #0078d4 transparent transparent transparent;
+  -fx-border-width: 2px 0 0 0;
+  -fx-padding: 5px 14px 4px 14px;
+}
+
+.sql-line-numbers {
+  -fx-background-color: #141618;
+  -fx-border-color: #2a2d34;
+  -fx-border-width: 0 1px 0 0;
+}
+
+.sql-line-num {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-text-fill: #3d4555;
+}
+
+.sql-editor {
+  -fx-background-color: #1a1b1f;
+  -fx-text-fill: #cdd8e8;
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 14px;
+  -fx-border-width: 0;
+  -fx-background-insets: 0;
+  -fx-padding: 10px 12px;
+  -fx-control-inner-background: #1a1b1f;
+  -fx-highlight-fill: rgba(0, 120, 212, 0.3);
+}
+
+.sql-editor:focused {
+  -fx-background-color: #1a1b1f;
+  -fx-border-color: transparent;
+}
+
+/* Result pane */
+.sql-result-pane {
+  -fx-background-color: #16181c;
+}
+
+.sql-result-header {
+  -fx-background-color: #141618;
+  -fx-border-color: #2a2d34;
+  -fx-border-width: 1px 0 1px 0;
+}
+
+.sql-result-tab-active {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-text-fill: #9eaabc;
+  -fx-border-color: #0078d4 transparent transparent transparent;
+  -fx-border-width: 2px 0 0 0;
+  -fx-padding: 4px 10px;
+}
+
+.sql-result-tab {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-text-fill: #55667a;
+  -fx-padding: 4px 10px;
+}
+
+.sql-result-status {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 11px;
+  -fx-text-fill: #55667a;
+}
+
+.sql-result-scroll {
+  -fx-background-color: transparent;
+  -fx-background: #16181c;
+}
+
+.sql-result-table {
+  -fx-background-color: #16181c;
+  -fx-table-cell-border-color: #252830;
+  -fx-border-width: 0;
+}
+
+.sql-result-table .column-header {
+  -fx-background-color: #1e2028;
+  -fx-border-color: #2a2d34;
+  -fx-border-width: 0 1px 1px 0;
+}
+
+.sql-result-table .column-header .label {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #7a9ec0;
+}
+
+.sql-result-table .table-row-cell {
+  -fx-background-color: #16181c;
+  -fx-border-color: #1e2028;
+  -fx-border-width: 0 0 1px 0;
+}
+
+.sql-result-table .table-row-cell:odd {
+  -fx-background-color: #191b1f;
+}
+
+.sql-result-table .table-cell {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-text-fill: #c0cfe0;
+  -fx-border-color: #252830;
+  -fx-border-width: 0 1px 0 0;
+  -fx-padding: 4px 8px;
+}
+
+.sql-result-placeholder {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-text-fill: #3d4555;
+}
+
+.sql-status-bar {
+  -fx-background-color: #111316;
+  -fx-border-color: #252830;
+  -fx-border-width: 1px 0 0 0;
+}
+
+.sql-feedback {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-text-fill: #c8cfdb;
+}
+
+.sql-row-count {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 11px;
+  -fx-text-fill: #55667a;
+}
+
+/* Menu bar */
+.sql-menu-bar {
+  -fx-padding: 0 0 0 10px;
+}
+
+.sql-menu-item {
+  -fx-font-family: "Segoe UI", sans-serif;
+  -fx-font-size: 12px;
+  -fx-text-fill: #9eaabc;
+  -fx-padding: 4px 10px;
+  -fx-cursor: hand;
+}
+
+.sql-menu-item:hover {
+  -fx-background-color: rgba(100, 120, 160, 0.2);
+  -fx-background-radius: 4px;
+  -fx-text-fill: #c8d8f0;
+}
+
