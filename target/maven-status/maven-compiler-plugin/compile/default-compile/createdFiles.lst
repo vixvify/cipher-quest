@@ -2,10 +2,14 @@ com\cipherquest\ui\MainMenuController.class
 com\cipherquest\ui\MainMenuController$1.class
 com\cipherquest\ui\SqlWorkbenchController.class
 com\cipherquest\levels\caesar\CaesarLevel.class
+com\cipherquest\levels\BaseLevel.class
 com\cipherquest\ui\PasskeyScreenController.class
 com\cipherquest\levels\database\DatabaseLevel.class
+com\cipherquest\levels\Level$ScreenType.class
 com\cipherquest\core\GameEngine.class
 com\cipherquest\Main.class
+com\cipherquest\core\GameEngine$AnswerResult.class
 com\cipherquest\ui\TerminalScreenController.class
 com\cipherquest\levels\LevelManager.class
+com\cipherquest\levels\Level.class
 com\cipherquest\levels\linux\LinuxLevel.class

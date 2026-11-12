@@ -1,6 +1,8 @@
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\core\GameEngine.java
+C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\BaseLevel.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\caesar\CaesarLevel.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\database\DatabaseLevel.java
+C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\Level.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\LevelManager.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\linux\LinuxLevel.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\Main.java
