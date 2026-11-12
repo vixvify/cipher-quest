@@ -1,3 +1,5 @@
+com\cipherquest\ui\MainMenuController$MatrixRainEffect.class
 com\cipherquest\ui\MainMenuController.class
-com\cipherquest\Main.class
 com\cipherquest\core\GameEngine.class
+com\cipherquest\Main.class
+com\cipherquest\ui\MainMenuController$MatrixRainEffect$1.class
