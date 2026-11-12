@@ -1,0 +1,144 @@
+/* ============================================================
+   PASSKEY SCREEN STYLES
+   ด่าน 1 — Caesar Cipher
+   ============================================================ */
+
+.passkey-root {
+  -fx-background-color: linear-gradient(to bottom, #1a1209, #0d0a05);
+}
+
+.screen-body {
+  -fx-background-color: #0a0f16;
+}
+
+.screen-lock-icon {
+  -fx-font-size: 48px;
+  -fx-text-fill: #3a3a4a;
+}
+
+.screen-locked-title {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 22px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #c8cfdb;
+  -fx-effect: dropshadow(gaussian, rgba(100, 150, 255, 0.3), 10, 0.3, 0, 0);
+}
+
+.screen-locked-sub {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-text-fill: #4a5568;
+}
+
+.passkey-form {
+  -fx-background-color: rgba(15, 22, 35, 0.8);
+  -fx-border-color: rgba(80, 120, 200, 0.3);
+  -fx-border-width: 1px;
+  -fx-border-radius: 8px;
+  -fx-background-radius: 8px;
+  -fx-padding: 24px 32px;
+  -fx-max-width: 420px;
+}
+
+.passkey-label {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #6a7fa0;
+  -fx-letter-spacing: 1px;
+}
+
+.passkey-input-box {
+  -fx-background-color: #060c16;
+  -fx-border-color: rgba(80, 140, 230, 0.5);
+  -fx-border-width: 1.5px;
+  -fx-border-radius: 6px;
+  -fx-background-radius: 6px;
+}
+
+.passkey-field {
+  -fx-background-color: transparent;
+  -fx-text-fill: #c8e0ff;
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 20px;
+  -fx-letter-spacing: 6px;
+  -fx-padding: 10px 14px;
+  -fx-border-width: 0;
+  -fx-background-insets: 0;
+  -fx-background-radius: 0;
+}
+
+.passkey-field:focused {
+  -fx-border-color: transparent;
+  -fx-background-color: transparent;
+}
+
+.passkey-input-box:focused-within {
+  -fx-border-color: #5080e6;
+  -fx-effect: dropshadow(gaussian, rgba(80, 128, 230, 0.5), 10, 0.4, 0, 0);
+}
+
+.passkey-feedback {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-text-fill: #e05252;
+  -fx-min-height: 18px;
+}
+
+.auth-btn {
+  -fx-background-color: rgba(50, 80, 160, 0.9);
+  -fx-text-fill: #c8e0ff;
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-border-color: rgba(80, 140, 230, 0.6);
+  -fx-border-width: 1.5px;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+  -fx-padding: 10px 30px;
+  -fx-cursor: hand;
+}
+
+.auth-btn:hover {
+  -fx-background-color: rgba(70, 110, 200, 0.9);
+  -fx-effect: dropshadow(gaussian, rgba(80, 140, 230, 0.6), 12, 0.4, 0, 0);
+}
+
+.hint-label {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #d4a230;
+}
+
+.hint-text {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-text-fill: #8a9ab0;
+}
+
+.ciphertext-box {
+  -fx-background-color: rgba(10, 20, 10, 0.6);
+  -fx-border-color: rgba(0, 200, 100, 0.25);
+  -fx-border-width: 1px;
+  -fx-border-radius: 6px;
+  -fx-background-radius: 6px;
+  -fx-padding: 14px 24px;
+}
+
+.cipher-box-title {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 11px;
+  -fx-text-fill: #3a5040;
+  -fx-font-weight: bold;
+}
+
+.ciphertext-display {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 28px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #3ec97e;
+  -fx-letter-spacing: 6px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 200, 100, 0.4), 10, 0.3, 0, 0);
+}
+

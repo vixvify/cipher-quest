@@ -1,0 +1,22 @@
+# ด่าน 7 — SQL: Subquery และ Boss Challenge
+#
+# ด่านสุดท้าย ผู้เล่นต้องใช้ Subquery เพื่อค้นหาข้อมูลลับของระบบ
+
+id: 7
+type: database
+title: "Database Boss: Final Breach"
+description: |
+  ด่านสุดท้าย! ค้นหา username ของผู้ใช้ที่เข้าถึงไฟล์มากที่สุดในระบบ
+
+task: "ค้นหา username ของ user ที่มีจำนวน access_logs มากที่สุด (ใช้ Subquery หรือ JOIN ก็ได้)"
+schema: |
+  CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT);
+  CREATE TABLE access_logs (id INTEGER, user_id INTEGER, filename TEXT);
+expected_query: |
+  SELECT username FROM users WHERE id = (
+    SELECT user_id FROM access_logs GROUP BY user_id ORDER BY COUNT(*) DESC LIMIT 1
+  )
+answer_hash: "correct_if_returns_top_user"
+
+hint: "ใช้ Subquery เพื่อหา user_id ที่มีจำนวน log มากที่สุด แล้วเอาไปหา username"
+

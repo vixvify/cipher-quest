@@ -1,0 +1,23 @@
+# ด่าน 3 — SQL: SELECT พื้นฐาน
+#
+# ผู้เล่นต้องเขียน SQL Query เพื่อดึงข้อมูลจากตาราง users
+
+id: 3
+type: database
+title: "Database Recon I"
+description: |
+  คุณเจาะเข้าถึงฐานข้อมูลได้แล้ว ดึงรายชื่อผู้ใช้ทั้งหมดในตาราง users
+
+task: "แสดงคอลัมน์ username และ email ของผู้ใช้ทุกคนในตาราง users"
+schema: |
+  CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    username TEXT,
+    email TEXT,
+    role TEXT
+  );
+expected_query: "SELECT username, email FROM users"
+answer_hash: "correct_if_returns_all_users"
+
+hint: "ใช้ SELECT เพื่อเลือกคอลัมน์ที่ต้องการ"
+

@@ -1,0 +1,23 @@
+# ด่าน 4 — SQL: WHERE Clause
+#
+# ผู้เล่นต้องกรอง query ด้วยเงื่อนไข WHERE เพื่อหาผู้ใช้ที่มี role เป็น admin
+
+id: 4
+type: database
+title: "Database Recon II"
+description: |
+  มีบัญชี admin ซ่อนอยู่ในระบบ ค้นหาข้อมูลของ user ที่เป็น admin ทั้งหมด
+
+task: "ดึงข้อมูล username และ email ของผู้ใช้ที่มี role = 'admin'"
+schema: |
+  CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    username TEXT,
+    email TEXT,
+    role TEXT
+  );
+expected_query: "SELECT username, email FROM users WHERE role = 'admin'"
+answer_hash: "correct_if_returns_admin_users"
+
+hint: "ใช้ WHERE เพื่อกรองเฉพาะ role ที่ต้องการ"
+

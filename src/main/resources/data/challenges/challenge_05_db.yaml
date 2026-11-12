@@ -1,0 +1,19 @@
+# ด่าน 5 — SQL: JOIN สองตาราง
+#
+# ผู้เล่นต้องเชื่อมตาราง users กับ access_logs เพื่อหาผู้ที่เข้าถึงไฟล์ลับ
+
+id: 5
+type: database
+title: "Database Recon III"
+description: |
+  ตรวจสอบ log การเข้าถึง ใครบ้างที่เปิดไฟล์ชื่อ 'classified.pdf'?
+
+task: "JOIN ตาราง users กับ access_logs แล้วดึง username ของคนที่เปิด classified.pdf"
+schema: |
+  CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT);
+  CREATE TABLE access_logs (id INTEGER, user_id INTEGER, filename TEXT, accessed_at TEXT);
+expected_query: "SELECT users.username FROM users JOIN access_logs ON users.id = access_logs.user_id WHERE access_logs.filename = 'classified.pdf'"
+answer_hash: "correct_if_returns_classified_users"
+
+hint: "ใช้ JOIN เพื่อเชื่อม users กับ access_logs ผ่าน user_id"
+

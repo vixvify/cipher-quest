@@ -1,0 +1,101 @@
+/* ============================================================
+   TERMINAL SCREEN STYLES
+   ด่าน 2 — Linux Command Line
+   ============================================================ */
+
+.terminal-root {
+  -fx-background-color: linear-gradient(to bottom, #1a1209, #0d0a05);
+}
+
+.terminal-screen-body {
+  -fx-background-color: #0d1117;
+}
+
+.terminal-scroll {
+  -fx-background-color: transparent;
+  -fx-background: transparent;
+  -fx-border-width: 0;
+}
+
+.terminal-scroll .viewport {
+  -fx-background-color: transparent;
+}
+
+.terminal-output-box {
+  -fx-background-color: transparent;
+  -fx-padding: 4px 6px;
+}
+
+.term-system-msg {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-text-fill: #3a5048;
+}
+
+.term-prompt {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-text-fill: #3ec97e;
+}
+
+.term-output {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-text-fill: #c8cfdb;
+}
+
+.term-output-error {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-text-fill: #e05252;
+}
+
+.terminal-input-row {
+  -fx-background-color: #0d1117;
+  -fx-border-color: #252830;
+  -fx-border-width: 1px 0 0 0;
+  -fx-padding: 8px 6px;
+}
+
+.term-input-prompt {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #3ec97e;
+  -fx-padding: 0 8px 0 0;
+}
+
+.term-input-field {
+  -fx-background-color: transparent;
+  -fx-text-fill: #c8cfdb;
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-border-width: 0;
+  -fx-background-insets: 0;
+  -fx-padding: 4px 0;
+}
+
+.term-input-field:focused {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+}
+
+.term-exec-btn {
+  -fx-background-color: rgba(0, 160, 80, 0.3);
+  -fx-text-fill: #3ec97e;
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-border-color: rgba(0, 160, 80, 0.5);
+  -fx-border-width: 1px;
+  -fx-border-radius: 4px;
+  -fx-background-radius: 4px;
+  -fx-padding: 4px 12px;
+  -fx-cursor: hand;
+}
+
+.term-exec-btn:hover {
+  -fx-background-color: rgba(0, 200, 100, 0.4);
+  -fx-border-color: #3ec97e;
+}
+
