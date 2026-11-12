@@ -33,19 +33,16 @@ public class MainMenuController implements Initializable {
     @FXML private Button soundButton;
     @FXML private Button fullscreenButton;
 
-    // Modals
     @FXML private StackPane modalOverlay;
     @FXML private VBox cipherLabModal;
     @FXML private VBox levelSelectModal;
     @FXML private VBox settingsModal;
 
-    // Cipher Lab Controls
     @FXML private TextField labInputField;
     @FXML private Slider labShiftSlider;
     @FXML private Label labShiftValue;
     @FXML private TextField labOutputField;
 
-    // Settings Controls
     @FXML private Slider masterVolumeSlider;
     @FXML private Label masterVolumeLabel;
     @FXML private Slider musicVolumeSlider;
@@ -72,9 +69,7 @@ public class MainMenuController implements Initializable {
         setupKeyboardShortcuts();
     }
 
-    // ==========================================
-    // MATRIX RAIN CANVAS EFFECT
-    // ==========================================
+    
     private void setupMatrixCanvas() {
         if (matrixCanvas != null && rootPane != null) {
             matrixCanvas.widthProperty().bind(rootPane.widthProperty());
@@ -85,9 +80,6 @@ public class MainMenuController implements Initializable {
         }
     }
 
-    // ==========================================
-    // DECRYPTION TEXT EFFECT
-    // ==========================================
     private void setupDecryptAnimation() {
         if (subtitleLabel == null) return;
 
@@ -121,9 +113,6 @@ public class MainMenuController implements Initializable {
         timeline.play();
     }
 
-    // ==========================================
-    // BLINKING TERMINAL CURSOR
-    // ==========================================
     private void setupBlinkingCursor() {
         if (cursorLabel == null) return;
         Timeline blinkTimeline = new Timeline(
@@ -140,9 +129,6 @@ public class MainMenuController implements Initializable {
         blinkTimeline.play();
     }
 
-    // ==========================================
-    // LIVE CIPHER LAB (Interactive Gimmick)
-    // ==========================================
     private void setupCipherLab() {
         if (labShiftSlider != null && labShiftValue != null) {
             labShiftSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -181,9 +167,6 @@ public class MainMenuController implements Initializable {
         labOutputField.setText(cipherResult.toString());
     }
 
-    // ==========================================
-    // SETTINGS SLIDERS
-    // ==========================================
     private void setupSettingsSliders() {
         if (masterVolumeSlider != null && masterVolumeLabel != null) {
             masterVolumeSlider.valueProperty().addListener((obs, oldV, newV) ->
@@ -213,16 +196,12 @@ public class MainMenuController implements Initializable {
         }
     }
 
-    // ==========================================
-    // MENU ACTIONS
-    // ==========================================
     @FXML
     private void onStartGame() {
         System.out.println("[CipherQuest] Initiating Mission 1: Caesar's Secret...");
         if (cursorLabel != null) {
             cursorLabel.setText("launching_mission_1...");
         }
-        // Future scene transition can be hooked here seamlessly
     }
 
     @FXML
@@ -330,9 +309,6 @@ public class MainMenuController implements Initializable {
         System.exit(0);
     }
 
-    // ==========================================
-    // MATRIX RAIN BACKGROUND ANIMATION ENGINE
-    // ==========================================
     private static class MatrixRainEffect {
         private final Canvas canvas;
         private final Random rand = new Random();
@@ -363,7 +339,7 @@ public class MainMenuController implements Initializable {
             timer = new AnimationTimer() {
                 @Override
                 public void handle(long now) {
-                    if (now - lastUpdate < 45_000_000L) { // ~22 FPS for smooth, retro terminal feel
+                    if (now - lastUpdate < 45_000_000L) { 
                         return;
                     }
                     lastUpdate = now;
@@ -386,7 +362,6 @@ public class MainMenuController implements Initializable {
 
             GraphicsContext gc = canvas.getGraphicsContext2D();
 
-            // Semi-transparent dark wash to create fading trail effect
             gc.setFill(Color.rgb(5, 10, 18, 0.12));
             gc.fillRect(0, 0, width, height);
 
@@ -398,7 +373,6 @@ public class MainMenuController implements Initializable {
                 double x = i * FONT_SIZE;
                 double y = dropPositions[i] * FONT_SIZE;
 
-                // Glowing head of the stream (bright cyan/green)
                 if (rand.nextInt(10) == 0) {
                     gc.setFill(Color.rgb(180, 255, 235, 0.85));
                 } else {
