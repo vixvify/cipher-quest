@@ -1,1 +1,3 @@
+com\cipherquest\ui\MainMenuController.class
 com\cipherquest\Main.class
+com\cipherquest\core\GameEngine.class

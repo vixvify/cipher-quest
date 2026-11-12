@@ -1,0 +1,29 @@
+.main-menu {
+  -fx-background-image: url("../images/background.png");
+  -fx-background-size: cover;
+  -fx-background-position: center;
+  -fx-background-repeat: no-repeat;
+}
+
+.game-title {
+  -fx-font-family: "Consolas";
+  -fx-font-size: 64px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #7df9ff;
+  -fx-effect: dropshadow(gaussian, #00e5ff, 18, 0.5, 0, 0);
+}
+
+.start-button {
+  -fx-background-color: #073d35;
+  -fx-text-fill: #67ffcb;
+  -fx-font-family: "Consolas";
+  -fx-font-size: 22px;
+  -fx-border-color: #67ffcb;
+  -fx-border-width: 2px;
+  -fx-padding: 14px 40px;
+  -fx-cursor: hand;
+}
+
+.start-button:hover {
+  -fx-background-color: #126b58;
+}
