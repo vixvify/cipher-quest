@@ -2,60 +2,58 @@ package com.cipherquest.core;
 
 import com.cipherquest.levels.Level;
 import com.cipherquest.levels.LevelManager;
+import com.cipherquest.player.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * [ENCAPSULATION] แกนกลางควบคุมเกมทั้งหมด (Game Coordinator)
+ * [CORE GAME ENGINE - แกนกลางควบคุมระบบเกม]
  *
- * GameEngine รู้จักเฉพาะ Level interface — ไม่รู้จัก CaesarLevel / LinuxLevel / DatabaseLevel
- * ทั้ง state ของเกม (score, checkpoint, lives) ถูกซ่อนภายใน private field
- * และเปิดให้เข้าถึงผ่าน method ที่ควบคุมได้เท่านั้น
+ * แสดงการประยุกต์ใช้ 4 เสาหลักของ OOP:
  *
- * ─── แบ่งหน้าที่ให้ชัดเจน ───────────────────────────────────────────
- *  GameEngine   → "สมอง" ของเกม: state, score, flow, scene transition
- *  LevelManager → "โรงงาน": สร้าง Level object ตาม checkpoint id
- *  BaseLevel    → "แม่แบบ": state และ logic ที่ทุกด่านมีร่วมกัน
- *  CaesarLevel / LinuxLevel / DatabaseLevel → "ด่านจริง": logic เฉพาะของแต่ละด่าน
- * ─────────────────────────────────────────────────────────────────────
+ * 1. ENCAPSULATION (การห่อหุ้มข้อมูล):
+ *    - ฟิลด์ทั้งหมดเป็น private (player, gameState, currentLevel, listeners)
+ *    - ควบคุมการเปลี่ยนสถานะของเกมผ่าน State Machine อย่างรัดกุม ป้องกันสถานะที่ไม่ถูกต้อง
  *
- * → โชว์: Encapsulation (ซ่อน state), Polymorphism (เรียกผ่าน Level interface)
+ * 2. ABSTRACTION (การซ่อนรายละเอียดและการแยกส่วน):
+ *    - GameEngine ติดต่อกับด่านผ่านอินเตอร์เฟส Level เท่านั้น
+ *    - ติดต่อกับ UI ผ่าน Observer Pattern (GameEventListener) โดยไม่มีการ import JavaFX แม้แต่คลาสเดียว
+ *    - ทำให้ Core Logic ทำงานเป็น Pure Java ที่สามารถทดสอบด้วย Unit Test ได้ 100%
+ *
+ * 3. INHERITANCE (การสืบทอดคุณสมบัติ):
+ *    - ด่านต่างๆ สืบทอดความสามารถและสถานะพื้นฐานมาจาก BaseLevel
+ *
+ * 4. POLYMORPHISM (การมีหลายรูปแบบ):
+ *    - การเรียก currentLevel.checkAnswer(input) จะถูกส่งต่อไปทำงานที่คลาสเฉพาะของด่านนั้นๆ แบบไดนามิก
+ *    - การคำนวณคะแนนผ่านอินเตอร์เฟส ScoreCalculator (Strategy Pattern)
  */
 public class GameEngine {
 
-    // ─── State ของเกม (Encapsulation: ทั้งหมด private) ───
+    private static GameEngine instance;
 
-    /** หมายเลข checkpoint ปัจจุบัน (1–7) */
+    private Player player;
+    private GameState gameState;
     private int currentCheckpoint;
-
-    /** คะแนนสะสมของผู้เล่น */
-    private int score;
-
-    /** จำนวนชีวิตที่เหลือ */
-    private int lives;
-
-    /** ด่านที่กำลังเล่นอยู่ (เป็น Level interface — ไม่รู้ว่า class อะไร) */
     private Level currentLevel;
 
-    /** LevelManager ไว้สร้าง Level ใหม่ */
     private final LevelManager levelManager;
-
-    // ─── ค่า default ───
+    private final ScoreCalculator scoreCalculator;
+    private final List<GameEventListener> eventListeners;
 
     private static final int STARTING_CHECKPOINT = 1;
-    private static final int STARTING_LIVES = 3;
-    private static final int SCORE_PER_CORRECT = 100;
-    private static final int SCORE_BONUS_NO_HINT = 50;
-
-    // ─── Singleton pattern (optional — เอาไว้ถ้าทีมอยากใช้) ───
-
-    private static GameEngine instance;
 
     private GameEngine() {
         this.levelManager = new LevelManager();
-        reset();
+        this.scoreCalculator = new DefaultScoreCalculator();
+        this.eventListeners = new ArrayList<>();
+        this.gameState = GameState.NOT_STARTED;
     }
 
-    /** คืน instance เดียวของ GameEngine (Singleton) */
-    public static GameEngine getInstance() {
+    /**
+     * Singleton Instance สำหรับเข้าถึง GameEngine จากทุกที่ในโปรเจกต์
+     */
+    public static synchronized GameEngine getInstance() {
         if (instance == null) {
             instance = new GameEngine();
         }
@@ -63,108 +61,216 @@ public class GameEngine {
     }
 
     // ─────────────────────────────────────────────────────────
-    // Game Flow Methods — UI Controller เรียกใช้เมธอดเหล่านี้
+    // Observer Pattern (การจัดการ Listener)
+    // ─────────────────────────────────────────────────────────
+
+    public void addListener(GameEventListener listener) {
+        if (listener != null && !eventListeners.contains(listener)) {
+            eventListeners.add(listener);
+        }
+    }
+
+    public void removeListener(GameEventListener listener) {
+        eventListeners.remove(listener);
+    }
+
+    private void changeGameState(GameState newState) {
+        if (this.gameState != newState) {
+            GameState oldState = this.gameState;
+            this.gameState = newState;
+            for (GameEventListener listener : eventListeners) {
+                listener.onGameStateChanged(oldState, newState);
+            }
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // Game Flow Lifecycle Methods
     // ─────────────────────────────────────────────────────────
 
     /**
-     * เริ่มเกมใหม่ตั้งแต่ต้น
-     * เรียกจาก MainMenuController ตอนกด "START GAME"
+     * เริ่มต้นเกมใหม่
      */
     public void startNewGame() {
-        reset();
-        loadCheckpoint(currentCheckpoint);
+        startNewGame("Agent");
     }
 
     /**
-     * รับคำตอบจากผู้เล่นและตรวจสอบ
-     * UI Controller เรียกเมธอดนี้เมื่อผู้เล่นกด Submit/Execute/Run
-     *
-     * [POLYMORPHISM] เรียก currentLevel.checkAnswer() —
-     * runtime จะเลือกเรียก CaesarLevel / LinuxLevel / DatabaseLevel
-     * ให้โดยอัตโนมัติตาม object จริงที่อยู่ใน currentLevel
-     *
-     * @param input คำตอบของผู้เล่น
-     * @return AnswerResult บอกว่าถูก/ผิด/จบเกม
+     * เริ่มต้นเกมใหม่โดยระบุชื่อผู้เล่น
      */
-    public AnswerResult submitAnswer(String input) {
-        if (currentLevel == null) return AnswerResult.ERROR;
+    public void startNewGame(String playerName) {
+        this.player = new Player(playerName);
+        this.currentCheckpoint = STARTING_CHECKPOINT;
+        loadCheckpoint(this.currentCheckpoint);
+    }
 
-        boolean correct = currentLevel.checkAnswer(input);
+    /**
+     * โหลดข้อมูลด่านตามหมายเลข checkpoint
+     */
+    private void loadCheckpoint(int checkpointId) {
+        this.currentLevel = levelManager.createLevel(checkpointId);
+        this.currentLevel.loadChallenge();
+        changeGameState(GameState.PLAYING);
 
-        if (correct) {
-            score += SCORE_PER_CORRECT;
-            currentLevel.markCompleted();
-
-            if (currentCheckpoint >= levelManager.getTotalCheckpoints()) {
-                return AnswerResult.GAME_CLEARED;
-            }
-            return AnswerResult.CORRECT;
-        } else {
-            lives--;
-            if (lives <= 0) {
-                return AnswerResult.GAME_OVER;
-            }
-            return AnswerResult.WRONG;
+        for (GameEventListener listener : eventListeners) {
+            listener.onLevelLoaded(this.currentLevel);
+            listener.onLivesChanged(this.player.getLives());
+            listener.onScoreChanged(this.player.getScore(), 0);
         }
     }
 
     /**
-     * โหลดด่านถัดไปหลังจาก submitAnswer คืน CORRECT
-     * เรียกจาก UI Controller หลังแสดง transition animation เสร็จ
+     * รับและประเมินคำตอบของผู้เล่น
+     *
+     * [POLYMORPHISM] เรียก currentLevel.checkAnswer(input) ซึ่งจะเรียกใช้
+     * ตรรกะของ CaesarLevel, LinuxLevel หรือ DatabaseLevel ตามอ็อบเจกต์จริงขณะรันไทม์
      */
-    public void advanceToNextCheckpoint() {
+    public AnswerResult submitAnswer(String input) {
+        if (gameState != GameState.PLAYING || currentLevel == null) {
+            return AnswerResult.error("เกมไม่ได้อยู่ในสถานะที่สามารถส่งคำตอบได้ในขณะนี้");
+        }
+
+        boolean isCorrect = currentLevel.checkAnswer(input);
+
+        if (isCorrect) {
+            currentLevel.markCompleted();
+            player.markCheckpointCompleted(currentCheckpoint);
+
+            int earnedScore = scoreCalculator.calculateScore(
+                    currentCheckpoint,
+                    currentLevel.getAttempts(),
+                    currentLevel.hasUsedHint()
+            );
+            player.addScore(earnedScore);
+
+            for (GameEventListener listener : eventListeners) {
+                listener.onScoreChanged(player.getScore(), earnedScore);
+            }
+
+            if (currentCheckpoint >= levelManager.getTotalCheckpoints()) {
+                changeGameState(GameState.VICTORY);
+                AnswerResult result = AnswerResult.gameCleared(
+                        "ยินดีด้วย! คุณเคลียร์ภารกิจครบทั้ง 7 Checkpoint และเจาะระบบสำเร็จ!",
+                        earnedScore,
+                        player.getLives(),
+                        player.getScore()
+                );
+                notifyAnswerEvaluated(result);
+                for (GameEventListener listener : eventListeners) {
+                    listener.onGameCompleted(player);
+                }
+                return result;
+            } else {
+                changeGameState(GameState.CHECKPOINT_CLEARED);
+                AnswerResult result = AnswerResult.correct(
+                        "คำตอบถูกต้อง! ปลดล็อก Checkpoint " + currentCheckpoint + " สำเร็จ",
+                        earnedScore,
+                        player.getLives(),
+                        player.getScore()
+                );
+                notifyAnswerEvaluated(result);
+                return result;
+            }
+        } else {
+            player.deductLife();
+
+            for (GameEventListener listener : eventListeners) {
+                listener.onLivesChanged(player.getLives());
+            }
+
+            if (!player.isAlive()) {
+                changeGameState(GameState.GAME_OVER);
+                AnswerResult result = AnswerResult.gameOver(
+                        "การเข้าถึงถูกปฏิเสธ! พลังชีวิตหมดลงแล้ว (GAME OVER)",
+                        player.getScore()
+                );
+                notifyAnswerEvaluated(result);
+                for (GameEventListener listener : eventListeners) {
+                    listener.onGameOver(player);
+                }
+                return result;
+            } else {
+                AnswerResult result = AnswerResult.wrong(
+                        "รหัสผ่านหรือคำสั่งไม่ถูกต้อง! เหลือชีวิตอีก " + player.getLives() + " ครั้ง",
+                        player.getLives(),
+                        player.getScore()
+                );
+                notifyAnswerEvaluated(result);
+                return result;
+            }
+        }
+    }
+
+    private void notifyAnswerEvaluated(AnswerResult result) {
+        for (GameEventListener listener : eventListeners) {
+            listener.onAnswerEvaluated(result);
+        }
+    }
+
+    /**
+     * ก้าวสู่ด่านถัดไป (เรียกเมื่อผ่านด่านปัจจุบันแล้ว)
+     */
+    public boolean advanceToNextCheckpoint() {
+        if (gameState != GameState.CHECKPOINT_CLEARED) {
+            return false;
+        }
+
         if (currentCheckpoint < levelManager.getTotalCheckpoints()) {
             currentCheckpoint++;
+            loadCheckpoint(currentCheckpoint);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * ขอรับคำใบ้สำหรับด่านปัจจุบัน
+     */
+    public String requestHint() {
+        if (currentLevel == null) {
+            return "ไม่มีคำใบ้ในขณะนี้";
+        }
+
+        boolean firstTime = currentLevel.useHint();
+        if (firstTime && player != null) {
+            player.recordHintUsed();
+        }
+
+        String hint = currentLevel.getHint();
+        for (GameEventListener listener : eventListeners) {
+            listener.onHintUsed(hint);
+        }
+        return hint;
+    }
+
+    /**
+     * รีสตาร์ทด่านปัจจุบันใหม่กรณีต้องการเริ่มแก้โจทย์ใหม่
+     */
+    public void retryCurrentCheckpoint() {
+        if (player != null && player.isAlive() && currentCheckpoint >= 1) {
             loadCheckpoint(currentCheckpoint);
         }
     }
 
-    /**
-     * โหลด checkpoint ตามหมายเลข
-     * ใช้ LevelManager สร้าง Level แล้วเรียก loadChallenge()
-     */
-    private void loadCheckpoint(int checkpointId) {
-        // LevelManager คืน Level interface — GameEngine ไม่รู้ว่าเป็น class อะไร
-        currentLevel = levelManager.createLevel(checkpointId);
-        currentLevel.loadChallenge();
+    // ─── Getters (Encapsulation: ป้องกันภายนอกเปลี่ยนค่าตามอำเภอใจ) ───
+
+    public Player getPlayer() {
+        return player;
     }
 
-    /**
-     * Reset state กลับไปค่าเริ่มต้น
-     */
-    private void reset() {
-        currentCheckpoint = STARTING_CHECKPOINT;
-        score = 0;
-        lives = STARTING_LIVES;
-        currentLevel = null;
+    public GameState getGameState() {
+        return gameState;
     }
 
-    // ─── Getters (Encapsulation: อ่านได้แต่แก้ไขตรงไม่ได้) ───
+    public int getCurrentCheckpoint() {
+        return currentCheckpoint;
+    }
 
-    public int getCurrentCheckpoint() { return currentCheckpoint; }
-    public int getScore() { return score; }
-    public int getLives() { return lives; }
-    public Level getCurrentLevel() { return currentLevel; }
-    public int getTotalCheckpoints() { return levelManager.getTotalCheckpoints(); }
+    public Level getCurrentLevel() {
+        return currentLevel;
+    }
 
-    // ─────────────────────────────────────────────────────────
-    // Result enum — บอก UI ว่าต้องแสดงผลอะไรต่อ
-    // ─────────────────────────────────────────────────────────
-
-    /**
-     * ผลลัพธ์จากการ submit คำตอบ
-     * UI Controller รับค่านี้แล้วตัดสินใจเองว่าจะแสดงอะไร
-     */
-    public enum AnswerResult {
-        /** คำตอบถูก — ให้แสดง success animation แล้วเรียก advanceToNextCheckpoint() */
-        CORRECT,
-        /** คำตอบผิด — ให้แสดง error message และ lives ที่เหลือ */
-        WRONG,
-        /** ผ่านทุกด่านครบแล้ว — ให้แสดงหน้า Victory */
-        GAME_CLEARED,
-        /** หมด lives — ให้แสดงหน้า Game Over */
-        GAME_OVER,
-        /** เรียก submitAnswer โดยที่ยังไม่ได้ startNewGame */
-        ERROR
+    public int getTotalCheckpoints() {
+        return levelManager.getTotalCheckpoints();
     }
 }

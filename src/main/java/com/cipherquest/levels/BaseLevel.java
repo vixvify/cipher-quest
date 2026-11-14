@@ -19,11 +19,13 @@ public abstract class BaseLevel implements Level {
     private String hint;
     private boolean completed;
     private int attempts;
+    private boolean hintUsed;
 
     protected BaseLevel(int checkpointId) {
         this.checkpointId = checkpointId;
         this.completed = false;
         this.attempts = 0;
+        this.hintUsed = false;
     }
 
     // ─────────────────────────────────────────────
@@ -72,7 +74,23 @@ public abstract class BaseLevel implements Level {
     }
 
     public boolean isCompleted() { return completed; }
+
+    @Override
     public int getAttempts() { return attempts; }
+
+    @Override
+    public boolean useHint() {
+        if (!this.hintUsed) {
+            this.hintUsed = true;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hasUsedHint() {
+        return hintUsed;
+    }
 
     // ─────────────────────────────────────────────
     // เมธอด abstract ที่ subclass ต้อง implement เอง

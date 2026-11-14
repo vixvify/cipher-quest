@@ -1,4 +1,9 @@
+C:\code\oop\cipherquest\src\main\java\com\cipherquest\core\AnswerResult.java
+C:\code\oop\cipherquest\src\main\java\com\cipherquest\core\DefaultScoreCalculator.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\core\GameEngine.java
+C:\code\oop\cipherquest\src\main\java\com\cipherquest\core\GameEventListener.java
+C:\code\oop\cipherquest\src\main\java\com\cipherquest\core\GameState.java
+C:\code\oop\cipherquest\src\main\java\com\cipherquest\core\ScoreCalculator.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\BaseLevel.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\caesar\CaesarLevel.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\database\DatabaseLevel.java
@@ -6,7 +11,9 @@ C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\Level.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\LevelManager.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\levels\linux\LinuxLevel.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\Main.java
+C:\code\oop\cipherquest\src\main\java\com\cipherquest\player\Player.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\ui\MainMenuController.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\ui\PasskeyScreenController.java
+C:\code\oop\cipherquest\src\main\java\com\cipherquest\ui\ScreenNavigator.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\ui\SqlWorkbenchController.java
 C:\code\oop\cipherquest\src\main\java\com\cipherquest\ui\TerminalScreenController.java

@@ -1,18 +1,26 @@
 package com.cipherquest.ui;
 
+import com.cipherquest.core.AnswerResult;
+import com.cipherquest.core.GameEngine;
+import com.cipherquest.levels.Level;
+import com.cipherquest.levels.linux.LinuxLevel;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
  * Controller สำหรับหน้า Terminal Screen (ด่าน 2 — Linux Command Line)
- * ทำหน้าที่รับคำสั่ง Linux จากผู้เล่น จำลองผลลัพธ์ และส่งไปตรวจสอบกับ LinuxLevel
+ *
+ * ทำหน้าที่รับคำสั่งจากผู้เล่น แสดงผลลัพธ์แบบ Shell Terminal
+ * และส่งคำสั่งไปยัง Core GameEngine เพื่อประเมินผลลัพธ์
  */
 public class TerminalScreenController implements Initializable {
 
@@ -23,12 +31,74 @@ public class TerminalScreenController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // TODO: โหลดโจทย์จาก challenge_02_linux.yaml
+        Level currentLevel = GameEngine.getInstance().getCurrentLevel();
+        if (currentLevel != null) {
+            appendTerminalLine("[TASK] " + currentLevel.getDescription(), "term-system-msg");
+            if (currentLevel instanceof LinuxLevel linux) {
+                appendTerminalLine("[INFO] " + linux.getTask(), "term-system-msg");
+            }
+        }
     }
 
     @FXML
     private void onExecuteCommand() {
-        // TODO: จำลองการรันคำสั่ง Linux และตรวจสอบความถูกต้อง
+        String command = commandField.getText();
+        if (command == null || command.trim().isEmpty()) {
+            return;
+        }
+
+        // แสดงคำสั่งที่ผู้เล่นพิมพ์ลงในหน้าจอ Terminal
+        appendTerminalLine("agent@cipherquest:~$ " + command, "term-prompt");
+        commandField.clear();
+
+        // ส่งให้ GameEngine เป็นผู้ประเมินคำตอบ
+        AnswerResult result = GameEngine.getInstance().submitAnswer(command);
+
+        if (result.isCorrect()) {
+            Level currentLevel = GameEngine.getInstance().getCurrentLevel();
+            if (currentLevel instanceof LinuxLevel linux && linux.getSimulatedOutput() != null) {
+                appendTerminalLine(linux.getSimulatedOutput(), "term-output");
+            }
+            appendTerminalLine("✔ " + result.getMessage(), "term-output");
+            statusLabel.setText("●  ACCESS GRANTED");
+            statusLabel.setStyle("-fx-text-fill: #3ec97e;");
+
+            PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+            pause.setOnFinished(e -> {
+                if (result.getStatus() == AnswerResult.Status.GAME_CLEARED) {
+                    ScreenNavigator.navigateToMainMenu();
+                } else {
+                    GameEngine.getInstance().advanceToNextCheckpoint();
+                    ScreenNavigator.navigateToCurrentLevel();
+                }
+            });
+            pause.play();
+        } else {
+            appendTerminalLine("bash: " + command + ": command failed or incorrect flag", "term-output-error");
+            appendTerminalLine("✖ " + result.getMessage(), "term-output-error");
+
+            if (result.getStatus() == AnswerResult.Status.GAME_OVER) {
+                statusLabel.setText("●  CONNECTION TERMINATED");
+                statusLabel.setStyle("-fx-text-fill: #e05252;");
+                PauseTransition pause = new PauseTransition(Duration.seconds(2.0));
+                pause.setOnFinished(e -> ScreenNavigator.navigateToMainMenu());
+                pause.play();
+            }
+        }
+
+        scrollToBottom();
+    }
+
+    private void appendTerminalLine(String text, String styleClass) {
+        Label label = new Label(text);
+        label.getStyleClass().add(styleClass);
+        outputBox.getChildren().add(label);
+    }
+
+    private void scrollToBottom() {
+        if (outputScrollPane != null) {
+            outputScrollPane.layout();
+            outputScrollPane.setVvalue(1.0);
+        }
     }
 }
-

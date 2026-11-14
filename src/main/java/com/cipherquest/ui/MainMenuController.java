@@ -96,5 +96,7 @@ public class MainMenuController implements Initializable {
     @FXML
     private void onStartGame() {
         System.out.println("[CipherQuest] Starting game — loading Level 1...");
+        com.cipherquest.core.GameEngine.getInstance().startNewGame();
+        ScreenNavigator.navigateToCurrentLevel();
     }
 }
