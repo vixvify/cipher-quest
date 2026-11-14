@@ -1,17 +1,51 @@
 id: 7
+mission_code: "M05"
 type: database
-title: "Database Boss: Final Breach"
+title: "M05 — The Lost Treasure"
+difficulty: "Advanced"
+sql_concepts:
+  - SELECT
+  - JOIN
+  - ON
+  - WHERE
+  - AND
+  - Subquery
+  - MAX
 description: |
-  ด่านสุดท้าย! ค้นหา username ของผู้ใช้ที่เข้าถึงไฟล์มากที่สุดในระบบ
+  The player finally accesses the Archive Vault (L005).
+  Combine artifacts and locations and use a subquery with MAX(power_level) to identify the most powerful Treasure stored in the vault.
 
-task: "ค้นหา username ของ user ที่มีจำนวน access_logs มากที่สุด (ใช้ Subquery หรือ JOIN ก็ได้)"
+task: "Find the Treasure with the highest power level inside the Archive Vault (artifact_name, artifact_type, location_name, power_level, clue) for location_id = 'L005' and artifact_type = 'Treasure'."
 schema: |
-  CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT);
-  CREATE TABLE access_logs (id INTEGER, user_id INTEGER, filename TEXT);
+  CREATE TABLE artifacts (
+    artifact_id TEXT PRIMARY KEY,
+    artifact_name TEXT NOT NULL,
+    artifact_type TEXT NOT NULL,
+    power_level INTEGER NOT NULL,
+    location_id TEXT NOT NULL,
+    clue TEXT NULL
+  );
+  CREATE TABLE locations (
+    location_id TEXT PRIMARY KEY,
+    location_name TEXT NOT NULL,
+    description TEXT NULL
+  );
 expected_query: |
-  SELECT username FROM users WHERE id = (
-    SELECT user_id FROM access_logs GROUP BY user_id ORDER BY COUNT(*) DESC LIMIT 1
-  )
-answer_hash: "correct_if_returns_top_user"
+  SELECT a.artifact_name, a.artifact_type, l.location_name, a.power_level, a.clue
+  FROM artifacts a
+  JOIN locations l ON a.location_id = l.location_id
+  WHERE a.location_id = 'L005'
+    AND a.artifact_type = 'Treasure'
+    AND a.power_level = (
+      SELECT MAX(power_level)
+      FROM artifacts
+      WHERE location_id = 'L005'
+        AND artifact_type = 'Treasure'
+    )
+main_clue_id: "MC05"
+answer_hash: "correct_if_returns_memory_archive"
 
-hint: "ใช้ Subquery เพื่อหา user_id ที่มีจำนวน log มากที่สุด แล้วเอาไปหา username"
+hints:
+  - "Level 1 (Concept): Combine a JOIN between two tables with a WHERE subquery that uses the MAX() aggregate function to find the highest value."
+  - "Level 2 (Structure): SELECT ... FROM table1 a JOIN table2 l ON a.loc_id = l.loc_id WHERE a.loc_id = '...' AND a.type = '...' AND a.power = (SELECT MAX(power) FROM table1 WHERE ...);"
+  - "Level 3 (Specific): Join artifacts a with locations l on location_id, filter by location_id = 'L005' AND artifact_type = 'Treasure', and match power_level = (SELECT MAX(power_level) FROM artifacts WHERE location_id = 'L005' AND artifact_type = 'Treasure')."

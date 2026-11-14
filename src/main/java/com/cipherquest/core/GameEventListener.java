@@ -1,5 +1,6 @@
 package com.cipherquest.core;
 
+import com.cipherquest.clues.Clue;
 import com.cipherquest.levels.Level;
 import com.cipherquest.player.Player;
 
@@ -14,6 +15,8 @@ public interface GameEventListener {
     default void onScoreChanged(int currentScore, int delta) {}
 
     default void onHintUsed(String hint) {}
+
+    default void onClueDiscovered(Clue clue) {}
 
     default void onGameCompleted(Player player) {}
 }

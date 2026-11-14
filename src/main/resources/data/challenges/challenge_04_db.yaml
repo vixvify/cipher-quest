@@ -1,18 +1,32 @@
 id: 4
+mission_code: "M02"
 type: database
-title: "Database Recon II"
+title: "M02 — The Last Message"
+difficulty: "Beginner–Intermediate"
+sql_concepts:
+  - SELECT
+  - WHERE
+  - AND
+  - LIKE
 description: |
-  มีบัญชี admin ซ่อนอยู่ในระบบ ค้นหาข้อมูลของ user ที่เป็น admin ทั้งหมด
+  The player accesses the expedition logs associated with Arin.
+  Most records contain ordinary expedition information, but one message mentions a mysterious symbol.
+  Identify the relevant message.
 
-task: "ดึงข้อมูล username และ email ของผู้ใช้ที่มี role = 'admin'"
+task: "Find Arin's expedition message (log_id, explorer_id, message, clue) from expedition_logs for explorer_id 'E001' containing the word 'symbol'."
 schema: |
-  CREATE TABLE users (
-    id INTEGER PRIMARY KEY,
-    username TEXT,
-    email TEXT,
-    role TEXT
+  CREATE TABLE expedition_logs (
+    log_id INTEGER PRIMARY KEY,
+    explorer_id TEXT NOT NULL,
+    location_id TEXT NOT NULL,
+    message TEXT NOT NULL,
+    clue TEXT NULL
   );
-expected_query: "SELECT username, email FROM users WHERE role = 'admin'"
-answer_hash: "correct_if_returns_admin_users"
+expected_query: "SELECT log_id, explorer_id, message, clue FROM expedition_logs WHERE explorer_id = 'E001' AND message LIKE '%symbol%'"
+main_clue_id: "MC02"
+answer_hash: "correct_if_returns_arin_symbol_log"
 
-hint: "ใช้ WHERE เพื่อกรองเฉพาะ role ที่ต้องการ"
+hints:
+  - "Level 1 (Concept): Combine two filtering conditions using WHERE and AND, and use LIKE with '%' wildcards to search for a substring."
+  - "Level 2 (Structure): SELECT col1, col2, col3, col4 FROM table_name WHERE id_col = 'ID' AND text_col LIKE '%keyword%';"
+  - "Level 3 (Specific): Select log_id, explorer_id, message, and clue from expedition_logs where explorer_id = 'E001' and message matches '%symbol%' using LIKE."

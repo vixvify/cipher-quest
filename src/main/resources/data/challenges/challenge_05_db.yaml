@@ -1,14 +1,34 @@
 id: 5
+mission_code: "M03"
 type: database
-title: "Database Recon III"
+title: "M03 — The Forgotten Relics"
+difficulty: "Intermediate"
+sql_concepts:
+  - SELECT
+  - WHERE
+  - BETWEEN
+  - ORDER BY
+  - LIMIT
 description: |
-  ตรวจสอบ log การเข้าถึง ใครบ้างที่เปิดไฟล์ชื่อ 'classified.pdf'?
+  The player accesses the artifact records stored in the Relic Chamber (L002).
+  Several artifacts have been recorded, but only some appear to have significant power levels.
+  Identify the highest-power artifacts and investigate their associated information.
 
-task: "JOIN ตาราง users กับ access_logs แล้วดึง username ของคนที่เปิด classified.pdf"
+task: "Find the five highest-power artifacts (artifact_id, artifact_name, artifact_type, power_level, clue) in location 'L002' with power_level between 50 and 100, ordered by power_level descending."
 schema: |
-  CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT);
-  CREATE TABLE access_logs (id INTEGER, user_id INTEGER, filename TEXT, accessed_at TEXT);
-expected_query: "SELECT users.username FROM users JOIN access_logs ON users.id = access_logs.user_id WHERE access_logs.filename = 'classified.pdf'"
-answer_hash: "correct_if_returns_classified_users"
+  CREATE TABLE artifacts (
+    artifact_id TEXT PRIMARY KEY,
+    artifact_name TEXT NOT NULL,
+    artifact_type TEXT NOT NULL,
+    power_level INTEGER NOT NULL,
+    location_id TEXT NOT NULL,
+    clue TEXT NULL
+  );
+expected_query: "SELECT artifact_id, artifact_name, artifact_type, power_level, clue FROM artifacts WHERE location_id = 'L002' AND power_level BETWEEN 50 AND 100 ORDER BY power_level DESC LIMIT 5"
+main_clue_id: "MC03"
+answer_hash: "correct_if_returns_relic_chamber_artifacts"
 
-hint: "ใช้ JOIN เพื่อเชื่อม users กับ access_logs ผ่าน user_id"
+hints:
+  - "Level 1 (Concept): Use BETWEEN for inclusive numeric ranges, ORDER BY ... DESC to sort highest to lowest, and LIMIT to cap the number of returned rows."
+  - "Level 2 (Structure): SELECT ... FROM table_name WHERE loc_col = '...' AND num_col BETWEEN min AND max ORDER BY num_col DESC LIMIT n;"
+  - "Level 3 (Specific): Select artifact_id, artifact_name, artifact_type, power_level, and clue from artifacts where location_id = 'L002' and power_level is BETWEEN 50 AND 100, ordered by power_level DESC with LIMIT 5."

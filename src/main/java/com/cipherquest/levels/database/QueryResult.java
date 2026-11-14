@@ -5,7 +5,18 @@ import java.util.List;
 
 public class QueryResult {
 
+    public enum ErrorType {
+        NONE,
+        EMPTY_QUERY,
+        INVALID_STATEMENT,
+        SYNTAX_ERROR,
+        UNKNOWN_TABLE,
+        UNKNOWN_COLUMN,
+        EXECUTION_ERROR
+    }
+
     private final boolean success;
+    private final ErrorType errorType;
     private final String errorMessage;
     private final List<String> columnNames;
     private final List<List<String>> rows;
@@ -13,7 +24,12 @@ public class QueryResult {
     private final long executionTimeMs;
 
     public QueryResult(boolean success, String errorMessage, List<String> columnNames, List<List<String>> rows, int rowCount, long executionTimeMs) {
+        this(success, success ? ErrorType.NONE : ErrorType.EXECUTION_ERROR, errorMessage, columnNames, rows, rowCount, executionTimeMs);
+    }
+
+    public QueryResult(boolean success, ErrorType errorType, String errorMessage, List<String> columnNames, List<List<String>> rows, int rowCount, long executionTimeMs) {
         this.success = success;
+        this.errorType = errorType != null ? errorType : (success ? ErrorType.NONE : ErrorType.EXECUTION_ERROR);
         this.errorMessage = errorMessage;
         this.columnNames = columnNames != null ? columnNames : Collections.emptyList();
         this.rows = rows != null ? rows : Collections.emptyList();
@@ -23,15 +39,24 @@ public class QueryResult {
 
     public static QueryResult success(List<String> columnNames, List<List<String>> rows, long executionTimeMs) {
         int count = rows != null ? rows.size() : 0;
-        return new QueryResult(true, null, columnNames, rows, count, executionTimeMs);
+        return new QueryResult(true, ErrorType.NONE, null, columnNames, rows, count, executionTimeMs);
     }
 
     public static QueryResult error(String errorMessage, long executionTimeMs) {
-        return new QueryResult(false, errorMessage, Collections.emptyList(), Collections.emptyList(), 0, executionTimeMs);
+        return error(ErrorType.EXECUTION_ERROR, errorMessage, executionTimeMs);
+    }
+
+    public static QueryResult error(ErrorType errorType, String errorMessage, long executionTimeMs) {
+        ErrorType resolvedType = errorType != null ? errorType : ErrorType.EXECUTION_ERROR;
+        return new QueryResult(false, resolvedType, errorMessage, Collections.emptyList(), Collections.emptyList(), 0, executionTimeMs);
     }
 
     public boolean isSuccess() {
         return success;
+    }
+
+    public ErrorType getErrorType() {
+        return errorType;
     }
 
     public String getErrorMessage() {
