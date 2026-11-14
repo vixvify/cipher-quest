@@ -17,25 +17,23 @@
 
             <VBox styleClass="monitor-bezel" spacing="0">
 
-                <Region styleClass="monitor-screen-top-bar" prefHeight="28">
-                    <HBox alignment="CENTER_LEFT" spacing="0">
-                        <padding>
-                            <Insets left="6" />
-                        </padding>
-                        <Region styleClass="dot-red" />
-                        <Region styleClass="dot-yellow" />
-                        <Region styleClass="dot-green" />
-                        <HBox spacing="0" styleClass="sql-menu-bar">
-                            <Label text="  File" styleClass="sql-menu-item" />
-                            <Label text="  Edit" styleClass="sql-menu-item" />
-                            <Label text="  Query" styleClass="sql-menu-item" />
-                            <Label text="  Database" styleClass="sql-menu-item" />
-                            <Label text="  Help" styleClass="sql-menu-item" />
-                        </HBox>
-                        <Region HBox.hgrow="ALWAYS" />
-                        <Label text="CQ-SQL Workbench  " styleClass="screen-title-bar" />
+                <HBox styleClass="monitor-screen-top-bar" prefHeight="28" alignment="CENTER_LEFT" spacing="0">
+                    <padding>
+                        <Insets left="6" />
+                    </padding>
+                    <Region styleClass="dot-red" />
+                    <Region styleClass="dot-yellow" />
+                    <Region styleClass="dot-green" />
+                    <HBox spacing="0" styleClass="sql-menu-bar">
+                        <Label text="  File" styleClass="sql-menu-item" />
+                        <Label text="  Edit" styleClass="sql-menu-item" />
+                        <Label text="  Query" styleClass="sql-menu-item" />
+                        <Label text="  Database" styleClass="sql-menu-item" />
+                        <Label text="  Help" styleClass="sql-menu-item" />
                     </HBox>
-                </Region>
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label text="CQ-SQL Workbench  " styleClass="screen-title-bar" />
+                </HBox>
 
                 <HBox VBox.vgrow="ALWAYS" styleClass="sql-layout">
 
@@ -131,15 +129,13 @@
 
                 </HBox>
 
-                <Region styleClass="monitor-screen-bottom-bar" prefHeight="22">
-                    <HBox alignment="CENTER_RIGHT" spacing="16">
-                        <padding>
-                            <Insets right="14" />
-                        </padding>
-                        <Label text="cipherquest_db@localhost" styleClass="screen-status-text" />
-                        <Label fx:id="statusLabel" text="●  CONNECTED" styleClass="screen-status-ok" />
-                    </HBox>
-                </Region>
+                <HBox styleClass="monitor-screen-bottom-bar" prefHeight="22" alignment="CENTER_RIGHT" spacing="16">
+                    <padding>
+                        <Insets right="14" />
+                    </padding>
+                    <Label text="cipherquest_db@localhost" styleClass="screen-status-text" />
+                    <Label fx:id="statusLabel" text="●  CONNECTED" styleClass="screen-status-ok" />
+                </HBox>
 
             </VBox>
 
@@ -150,4 +146,3 @@
     </VBox>
 
 </StackPane>
-

@@ -1,17 +1,19 @@
 package com.cipherquest.ui;
 
+import com.cipherquest.core.AnswerResult;
+import com.cipherquest.core.GameEngine;
+import com.cipherquest.levels.Level;
+import com.cipherquest.levels.caesar.CaesarLevel;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-/**
- * Controller สำหรับหน้า Passkey Screen (ด่าน 1 — Caesar Cipher)
- * ทำหน้าที่รับการกรอก Passkey จากผู้เล่น และส่งไปตรวจสอบกับ CaesarLevel
- */
 public class PasskeyScreenController implements Initializable {
 
     @FXML private PasswordField passkeyField;
@@ -21,12 +23,44 @@ public class PasskeyScreenController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // TODO: โหลดโจทย์จาก challenge_01_caesar.yaml
+        Level currentLevel = GameEngine.getInstance().getCurrentLevel();
+        if (currentLevel != null) {
+            hintLabel.setText(currentLevel.getHint());
+            if (currentLevel instanceof CaesarLevel caesar) {
+                ciphertextLabel.setText(caesar.getCiphertext());
+            }
+        }
+        feedbackLabel.setText("");
     }
 
     @FXML
     private void onSubmitPasskey() {
-        // TODO: ตรวจสอบ passkey กับคำตอบของด่าน
+        String input = passkeyField.getText();
+        if (input == null || input.trim().isEmpty()) {
+            feedbackLabel.setText("กรุณากรอก Passkey ก่อนกดยืนยัน");
+            return;
+        }
+
+        AnswerResult result = GameEngine.getInstance().submitAnswer(input);
+
+        if (result.isCorrect()) {
+            feedbackLabel.setStyle("-fx-text-fill: #3ec97e;");
+            feedbackLabel.setText("✔ " + result.getMessage());
+
+            PauseTransition pause = new PauseTransition(Duration.seconds(1.2));
+            pause.setOnFinished(e -> {
+                if (result.getStatus() == AnswerResult.Status.GAME_CLEARED) {
+                    ScreenNavigator.navigateToMainMenu();
+                } else {
+                    GameEngine.getInstance().advanceToNextCheckpoint();
+                    ScreenNavigator.navigateToCurrentLevel();
+                }
+            });
+            pause.play();
+        } else {
+            feedbackLabel.setStyle("-fx-text-fill: #e05252;");
+            feedbackLabel.setText("✖ " + result.getMessage());
+            passkeyField.clear();
+        }
     }
 }
-

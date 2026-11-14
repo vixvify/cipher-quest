@@ -17,17 +17,15 @@
 
             <VBox styleClass="monitor-bezel" alignment="CENTER" spacing="0">
 
-                <Region styleClass="monitor-screen-top-bar" prefHeight="28">
-                    <HBox alignment="CENTER_LEFT" spacing="8">
-                        <padding>
-                            <Insets left="14" />
-                        </padding>
-                        <Region styleClass="dot-red" />
-                        <Region styleClass="dot-yellow" />
-                        <Region styleClass="dot-green" />
-                        <Label text="agent@cipherquest: ~ — bash" styleClass="screen-title-bar" HBox.hgrow="ALWAYS" />
-                    </HBox>
-                </Region>
+                <HBox styleClass="monitor-screen-top-bar" prefHeight="28" alignment="CENTER_LEFT" spacing="8">
+                    <padding>
+                        <Insets left="14" />
+                    </padding>
+                    <Region styleClass="dot-red" />
+                    <Region styleClass="dot-yellow" />
+                    <Region styleClass="dot-green" />
+                    <Label text="agent@cipherquest: ~ — bash" styleClass="screen-title-bar" HBox.hgrow="ALWAYS" />
+                </HBox>
 
                 <VBox styleClass="terminal-screen-body" VBox.vgrow="ALWAYS">
                     <padding>
@@ -47,7 +45,7 @@
                     <Region prefHeight="8" />
 
                     <HBox styleClass="terminal-input-row" spacing="0" alignment="CENTER_LEFT">
-                        <Label text="agent@cipherquest:~$" styleClass="term-input-prompt" />
+                        <Label fx:id="promptLabel" text="agent@cipherquest:~$" styleClass="term-input-prompt" />
                         <TextField fx:id="commandField"
                                    promptText="type command here..."
                                    styleClass="term-input-field"
@@ -58,15 +56,13 @@
 
                 </VBox>
 
-                <Region styleClass="monitor-screen-bottom-bar" prefHeight="22">
-                    <HBox alignment="CENTER_RIGHT" spacing="16">
-                        <padding>
-                            <Insets right="14" />
-                        </padding>
-                        <Label text="CHECKPOINT 2 / 7" styleClass="screen-status-text" />
-                        <Label fx:id="statusLabel" text="●  AWAITING COMMAND" styleClass="screen-status-warn" />
-                    </HBox>
-                </Region>
+                <HBox styleClass="monitor-screen-bottom-bar" prefHeight="22" alignment="CENTER_RIGHT" spacing="16">
+                    <padding>
+                        <Insets right="14" />
+                    </padding>
+                    <Label text="CHECKPOINT 2 / 7" styleClass="screen-status-text" />
+                    <Label fx:id="statusLabel" text="●  AWAITING COMMAND" styleClass="screen-status-warn" />
+                </HBox>
 
             </VBox>
 
@@ -77,4 +73,3 @@
     </VBox>
 
 </StackPane>
-

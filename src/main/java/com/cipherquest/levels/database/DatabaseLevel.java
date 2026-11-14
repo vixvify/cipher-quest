@@ -2,51 +2,103 @@ package com.cipherquest.levels.database;
 
 import com.cipherquest.levels.BaseLevel;
 
-/**
- * [INHERITANCE] ด่านที่ 3–7: SQL Database Query
- *
- * extends BaseLevel → ได้ title, description, hint, attempts ฟรี
- * override checkAnswer() → ตรวจสอบด้วยการรัน query กับ SQLite จำลอง (Polymorphism)
- *
- * UI ที่ใช้: SqlWorkbenchScreen
- */
 public class DatabaseLevel extends BaseLevel {
 
-    // [ENCAPSULATION] ซ่อน schema และ expected result ไว้ภายใน
-    private String schemaSQL;
-    private String expectedQuery;
+    private final SqlDatabaseEnvironment dbEnv;
     private String task;
+    private String expectedQuery;
+    private QueryResult lastQueryResult;
+    private String lastFeedback;
 
     public DatabaseLevel(int checkpointId) {
         super(checkpointId);
+        this.dbEnv = new SqlDatabaseEnvironment();
+        this.lastFeedback = "";
     }
 
-    /**
-     * [POLYMORPHISM] โหลดโจทย์เฉพาะของ SQL
-     * TODO: อ่านจาก challenge_0X_db.yaml ตาม checkpointId
-     */
     @Override
     public void loadChallenge() {
-        // TODO: โหลดจาก YAML ตาม checkpointId (3–7)
-        // ตัวอย่าง default สำหรับด่าน 3
-        setTitle("Database Recon I");
-        setDescription("ดึงรายชื่อผู้ใช้ทั้งหมดในตาราง users");
-        setHint("ใช้ SELECT เพื่อเลือกคอลัมน์ที่ต้องการ");
-        this.task = "แสดง username และ email ของผู้ใช้ทุกคน";
-        this.schemaSQL = "CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, email TEXT, role TEXT);";
-        this.expectedQuery = "SELECT username, email FROM users";
+        dbEnv.initDatabase();
+        int cp = getCheckpointId();
+
+        switch (cp) {
+            case 3 -> {
+                setTitle("Database Recon I");
+                setDescription("ดึงรายชื่อผู้ใช้ทั้งหมดในตาราง users");
+                this.task = "แสดงคอลัมน์ username และ email ของผู้ใช้ทุกคนในตาราง users";
+                setHint("ใช้คำสั่ง SELECT username, email FROM users;");
+                this.expectedQuery = "SELECT username, email FROM users";
+            }
+            case 4 -> {
+                setTitle("Database Recon II");
+                setDescription("ค้นหาผู้ใช้ที่เป็น admin ในระบบ");
+                this.task = "ดึงข้อมูล username และ email ของผู้ใช้ที่มี role = 'admin'";
+                setHint("ใช้เงื่อนไข WHERE role = 'admin' เพื่อกรองเฉพาะผู้ใช้ที่เป็น admin");
+                this.expectedQuery = "SELECT username, email FROM users WHERE role = 'admin'";
+            }
+            case 5 -> {
+                setTitle("Database Recon III");
+                setDescription("ตรวจสอบ log การเข้าถึงเอกสารลับ");
+                this.task = "JOIN ตาราง users กับ access_logs แล้วดึง username ของคนที่เปิด classified.pdf";
+                setHint("ใช้ JOIN access_logs ON users.id = access_logs.user_id WHERE filename = 'classified.pdf'");
+                this.expectedQuery = "SELECT users.username FROM users JOIN access_logs ON users.id = access_logs.user_id WHERE access_logs.filename = 'classified.pdf'";
+            }
+            case 6 -> {
+                setTitle("Database Recon IV");
+                setDescription("สรุปสถิติความถี่การเข้าถึงระบบ");
+                this.task = "นับจำนวนแถวใน access_logs ของแต่ละ user_id แล้วเรียงลำดับจากมากไปน้อย";
+                setHint("ใช้ GROUP BY user_id ORDER BY COUNT(*) DESC");
+                this.expectedQuery = "SELECT user_id, COUNT(*) as access_count FROM access_logs GROUP BY user_id ORDER BY COUNT(*) DESC";
+            }
+            case 7 -> {
+                setTitle("Database Boss: Final Breach");
+                setDescription("เจาะระบบขั้นสูงสุด ดึงข้อมูลเป้าหมายหลัก");
+                this.task = "ค้นหา username ของ user ที่มีจำนวนการเข้าถึง (access_logs) มากที่สุดในระบบ";
+                setHint("ใช้ Subquery หรือ JOIN เพื่อหา user_id ที่มี log มากที่สุด แล้วนำไปหา username ในตาราง users");
+                this.expectedQuery = "SELECT username FROM users WHERE id = (SELECT user_id FROM access_logs GROUP BY user_id ORDER BY COUNT(*) DESC LIMIT 1)";
+            }
+            default -> {
+                setTitle("Database Recon");
+                setDescription("ภารกิจฐานข้อมูล");
+                this.task = "สำรวจข้อมูลในฐานข้อมูล";
+                setHint("ใช้คำสั่ง SELECT เพื่อดูตาราง");
+                this.expectedQuery = "SELECT * FROM users";
+            }
+        }
     }
 
-    /**
-     * [POLYMORPHISM] ตรวจสอบแบบ Database: รัน query จริงกับ SQLite in-memory
-     * และเปรียบเทียบ result set กับเฉลย (ไม่ตรวจ syntax แต่ตรวจผลลัพธ์)
-     * TODO: implement การรัน SQLite และเปรียบเทียบผลลัพธ์
-     */
     @Override
     public boolean checkAnswer(String input) {
         recordAttempt();
-        // TODO: รัน input เป็น SQL query กับ SQLite แล้วตรวจผลลัพธ์
-        return false;
+        this.lastQueryResult = dbEnv.executeQuery(input);
+
+        if (!lastQueryResult.isSuccess()) {
+            this.lastFeedback = "SQL Error: " + lastQueryResult.getErrorMessage();
+            return false;
+        }
+
+        boolean matched = dbEnv.evaluateAnswer(input, expectedQuery);
+        if (matched) {
+            this.lastFeedback = "Query OK! Result matches mission objective (" + lastQueryResult.getRowCount() + " rows).";
+            return true;
+        } else {
+            this.lastFeedback = "Query executed successfully (" + lastQueryResult.getRowCount() + " rows), but does not match mission objective.";
+            return false;
+        }
+    }
+
+    @Override
+    public String getSuccessFeedback() {
+        return lastFeedback != null && !lastFeedback.isEmpty()
+                ? lastFeedback
+                : super.getSuccessFeedback();
+    }
+
+    @Override
+    public String getFailureFeedback() {
+        return lastFeedback != null && !lastFeedback.isEmpty()
+                ? lastFeedback
+                : super.getFailureFeedback();
     }
 
     @Override
@@ -54,8 +106,19 @@ public class DatabaseLevel extends BaseLevel {
         return ScreenType.SQL_WORKBENCH;
     }
 
-    // Getter สำหรับ SqlWorkbenchController
-    public String getSchemaSQL() { return schemaSQL; }
-    public String getTask() { return task; }
-    public String getExpectedQuery() { return expectedQuery; }
+    public String getTask() {
+        return task;
+    }
+
+    public String getExpectedQuery() {
+        return expectedQuery;
+    }
+
+    public QueryResult getLastQueryResult() {
+        return lastQueryResult;
+    }
+
+    public SqlDatabaseEnvironment getDbEnvironment() {
+        return dbEnv;
+    }
 }

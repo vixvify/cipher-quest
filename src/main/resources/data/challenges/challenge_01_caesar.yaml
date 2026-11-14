@@ -1,18 +1,12 @@
-# ด่าน 1 — Caesar Cipher: "Hacked Memo"
-#
-# ผู้เล่นได้รับข้อความที่ถูกเข้ารหัสด้วย Caesar Cipher
-# และต้องถอดรหัสให้ได้ข้อความดั้งเดิมเพื่อป้อน Passkey เข้าระบบ
-
 id: 1
 type: caesar
 title: "Operation Caesar"
 description: |
   คุณพบไฟล์ที่ถูกเข้ารหัสบนเซิร์ฟเวอร์เก่า
-  ถอดรหัสข้อความต่อไปนี้เพื่อค้นหา Passkey
+  ถอดรหัสข้อความ Ciphertext 5 ตัวอักษรต่อไปนี้เพื่อค้นหา Passkey
 
-ciphertext: "FLSKHUTZXHVW"
-shift: 3
-answer: "CIPHERQUEST"
+ciphertext: "VZJXY"
+shift: 5
+answer: "QUEST"
 
-hint: "ตัวอักษรแต่ละตัวถูกเลื่อนไปข้างหน้า 3 ตำแหน่ง ลองเลื่อนกลับ"
-
+hint: "ตัวเลข Shift อยู่ในช่วง 3 - 7"

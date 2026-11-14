@@ -2,53 +2,38 @@ package com.cipherquest.levels.linux;
 
 import com.cipherquest.levels.BaseLevel;
 
-import java.util.List;
-
-/**
- * [INHERITANCE] ด่านที่ 2: Linux Command Line
- *
- * extends BaseLevel → ได้ title, description, hint, attempts ฟรี
- * override checkAnswer() → ตรวจสอบด้วยการเปรียบเทียบคำสั่ง Linux (Polymorphism)
- *
- * UI ที่ใช้: TerminalScreen
- */
 public class LinuxLevel extends BaseLevel {
 
-    // [ENCAPSULATION] ซ่อน logic การตรวจสอบคำสั่งไว้ภายใน
-    private List<String> acceptedCommands;
-    private String simulatedOutput;
-    private String task;
+    private final VirtualTerminal terminal;
 
     public LinuxLevel(int checkpointId) {
         super(checkpointId);
+        this.terminal = new VirtualTerminal();
     }
 
-    /**
-     * [POLYMORPHISM] โหลดโจทย์เฉพาะของ Linux Terminal
-     * TODO: อ่านจาก challenge_02_linux.yaml
-     */
     @Override
     public void loadChallenge() {
-        // TODO: โหลดจาก YAML แล้ว set ค่าด้านล่าง
         setTitle("Terminal Access");
-        setDescription("ค้นหาและแสดงเนื้อหาของไฟล์ secret.txt ที่ซ่อนอยู่ใน /home/agent");
-        setHint("ใช้คำสั่ง cat เพื่ออ่านเนื้อหาไฟล์");
-        this.task = "แสดงเนื้อหาของไฟล์ secret.txt ที่อยู่ใน /home/agent";
-        this.acceptedCommands = List.of("cat /home/agent/secret.txt", "cat ~/secret.txt");
-        this.simulatedOutput = "ACCESS_CODE: TOOR_7749";
+        setDescription("ค้นหาโปรแกรมที่ซ่อนอยู่ในระบบแล้วรันขึ้นมาเพื่อเจาะระบบ");
+        setHint("ลองสำรวจโฟลเดอร์ /opt หรือใช้คำสั่ง find / -name '*.bin' เพื่อค้นหาโปรแกรมแล้วรันด้วย ./");
+        terminal.reset();
     }
 
-    /**
-     * [POLYMORPHISM] ตรวจสอบแบบ Linux: เปรียบเทียบกับ accepted_commands
-     * รองรับหลายคำสั่งที่ให้ผลลัพธ์เดียวกัน
-     */
     @Override
     public boolean checkAnswer(String input) {
         recordAttempt();
-        if (input == null) return false;
-        String trimmed = input.trim();
-        return acceptedCommands.stream()
-                .anyMatch(cmd -> cmd.equalsIgnoreCase(trimmed));
+        terminal.execute(input);
+        return terminal.isTargetExecuted();
+    }
+
+    @Override
+    public String getSuccessFeedback() {
+        return terminal.getLastOutput();
+    }
+
+    @Override
+    public String getFailureFeedback() {
+        return terminal.getLastOutput();
     }
 
     @Override
@@ -56,7 +41,7 @@ public class LinuxLevel extends BaseLevel {
         return ScreenType.TERMINAL;
     }
 
-    // Getter สำหรับ TerminalScreenController
-    public String getTask() { return task; }
-    public String getSimulatedOutput() { return simulatedOutput; }
+    public VirtualTerminal getTerminal() {
+        return terminal;
+    }
 }
