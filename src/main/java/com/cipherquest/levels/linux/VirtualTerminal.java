@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Backward-compatible facade for the game's existing JavaFX controller. */
 public final class VirtualTerminal implements AutoCloseable {
     private TerminalContext context;
     private final Map<String, Command> commands = new HashMap<>();

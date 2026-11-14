@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
-/** Holds one level's isolated, in-memory file system and terminal state. */
 public final class TerminalContext implements AutoCloseable {
     public static final String HOME = "/home/agent";
     public static final String TARGET = "/opt/security/breach.bin";
