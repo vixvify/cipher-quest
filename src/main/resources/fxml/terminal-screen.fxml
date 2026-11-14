@@ -45,7 +45,7 @@
                     <Region prefHeight="8" />
 
                     <HBox styleClass="terminal-input-row" spacing="0" alignment="CENTER_LEFT">
-                        <Label text="agent@cipherquest:~$" styleClass="term-input-prompt" />
+                        <Label fx:id="promptLabel" text="agent@cipherquest:~$" styleClass="term-input-prompt" />
                         <TextField fx:id="commandField"
                                    promptText="type command here..."
                                    styleClass="term-input-field"

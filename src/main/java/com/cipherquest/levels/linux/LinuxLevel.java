@@ -2,35 +2,38 @@ package com.cipherquest.levels.linux;
 
 import com.cipherquest.levels.BaseLevel;
 
-import java.util.List;
-
 public class LinuxLevel extends BaseLevel {
 
-    private List<String> acceptedCommands;
-    private String simulatedOutput;
-    private String task;
+    private final VirtualTerminal terminal;
 
     public LinuxLevel(int checkpointId) {
         super(checkpointId);
+        this.terminal = new VirtualTerminal();
     }
 
     @Override
     public void loadChallenge() {
         setTitle("Terminal Access");
-        setDescription("ค้นหาและแสดงเนื้อหาของไฟล์ secret.txt ที่ซ่อนอยู่ใน /home/agent");
-        setHint("ใช้คำสั่ง cat เพื่ออ่านเนื้อหาไฟล์");
-        this.task = "แสดงเนื้อหาของไฟล์ secret.txt ที่อยู่ใน /home/agent";
-        this.acceptedCommands = List.of("cat /home/agent/secret.txt", "cat ~/secret.txt");
-        this.simulatedOutput = "ACCESS_CODE: TOOR_7749";
+        setDescription("ค้นหาโปรแกรมที่ซ่อนอยู่ในระบบแล้วรันขึ้นมาเพื่อเจาะระบบ");
+        setHint("ลองสำรวจโฟลเดอร์ /opt หรือใช้คำสั่ง find / -name '*.bin' เพื่อค้นหาโปรแกรมแล้วรันด้วย ./");
+        terminal.reset();
     }
 
     @Override
     public boolean checkAnswer(String input) {
         recordAttempt();
-        if (input == null) return false;
-        String trimmed = input.trim();
-        return acceptedCommands.stream()
-                .anyMatch(cmd -> cmd.equalsIgnoreCase(trimmed));
+        terminal.execute(input);
+        return terminal.isTargetExecuted();
+    }
+
+    @Override
+    public String getSuccessFeedback() {
+        return terminal.getLastOutput();
+    }
+
+    @Override
+    public String getFailureFeedback() {
+        return terminal.getLastOutput();
     }
 
     @Override
@@ -38,11 +41,7 @@ public class LinuxLevel extends BaseLevel {
         return ScreenType.TERMINAL;
     }
 
-    public String getTask() {
-        return task;
-    }
-
-    public String getSimulatedOutput() {
-        return simulatedOutput;
+    public VirtualTerminal getTerminal() {
+        return terminal;
     }
 }

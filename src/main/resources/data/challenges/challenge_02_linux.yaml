@@ -2,15 +2,10 @@ id: 2
 type: linux
 title: "Terminal Access"
 description: |
-  คุณเข้าถึง shell ได้แล้ว ไฟล์ secret.txt ถูกซ่อนอยู่ใน /home/agent
-  ค้นหาและแสดงเนื้อหาของไฟล์นั้น
+  คุณเข้าถึง shell ได้แล้ว ไฟล์โปรแกรมที่ใช้เจาะระบบถูกซ่อนอยู่ในระบบ
+  ค้นหาโปรแกรมให้พบแล้วรันขึ้นมาเพื่อผ่านด่าน
 
-task: "แสดงเนื้อหาของไฟล์ secret.txt ที่อยู่ใน /home/agent"
-expected_command: "cat /home/agent/secret.txt"
-accepted_commands:
-  - "cat /home/agent/secret.txt"
-  - "cat ~/secret.txt"
-simulated_output: "ACCESS_CODE: TOOR_7749"
-answer: "TOOR_7749"
+task: "ค้นหาโปรแกรมเจาะระบบแล้วรันขึ้นมา (Execute)"
+target_binary: "/opt/security/breach.bin"
 
-hint: "ใช้คำสั่ง cat เพื่ออ่านเนื้อหาไฟล์"
+hint: "ลองสำรวจโฟลเดอร์ /opt หรือใช้คำสั่ง find / -name '*.bin' เพื่อค้นหาโปรแกรมแล้วรันด้วย ./"

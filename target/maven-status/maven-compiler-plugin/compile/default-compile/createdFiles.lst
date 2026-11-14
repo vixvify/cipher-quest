@@ -9,11 +9,14 @@ com\cipherquest\ui\ScreenNavigator$1.class
 com\cipherquest\ui\ScreenNavigator.class
 com\cipherquest\core\GameEventListener.class
 com\cipherquest\levels\BaseLevel.class
+com\cipherquest\levels\database\QueryResult.class
 com\cipherquest\ui\PasskeyScreenController.class
+com\cipherquest\levels\linux\VirtualTerminal.class
 com\cipherquest\levels\database\DatabaseLevel.class
 com\cipherquest\levels\Level$ScreenType.class
 com\cipherquest\core\GameEngine.class
 com\cipherquest\core\ScoreCalculator.class
+com\cipherquest\levels\database\SqlDatabaseEnvironment.class
 com\cipherquest\core\AnswerResult.class
 com\cipherquest\Main.class
 com\cipherquest\ui\TerminalScreenController.class

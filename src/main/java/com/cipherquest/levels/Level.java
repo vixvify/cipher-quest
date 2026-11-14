@@ -24,6 +24,10 @@ public interface Level {
 
     boolean isCompleted();
 
+    String getSuccessFeedback();
+
+    String getFailureFeedback();
+
     ScreenType getScreenType();
 
     enum ScreenType {

@@ -114,7 +114,7 @@ public class GameEngine {
             } else {
                 changeGameState(GameState.CHECKPOINT_CLEARED);
                 AnswerResult result = AnswerResult.correct(
-                        "คำตอบถูกต้อง! ปลดล็อก Checkpoint " + currentCheckpoint + " สำเร็จ",
+                        currentLevel.getSuccessFeedback(),
                         earnedScore,
                         player.getScore()
                 );
@@ -123,7 +123,7 @@ public class GameEngine {
             }
         } else {
             AnswerResult result = AnswerResult.wrong(
-                    "รหัสผ่านหรือคำสั่งไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
+                    currentLevel.getFailureFeedback(),
                     player.getScore()
             );
             notifyAnswerEvaluated(result);

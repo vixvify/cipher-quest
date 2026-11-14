@@ -83,6 +83,16 @@ public abstract class BaseLevel implements Level {
     }
 
     @Override
+    public String getSuccessFeedback() {
+        return "คำตอบถูกต้อง! ปลดล็อก Checkpoint " + checkpointId + " สำเร็จ";
+    }
+
+    @Override
+    public String getFailureFeedback() {
+        return "รหัสผ่านหรือคำสั่งไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง";
+    }
+
+    @Override
     public abstract void loadChallenge();
 
     @Override

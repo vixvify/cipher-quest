@@ -50,7 +50,7 @@
 
                         <HBox alignment="CENTER" spacing="0" styleClass="passkey-input-box">
                             <PasswordField fx:id="passkeyField"
-                                          promptText="_ _ _ _ _ _ _ _ _ _"
+                                          promptText="_ _ _ _ _"
                                           styleClass="passkey-field"
                                           HBox.hgrow="ALWAYS"
                                           onAction="#onSubmitPasskey" />
@@ -70,7 +70,7 @@
 
                     <VBox styleClass="ciphertext-box" alignment="CENTER" spacing="6">
                         <Label text="INTERCEPTED MESSAGE:" styleClass="cipher-box-title" />
-                        <Label fx:id="ciphertextLabel" text="FLSKHUTZXHVW" styleClass="ciphertext-display" />
+                        <Label fx:id="ciphertextLabel" text="VZJXY" styleClass="ciphertext-display" />
                     </VBox>
                 </VBox>
 

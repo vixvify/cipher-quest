@@ -22,16 +22,15 @@ public class TerminalScreenController implements Initializable {
     @FXML private VBox outputBox;
     @FXML private ScrollPane outputScrollPane;
     @FXML private Label statusLabel;
+    @FXML private Label promptLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Level currentLevel = GameEngine.getInstance().getCurrentLevel();
-        if (currentLevel != null) {
-            appendTerminalLine("[TASK] " + currentLevel.getDescription(), "term-system-msg");
-            if (currentLevel instanceof LinuxLevel linux && linux.getTask() != null) {
-                appendTerminalLine("[INFO] " + linux.getTask(), "term-system-msg");
-            }
-        }
+        outputBox.getChildren().clear();
+        appendTerminalLine("CipherQuest OS — Linux Terminal Shell v5.15", "term-system-msg");
+        appendTerminalLine("Type 'help' for available commands or 'cat readme.txt' for mission details.", "term-system-msg");
+        appendTerminalLine("", "term-output");
+        updatePrompt();
     }
 
     @FXML
@@ -41,21 +40,26 @@ public class TerminalScreenController implements Initializable {
             return;
         }
 
-        appendTerminalLine("agent@cipherquest:~$ " + command, "term-prompt");
+        String currentPrompt = promptLabel != null ? promptLabel.getText() : "agent@cipherquest:~$ ";
+        appendTerminalLine(currentPrompt + " " + command, "term-prompt");
         commandField.clear();
 
         AnswerResult result = GameEngine.getInstance().submitAnswer(command);
+        String output = result.getMessage();
+
+        if ("__CLEAR__".equals(output)) {
+            outputBox.getChildren().clear();
+        } else if (output != null && !output.isEmpty()) {
+            appendTerminalLine(output, result.isCorrect() ? "term-output" : "term-output");
+        }
+
+        updatePrompt();
 
         if (result.isCorrect()) {
-            Level currentLevel = GameEngine.getInstance().getCurrentLevel();
-            if (currentLevel instanceof LinuxLevel linux && linux.getSimulatedOutput() != null) {
-                appendTerminalLine(linux.getSimulatedOutput(), "term-output");
-            }
-            appendTerminalLine("✔ " + result.getMessage(), "term-output");
             statusLabel.setText("●  ACCESS GRANTED");
             statusLabel.setStyle("-fx-text-fill: #3ec97e;");
 
-            PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+            PauseTransition pause = new PauseTransition(Duration.seconds(2.0));
             pause.setOnFinished(e -> {
                 if (result.getStatus() == AnswerResult.Status.GAME_CLEARED) {
                     ScreenNavigator.navigateToMainMenu();
@@ -65,17 +69,32 @@ public class TerminalScreenController implements Initializable {
                 }
             });
             pause.play();
-        } else {
-            appendTerminalLine("bash: " + command + ": command failed or incorrect flag", "term-output-error");
-            appendTerminalLine("✖ " + result.getMessage(), "term-output-error");
         }
 
         scrollToBottom();
     }
 
+    private void updatePrompt() {
+        if (promptLabel == null) return;
+        Level level = GameEngine.getInstance().getCurrentLevel();
+        String path = "/home/agent";
+        if (level instanceof LinuxLevel linux) {
+            path = linux.getTerminal().getCurrentPath();
+        }
+
+        if (path.equals("/home/agent")) {
+            path = "~";
+        } else if (path.startsWith("/home/agent/")) {
+            path = "~" + path.substring("/home/agent".length());
+        }
+
+        promptLabel.setText("agent@cipherquest:" + path + "$");
+    }
+
     private void appendTerminalLine(String text, String styleClass) {
         Label label = new Label(text);
         label.getStyleClass().add(styleClass);
+        label.setWrapText(true);
         outputBox.getChildren().add(label);
     }
 

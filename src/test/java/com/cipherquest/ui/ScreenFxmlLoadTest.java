@@ -47,3 +47,4 @@ public class ScreenFxmlLoadTest {
         assertNotNull(root);
     }
 }
+

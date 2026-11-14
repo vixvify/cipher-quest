@@ -15,11 +15,11 @@ public class CaesarLevel extends BaseLevel {
     @Override
     public void loadChallenge() {
         setTitle("Operation Caesar");
-        setDescription("ถอดรหัสข้อความที่ถูก encrypt ด้วย Caesar Cipher เพื่อค้นหา Passkey");
-        setHint("ตัวอักษรแต่ละตัวถูกเลื่อนไปข้างหน้า 3 ตำแหน่ง ลองเลื่อนกลับ");
-        this.ciphertext = "FLSKHUTZXHVW";
-        this.expectedPlaintext = "CIPHERQUEST";
-        this.shift = 3;
+        setDescription("ถอดรหัสข้อความ Ciphertext 5 ตัวอักษร เพื่อค้นหา Passkey");
+        setHint("ตัวเลข Shift อยู่ในช่วง 3 - 7");
+        this.ciphertext = "VZJXY";
+        this.expectedPlaintext = "QUEST";
+        this.shift = 5;
     }
 
     @Override

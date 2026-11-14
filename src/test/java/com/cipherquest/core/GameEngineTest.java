@@ -38,7 +38,7 @@ class GameEngineTest {
 
     @Test
     void testSubmitCorrectAnswer() {
-        AnswerResult result = engine.submitAnswer("CIPHERQUEST");
+        AnswerResult result = engine.submitAnswer("QUEST");
 
         assertTrue(result.isCorrect());
         assertEquals(AnswerResult.Status.CORRECT, result.getStatus());
@@ -50,7 +50,7 @@ class GameEngineTest {
 
     @Test
     void testAdvanceToNextCheckpoint() {
-        engine.submitAnswer("CIPHERQUEST");
+        engine.submitAnswer("QUEST");
         assertEquals(GameState.CHECKPOINT_CLEARED, engine.getGameState());
 
         boolean advanced = engine.advanceToNextCheckpoint();
@@ -58,6 +58,34 @@ class GameEngineTest {
         assertEquals(2, engine.getCurrentCheckpoint());
         assertEquals(GameState.PLAYING, engine.getGameState());
         assertEquals(Level.ScreenType.TERMINAL, engine.getCurrentLevel().getScreenType());
+    }
+
+    @Test
+    void testLinuxTerminalLevelInteraction() {
+        engine.submitAnswer("QUEST");
+        engine.advanceToNextCheckpoint();
+
+        assertEquals(2, engine.getCurrentCheckpoint());
+
+        AnswerResult pwdResult = engine.submitAnswer("pwd");
+        assertFalse(pwdResult.isCorrect());
+        assertEquals("/home/agent", pwdResult.getMessage());
+
+        AnswerResult lsResult = engine.submitAnswer("ls");
+        assertFalse(lsResult.isCorrect());
+        assertTrue(lsResult.getMessage().contains("readme.txt"));
+
+        AnswerResult catResult = engine.submitAnswer("cat readme.txt");
+        assertFalse(catResult.isCorrect());
+        assertTrue(catResult.getMessage().contains("/opt/security/"));
+
+        AnswerResult cdResult = engine.submitAnswer("cd /opt/security");
+        assertFalse(cdResult.isCorrect());
+
+        AnswerResult execResult = engine.submitAnswer("./breach.bin");
+        assertTrue(execResult.isCorrect());
+        assertEquals(GameState.CHECKPOINT_CLEARED, engine.getGameState());
+        assertTrue(execResult.getMessage().contains("ROOT ACCESS ACQUIRED"));
     }
 
     @Test
