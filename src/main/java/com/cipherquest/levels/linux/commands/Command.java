@@ -4,9 +4,7 @@ import com.cipherquest.levels.linux.TerminalContext;
 import java.io.IOException;
 import java.util.List;
 
+@FunctionalInterface
 public interface Command {
-    String execute(
-        List<String> args,
-        TerminalContext context
-    ) throws IOException;
+    String execute(List<String> args, TerminalContext context) throws IOException;
 }
