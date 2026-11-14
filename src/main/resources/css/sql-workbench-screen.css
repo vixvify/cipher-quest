@@ -1,8 +1,3 @@
-/* ============================================================
-   SQL WORKBENCH SCREEN STYLES
-   ด่าน 3–7 — SQL Query
-   ============================================================ */
-
 .sql-root {
   -fx-background-color: linear-gradient(to bottom, #1a1209, #0d0a05);
 }
@@ -11,7 +6,6 @@
   -fx-background-color: #1e1e22;
 }
 
-/* Sidebar */
 .sql-sidebar {
   -fx-background-color: #191b1f;
   -fx-border-color: #2a2d34;
@@ -55,7 +49,6 @@
   -fx-text-fill: #a8c8e8;
 }
 
-/* Main area */
 .sql-main-area {
   -fx-background-color: #1e1e22;
 }
@@ -103,7 +96,6 @@
   -fx-text-fill: #c0cfe0;
 }
 
-/* Editor pane */
 .sql-editor-pane {
   -fx-background-color: #1a1b1f;
   -fx-border-color: #2a2d34;
@@ -155,7 +147,6 @@
   -fx-border-color: transparent;
 }
 
-/* Result pane */
 .sql-result-pane {
   -fx-background-color: #16181c;
 }
@@ -255,7 +246,6 @@
   -fx-text-fill: #55667a;
 }
 
-/* Menu bar */
 .sql-menu-bar {
   -fx-padding: 0 0 0 10px;
 }
@@ -273,4 +263,3 @@
   -fx-background-radius: 4px;
   -fx-text-fill: #c8d8f0;
 }
-

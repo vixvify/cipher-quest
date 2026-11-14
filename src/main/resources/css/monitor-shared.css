@@ -1,8 +1,3 @@
-/* ============================================================
-   SHARED MONITOR / DESK STYLES
-   ใช้ร่วมกันทั้ง 3 หน้าจอเกม
-   ============================================================ */
-
 .desk-surface {
   -fx-background-color: linear-gradient(to bottom, #1a1209, #0d0a05);
 }
@@ -41,7 +36,6 @@
   -fx-background-radius: 4px;
 }
 
-/* Top bar (macOS-style title bar) */
 .monitor-screen-top-bar {
   -fx-background-color: #1e1e20;
   -fx-border-color: #2c2c2e;
@@ -110,4 +104,3 @@
   -fx-font-size: 11px;
   -fx-text-fill: #d4a230;
 }
-

@@ -16,12 +16,6 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-/**
- * Controller สำหรับหน้า Terminal Screen (ด่าน 2 — Linux Command Line)
- *
- * ทำหน้าที่รับคำสั่งจากผู้เล่น แสดงผลลัพธ์แบบ Shell Terminal
- * และส่งคำสั่งไปยัง Core GameEngine เพื่อประเมินผลลัพธ์
- */
 public class TerminalScreenController implements Initializable {
 
     @FXML private TextField commandField;
@@ -34,7 +28,7 @@ public class TerminalScreenController implements Initializable {
         Level currentLevel = GameEngine.getInstance().getCurrentLevel();
         if (currentLevel != null) {
             appendTerminalLine("[TASK] " + currentLevel.getDescription(), "term-system-msg");
-            if (currentLevel instanceof LinuxLevel linux) {
+            if (currentLevel instanceof LinuxLevel linux && linux.getTask() != null) {
                 appendTerminalLine("[INFO] " + linux.getTask(), "term-system-msg");
             }
         }
@@ -47,11 +41,9 @@ public class TerminalScreenController implements Initializable {
             return;
         }
 
-        // แสดงคำสั่งที่ผู้เล่นพิมพ์ลงในหน้าจอ Terminal
         appendTerminalLine("agent@cipherquest:~$ " + command, "term-prompt");
         commandField.clear();
 
-        // ส่งให้ GameEngine เป็นผู้ประเมินคำตอบ
         AnswerResult result = GameEngine.getInstance().submitAnswer(command);
 
         if (result.isCorrect()) {
@@ -76,14 +68,6 @@ public class TerminalScreenController implements Initializable {
         } else {
             appendTerminalLine("bash: " + command + ": command failed or incorrect flag", "term-output-error");
             appendTerminalLine("✖ " + result.getMessage(), "term-output-error");
-
-            if (result.getStatus() == AnswerResult.Status.GAME_OVER) {
-                statusLabel.setText("●  CONNECTION TERMINATED");
-                statusLabel.setStyle("-fx-text-fill: #e05252;");
-                PauseTransition pause = new PauseTransition(Duration.seconds(2.0));
-                pause.setOnFinished(e -> ScreenNavigator.navigateToMainMenu());
-                pause.play();
-            }
         }
 
         scrollToBottom();

@@ -15,12 +15,6 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-/**
- * Controller สำหรับหน้า SQL Workbench Screen (ด่าน 3–7 — SQL Query)
- *
- * ทำหน้าที่เป็น View/UI Controller สำหรับหน้าจอแบบ SQL Client
- * รับข้อความ Query จาก TextArea และส่งต่อไปยัง Core GameEngine เพื่อประเมินผล
- */
 public class SqlWorkbenchController implements Initializable {
 
     @FXML private TextArea queryArea;
@@ -52,7 +46,6 @@ public class SqlWorkbenchController implements Initializable {
             return;
         }
 
-        // ส่งให้ GameEngine เป็นผู้ประเมินคำตอบ
         AnswerResult result = GameEngine.getInstance().submitAnswer(query);
 
         if (result.isCorrect()) {
@@ -72,14 +65,6 @@ public class SqlWorkbenchController implements Initializable {
         } else {
             feedbackLabel.setStyle("-fx-text-fill: #e05252;");
             feedbackLabel.setText("✖ " + result.getMessage());
-
-            if (result.getStatus() == AnswerResult.Status.GAME_OVER) {
-                statusLabel.setText("●  DISCONNECTED");
-                statusLabel.setStyle("-fx-text-fill: #e05252;");
-                PauseTransition pause = new PauseTransition(Duration.seconds(2.0));
-                pause.setOnFinished(e -> ScreenNavigator.navigateToMainMenu());
-                pause.play();
-            }
         }
     }
 

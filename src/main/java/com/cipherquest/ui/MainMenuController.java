@@ -1,8 +1,7 @@
 package com.cipherquest.ui;
 
+import com.cipherquest.core.GameEngine;
 import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -10,7 +9,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.Random;
@@ -95,8 +93,7 @@ public class MainMenuController implements Initializable {
 
     @FXML
     private void onStartGame() {
-        System.out.println("[CipherQuest] Starting game — loading Level 1...");
-        com.cipherquest.core.GameEngine.getInstance().startNewGame();
+        GameEngine.getInstance().startNewGame();
         ScreenNavigator.navigateToCurrentLevel();
     }
 }

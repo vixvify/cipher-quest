@@ -9,13 +9,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * [UI SEPARATION - การแยกส่วนควบคุมหน้าจอ]
- * คลาสจัดการการเปลี่ยนหน้าจอ (Scene Navigation)
- *
- * ทำหน้าที่เชื่อมโยงระหว่างผลลัพธ์จาก GameEngine กับการแสดงผล JavaFX
- * ทำให้ GameEngine ไม่จำเป็นต้องรู้จัก Stage, Scene หรือ FXML เลย
- */
 public class ScreenNavigator {
 
     private static Stage primaryStage;
@@ -28,16 +21,10 @@ public class ScreenNavigator {
         return primaryStage;
     }
 
-    /**
-     * เปลี่ยนไปยังหน้า Main Menu
-     */
     public static void navigateToMainMenu() {
         loadScene("/fxml/main-menu.fxml", "/css/main-menu.css", "CipherQuest - Main Menu");
     }
 
-    /**
-     * ตรวจสอบประเภทหน้าจอของด่านปัจจุบันจาก GameEngine แล้วสลับไปยังหน้าจอที่ถูกต้อง
-     */
     public static void navigateToCurrentLevel() {
         Level currentLevel = GameEngine.getInstance().getCurrentLevel();
         if (currentLevel == null) {
@@ -71,7 +58,6 @@ public class ScreenNavigator {
 
     private static void loadScene(String fxmlPath, String[] cssPaths, String title) {
         if (primaryStage == null) {
-            System.err.println("[ScreenNavigator] Error: primaryStage is not set.");
             return;
         }
 
@@ -97,9 +83,7 @@ public class ScreenNavigator {
 
             primaryStage.setTitle(title);
         } catch (IOException e) {
-            System.err.println("[ScreenNavigator] Failed to load FXML: " + fxmlPath);
             e.printStackTrace();
         }
     }
 }
-
