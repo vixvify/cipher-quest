@@ -6,6 +6,7 @@ import com.cipherquest.levels.LevelManager;
 import com.cipherquest.player.Player;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameEngine {
 
@@ -19,7 +20,7 @@ public class GameEngine {
 
     private final LevelManager levelManager;
     private final ScoreCalculator scoreCalculator;
-    private final List<GameEventListener> eventListeners;
+    private final CopyOnWriteArrayList<GameEventListener> eventListeners;
     private ProgressSaveManager saveManager;
 
     private static final int STARTING_CHECKPOINT = 1;
@@ -27,7 +28,7 @@ public class GameEngine {
     private GameEngine() {
         this.levelManager = new LevelManager();
         this.scoreCalculator = new DefaultScoreCalculator();
-        this.eventListeners = new ArrayList<>();
+        this.eventListeners = new CopyOnWriteArrayList<>();
         this.saveManager = new ProgressSaveManager();
         this.gameState = GameState.NOT_STARTED;
         this.mainEndingUnlocked = false;
@@ -41,8 +42,8 @@ public class GameEngine {
     }
 
     public void addListener(GameEventListener listener) {
-        if (listener != null && !eventListeners.contains(listener)) {
-            eventListeners.add(listener);
+        if (listener != null) {
+            eventListeners.addIfAbsent(listener);
         }
     }
 
@@ -263,6 +264,11 @@ public class GameEngine {
                 data.getUnlockedCheckpoints(),
                 data.getDiscoveredClueIds()
         );
+        for (int cp : this.player.getCompletedCheckpoints()) {
+            if (cp < levelManager.getTotalCheckpoints()) {
+                this.player.unlockCheckpoint(cp + 1);
+            }
+        }
         this.mainEndingUnlocked = data.isMainEndingUnlocked()
                 || this.player.hasCompletedCheckpoint(levelManager.getTotalCheckpoints());
 
@@ -272,10 +278,6 @@ public class GameEngine {
         }
         this.currentCheckpoint = targetCp;
         loadCheckpoint(this.currentCheckpoint);
-        if (this.mainEndingUnlocked && this.currentCheckpoint == levelManager.getTotalCheckpoints()
-                && this.player.hasCompletedCheckpoint(this.currentCheckpoint)) {
-            this.currentLevel.markCompleted();
-        }
         return true;
     }
 

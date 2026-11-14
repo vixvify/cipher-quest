@@ -26,6 +26,9 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
 
     @Override
     public void loadChallenge() {
+        resetProgressState();
+        this.lastQueryResult = null;
+        this.lastFeedback = "";
         dbEnv.initDatabase();
         int cp = getCheckpointId();
 

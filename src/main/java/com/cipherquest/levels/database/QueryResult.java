@@ -1,5 +1,6 @@
 package com.cipherquest.levels.database;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,8 +32,20 @@ public class QueryResult {
         this.success = success;
         this.errorType = errorType != null ? errorType : (success ? ErrorType.NONE : ErrorType.EXECUTION_ERROR);
         this.errorMessage = errorMessage;
-        this.columnNames = columnNames != null ? columnNames : Collections.emptyList();
-        this.rows = rows != null ? rows : Collections.emptyList();
+        this.columnNames = columnNames != null
+                ? Collections.unmodifiableList(new ArrayList<>(columnNames))
+                : Collections.emptyList();
+        if (rows != null) {
+            List<List<String>> copiedRows = new ArrayList<>(rows.size());
+            for (List<String> row : rows) {
+                copiedRows.add(row != null
+                        ? Collections.unmodifiableList(new ArrayList<>(row))
+                        : Collections.emptyList());
+            }
+            this.rows = Collections.unmodifiableList(copiedRows);
+        } else {
+            this.rows = Collections.emptyList();
+        }
         this.rowCount = rowCount;
         this.executionTimeMs = executionTimeMs;
     }

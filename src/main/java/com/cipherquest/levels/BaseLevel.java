@@ -114,6 +114,13 @@ public abstract class BaseLevel implements Level {
         attempts++;
     }
 
+    protected void resetProgressState() {
+        this.currentHintLevel = 0;
+        this.attempts = 0;
+        this.hintUsed = false;
+        this.completed = false;
+    }
+
     @Override
     public void markCompleted() {
         this.completed = true;

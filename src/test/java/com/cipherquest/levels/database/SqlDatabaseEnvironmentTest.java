@@ -1,5 +1,6 @@
 package com.cipherquest.levels.database;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +17,13 @@ class SqlDatabaseEnvironmentTest {
     @BeforeEach
     void setUp() {
         dbEnv = new SqlDatabaseEnvironment();
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (dbEnv != null) {
+            dbEnv.close();
+        }
     }
 
     @Test
@@ -230,5 +238,71 @@ class SqlDatabaseEnvironmentTest {
         QueryResult smuggled = dbEnv.executeQuery("SELECT * FROM explorers /* safe */ ; DROP TABLE explorers");
         assertFalse(smuggled.isSuccess());
         assertEquals(QueryResult.ErrorType.INVALID_STATEMENT, smuggled.getErrorType());
+    }
+
+    @Test
+    void testUnterminatedCommentAndUnclosedQuoteReturnSyntaxError() {
+        QueryResult unclosedCommentWithSelect = dbEnv.executeQuery("SELECT 1 /* unclosed");
+        assertFalse(unclosedCommentWithSelect.isSuccess());
+        assertEquals(QueryResult.ErrorType.SYNTAX_ERROR, unclosedCommentWithSelect.getErrorType());
+
+        QueryResult unclosedCommentOnly = dbEnv.executeQuery("/* unclosed");
+        assertFalse(unclosedCommentOnly.isSuccess());
+        assertEquals(QueryResult.ErrorType.SYNTAX_ERROR, unclosedCommentOnly.getErrorType());
+
+        QueryResult dropBeforeUnclosed = dbEnv.executeQuery("DROP TABLE explorers /* unclosed");
+        assertFalse(dropBeforeUnclosed.isSuccess());
+        assertEquals(QueryResult.ErrorType.INVALID_STATEMENT, dropBeforeUnclosed.getErrorType());
+
+        QueryResult unclosedSingleQuote = dbEnv.executeQuery(
+                "SELECT * FROM explorers WHERE explorer_name = 'Arin"
+        );
+        assertFalse(unclosedSingleQuote.isSuccess());
+        assertEquals(QueryResult.ErrorType.SYNTAX_ERROR, unclosedSingleQuote.getErrorType());
+
+        QueryResult unclosedDoubleQuote = dbEnv.executeQuery("SELECT \"unclosed FROM explorers");
+        assertFalse(unclosedDoubleQuote.isSuccess());
+        assertEquals(QueryResult.ErrorType.SYNTAX_ERROR, unclosedDoubleQuote.getErrorType());
+
+        QueryResult trailingCommentAfterSemicolon = dbEnv.executeQuery("SELECT 1; -- trailing comment");
+        assertTrue(trailingCommentAfterSemicolon.isSuccess());
+        assertEquals(1, trailingCommentAfterSemicolon.getRowCount());
+
+        QueryResult secondSelectAfterComment = dbEnv.executeQuery("SELECT 1; /* comment */ SELECT 2");
+        assertFalse(secondSelectAfterComment.isSuccess());
+        assertEquals(QueryResult.ErrorType.INVALID_STATEMENT, secondSelectAfterComment.getErrorType());
+    }
+
+    @Test
+    void testRowLimitProtectionAndImmutability() {
+        QueryResult withinLimit = dbEnv.executeQuery(
+                "WITH RECURSIVE cnt(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM cnt LIMIT 1000) SELECT x FROM cnt"
+        );
+        assertTrue(withinLimit.isSuccess());
+        assertEquals(1000, withinLimit.getRowCount());
+
+        QueryResult exceedsDefaultLimit = dbEnv.executeQuery(
+                "WITH RECURSIVE cnt(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM cnt LIMIT 1005) SELECT x FROM cnt"
+        );
+        assertFalse(exceedsDefaultLimit.isSuccess());
+        assertEquals(QueryResult.ErrorType.EXECUTION_ERROR, exceedsDefaultLimit.getErrorType());
+
+        QueryResult unboundedCte = dbEnv.executeQuery(
+                "WITH RECURSIVE cnt(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM cnt) SELECT x FROM cnt"
+        );
+        assertFalse(unboundedCte.isSuccess());
+        assertEquals(QueryResult.ErrorType.EXECUTION_ERROR, unboundedCte.getErrorType());
+
+        try (SqlDatabaseEnvironment smallLimitEnv = new SqlDatabaseEnvironment(true, 1, 3)) {
+            QueryResult limited = smallLimitEnv.executeQuery("SELECT explorer_id FROM explorers");
+            assertFalse(limited.isSuccess());
+            assertEquals(QueryResult.ErrorType.EXECUTION_ERROR, limited.getErrorType());
+        }
+
+        QueryResult immutableResult = dbEnv.executeQuery("SELECT explorer_id FROM explorers WHERE explorer_id = 'E001'");
+        assertTrue(immutableResult.isSuccess());
+        assertThrows(UnsupportedOperationException.class, () -> immutableResult.getColumnNames().add("extra"));
+        assertThrows(UnsupportedOperationException.class, () -> immutableResult.getRows().add(List.of("extra")));
+        assertThrows(UnsupportedOperationException.class, () -> immutableResult.getRows().get(0).add("extra"));
     }
 }

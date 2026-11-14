@@ -2,6 +2,7 @@ package com.cipherquest.core;
 
 import com.cipherquest.clues.Clue;
 import com.cipherquest.levels.Level;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -26,6 +27,12 @@ class GameEngineTest {
         engine.clearListeners();
         engine.setSaveManager(new ProgressSaveManager(tempDir.resolve("savegame.properties")));
         engine.startNewGame("TestAgent");
+    }
+
+    @AfterEach
+    void tearDown() {
+        engine.clearListeners();
+        engine.setSaveManager(new ProgressSaveManager());
     }
 
     @Test
@@ -180,6 +187,74 @@ class GameEngineTest {
         assertTrue(hint3.contains("Level 3"));
         assertEquals(3, engine.getCurrentLevel().getHintLevel());
         assertEquals(1, engine.getPlayer().getHintsUsed());
+    }
+
+    @Test
+    void testProgressiveHintsAndClampingAcrossAllSqlMissions() {
+        completeCheckpointsThrough(2);
+        int expectedHintsUsed = 0;
+
+        for (int cp = 3; cp <= 7; cp++) {
+            assertTrue(engine.advanceToNextCheckpoint());
+            assertEquals(cp, engine.getCurrentCheckpoint());
+            assertEquals(3, engine.getCurrentLevel().getMaxHintLevel());
+
+            String hint1 = engine.requestHint();
+            expectedHintsUsed++;
+            assertTrue(hint1.contains("Level 1"), "CP " + cp + " hint 1 should be Level 1");
+            assertEquals(1, engine.getCurrentLevel().getHintLevel());
+            assertEquals(expectedHintsUsed, engine.getPlayer().getHintsUsed());
+
+            String hint2 = engine.requestHint();
+            assertTrue(hint2.contains("Level 2"), "CP " + cp + " hint 2 should be Level 2");
+            assertEquals(2, engine.getCurrentLevel().getHintLevel());
+            assertEquals(expectedHintsUsed, engine.getPlayer().getHintsUsed());
+
+            String hint3 = engine.requestHint();
+            assertTrue(hint3.contains("Level 3"), "CP " + cp + " hint 3 should be Level 3");
+            assertEquals(3, engine.getCurrentLevel().getHintLevel());
+
+            String hint4 = engine.requestHint();
+            assertEquals(hint3, hint4, "CP " + cp + " hint beyond Level 3 should clamp");
+            assertEquals(3, engine.getCurrentLevel().getHintLevel());
+            assertEquals(expectedHintsUsed, engine.getPlayer().getHintsUsed());
+
+            AnswerResult result = switch (cp) {
+                case 3 -> submitM01();
+                case 4 -> submitM02();
+                case 5 -> submitM03();
+                case 6 -> submitM04();
+                case 7 -> submitM05();
+                default -> throw new IllegalStateException("Unexpected checkpoint: " + cp);
+            };
+            assertTrue(result.isCorrect(), "Expected CP " + cp + " solution to succeed");
+        }
+
+        assertEquals(5, engine.getPlayer().getHintsUsed());
+    }
+
+    @Test
+    void testListenerCanRemoveItselfDuringCallback() {
+        final int[] secondListenerCalls = {0};
+        GameEventListener selfRemoving = new GameEventListener() {
+            @Override
+            public void onAnswerEvaluated(AnswerResult result) {
+                engine.removeListener(this);
+            }
+        };
+        GameEventListener steadyListener = new GameEventListener() {
+            @Override
+            public void onAnswerEvaluated(AnswerResult result) {
+                secondListenerCalls[0]++;
+            }
+        };
+
+        engine.addListener(selfRemoving);
+        engine.addListener(steadyListener);
+
+        assertDoesNotThrow(() -> engine.submitAnswer("WRONG"));
+        assertDoesNotThrow(() -> engine.submitAnswer("WRONG_AGAIN"));
+        assertEquals(2, secondListenerCalls[0]);
     }
 
     @Test

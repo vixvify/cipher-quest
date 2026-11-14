@@ -51,7 +51,7 @@ public class ProgressSaveManager {
 
         Path tempFile = null;
         try {
-            Path parent = saveFilePath.getParent();
+            Path parent = saveFilePath.toAbsolutePath().getParent();
             if (parent != null) {
                 Files.createDirectories(parent);
                 tempFile = Files.createTempFile(parent, "savegame-", ".tmp");
@@ -88,6 +88,10 @@ public class ProgressSaveManager {
         try (InputStream in = Files.newInputStream(saveFilePath)) {
             props.load(in);
         } catch (IOException | IllegalArgumentException e) {
+            return Optional.empty();
+        }
+
+        if (!props.containsKey("player.username") && !props.containsKey("progress.currentCheckpoint")) {
             return Optional.empty();
         }
 

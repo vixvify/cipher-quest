@@ -1,5 +1,6 @@
 package com.cipherquest.core;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -14,6 +15,13 @@ class ProgressSaveManagerTest {
 
     @TempDir
     Path tempDir;
+
+    @AfterEach
+    void tearDown() {
+        GameEngine engine = GameEngine.getInstance();
+        engine.clearListeners();
+        engine.setSaveManager(new ProgressSaveManager());
+    }
 
     @Test
     void testMissingAndDeleteSavedGame() {
@@ -58,5 +66,39 @@ class ProgressSaveManagerTest {
         assertTrue(data.getCompletedCheckpoints().isEmpty());
         assertTrue(data.getUnlockedCheckpoints().isEmpty());
         assertTrue(data.getDiscoveredClueIds().isEmpty());
+    }
+
+    @Test
+    void testEmptyAndNonSavePropertiesReturnEmpty() throws Exception {
+        Path emptyPath = tempDir.resolve("empty.properties");
+        Files.writeString(emptyPath, "", StandardCharsets.ISO_8859_1);
+        ProgressSaveManager emptyManager = new ProgressSaveManager(emptyPath);
+        assertTrue(emptyManager.hasSavedGame());
+        assertTrue(emptyManager.loadProgress().isEmpty());
+
+        Path unrelatedPath = tempDir.resolve("other.properties");
+        Files.writeString(unrelatedPath, "unrelated.key=value\n", StandardCharsets.ISO_8859_1);
+        ProgressSaveManager unrelatedManager = new ProgressSaveManager(unrelatedPath);
+        assertTrue(unrelatedManager.loadProgress().isEmpty());
+    }
+
+    @Test
+    void testLoadSavedGameUnlocksNextCheckpointFromCompleted() throws Exception {
+        Path savePath = tempDir.resolve("partial-unlock.properties");
+        Files.writeString(
+                savePath,
+                "player.username=Inspector\n"
+                        + "progress.currentCheckpoint=1\n"
+                        + "progress.completedCheckpoints=1,2\n"
+                        + "progress.unlockedCheckpoints=1\n",
+                StandardCharsets.ISO_8859_1
+        );
+
+        GameEngine engine = GameEngine.getInstance();
+        engine.setSaveManager(new ProgressSaveManager(savePath));
+        assertTrue(engine.loadSavedGame());
+        assertTrue(engine.isCheckpointUnlocked(1));
+        assertTrue(engine.isCheckpointUnlocked(2));
+        assertTrue(engine.isCheckpointUnlocked(3));
     }
 }

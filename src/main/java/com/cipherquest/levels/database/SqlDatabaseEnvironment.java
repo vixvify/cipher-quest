@@ -5,11 +5,16 @@ import java.util.*;
 
 public class SqlDatabaseEnvironment implements AutoCloseable {
 
+    public static final int DEFAULT_QUERY_TIMEOUT_SECONDS = 5;
+    public static final int DEFAULT_MAX_ROWS = 1000;
+
     private static final Set<String> FORBIDDEN_KEYWORDS = Set.of(
             "INSERT", "UPDATE", "DELETE", "DROP", "ALTER",
             "CREATE", "PRAGMA", "ATTACH", "DETACH", "VACUUM"
     );
 
+    private final int queryTimeoutSeconds;
+    private final int maxRows;
     private Connection connection;
     private String initErrorMessage;
 
@@ -18,6 +23,12 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
     }
 
     public SqlDatabaseEnvironment(boolean autoInit) {
+        this(autoInit, DEFAULT_QUERY_TIMEOUT_SECONDS, DEFAULT_MAX_ROWS);
+    }
+
+    SqlDatabaseEnvironment(boolean autoInit, int queryTimeoutSeconds, int maxRows) {
+        this.queryTimeoutSeconds = Math.max(1, queryTimeoutSeconds);
+        this.maxRows = Math.max(1, maxRows);
         if (autoInit) {
             initDatabase();
         }
@@ -160,12 +171,23 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
             );
         }
 
-        String sanitized = stripComments(sql).trim();
-        while (sanitized.endsWith(";")) {
-            sanitized = sanitized.substring(0, sanitized.length() - 1).trim();
+        AnalyzedSql analyzed = analyzeSql(sql);
+        if (analyzed.hasUnterminatedBlockComment()) {
+            if (!analyzed.tokens().isEmpty() && !isReadOnlyTokens(analyzed)) {
+                return QueryResult.error(
+                        QueryResult.ErrorType.INVALID_STATEMENT,
+                        "Invalid SQL statement: Only read-only SELECT queries are permitted on the Ancient Archive.",
+                        0
+                );
+            }
+            return QueryResult.error(
+                    QueryResult.ErrorType.SYNTAX_ERROR,
+                    "Syntax error: Unterminated block comment (missing closing */).",
+                    0
+            );
         }
 
-        if (sanitized.isEmpty()) {
+        if (analyzed.sanitizedSql().isEmpty()) {
             return QueryResult.error(
                     QueryResult.ErrorType.EMPTY_QUERY,
                     "Empty query: Please enter a SQL query.",
@@ -173,7 +195,7 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
             );
         }
 
-        if (!isReadOnlySelectQuery(sanitized)) {
+        if (!isReadOnlyTokens(analyzed)) {
             return QueryResult.error(
                     QueryResult.ErrorType.INVALID_STATEMENT,
                     "Invalid SQL statement: Only read-only SELECT queries are permitted on the Ancient Archive.",
@@ -189,30 +211,40 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
         }
 
         long start = System.currentTimeMillis();
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sanitized)) {
-            long elapsed = System.currentTimeMillis() - start;
+        try (Statement stmt = connection.createStatement()) {
+            stmt.setQueryTimeout(queryTimeoutSeconds);
+            int rowFetchCap = maxRows == Integer.MAX_VALUE ? Integer.MAX_VALUE : maxRows + 1;
+            stmt.setMaxRows(rowFetchCap);
 
-            ResultSetMetaData meta = rs.getMetaData();
-            int colCount = meta.getColumnCount();
+            try (ResultSet rs = stmt.executeQuery(analyzed.sanitizedSql())) {
+                ResultSetMetaData meta = rs.getMetaData();
+                int colCount = meta.getColumnCount();
 
-            List<String> colNames = new ArrayList<>();
-            for (int i = 1; i <= colCount; i++) {
-                String label = meta.getColumnLabel(i);
-                colNames.add(label != null && !label.isEmpty() ? label : meta.getColumnName(i));
-            }
-
-            List<List<String>> rows = new ArrayList<>();
-            while (rs.next()) {
-                List<String> row = new ArrayList<>();
+                List<String> colNames = new ArrayList<>();
                 for (int i = 1; i <= colCount; i++) {
-                    Object val = rs.getObject(i);
-                    row.add(val != null ? String.valueOf(val) : "NULL");
+                    String label = meta.getColumnLabel(i);
+                    colNames.add(label != null && !label.isEmpty() ? label : meta.getColumnName(i));
                 }
-                rows.add(row);
-            }
 
-            return QueryResult.success(colNames, rows, elapsed);
+                List<List<String>> rows = new ArrayList<>();
+                while (rs.next()) {
+                    if (rows.size() >= maxRows) {
+                        return QueryResult.error(
+                                QueryResult.ErrorType.EXECUTION_ERROR,
+                                "Query execution failure: Result exceeded maximum limit of " + maxRows + " rows.",
+                                System.currentTimeMillis() - start
+                        );
+                    }
+                    List<String> row = new ArrayList<>();
+                    for (int i = 1; i <= colCount; i++) {
+                        Object val = rs.getObject(i);
+                        row.add(val != null ? String.valueOf(val) : "NULL");
+                    }
+                    rows.add(row);
+                }
+
+                return QueryResult.success(colNames, rows, System.currentTimeMillis() - start);
+            }
         } catch (SQLException e) {
             long elapsed = System.currentTimeMillis() - start;
             return classifySqlException(e, elapsed);
@@ -237,7 +269,9 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
                     elapsed
             );
         }
-        if (lower.contains("syntax error") || lower.contains("incomplete input")) {
+        if (lower.contains("syntax error")
+                || lower.contains("incomplete input")
+                || lower.contains("unrecognized token")) {
             return QueryResult.error(
                     QueryResult.ErrorType.SYNTAX_ERROR,
                     "Syntax error: " + sanitizeErrorMessage(rawMsg),
@@ -259,13 +293,24 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
         return cleaned.trim();
     }
 
-    private String stripComments(String sql) {
+    private record AnalyzedSql(
+            String sanitizedSql,
+            List<String> tokens,
+            boolean hasInternalSemicolon,
+            boolean hasUnterminatedBlockComment
+    ) {}
+
+    private AnalyzedSql analyzeSql(String sql) {
         StringBuilder out = new StringBuilder(sql.length());
+        List<String> tokens = new ArrayList<>();
+        StringBuilder currentToken = new StringBuilder();
         int n = sql.length();
         boolean inSingleQuote = false;
         boolean inDoubleQuote = false;
         boolean inBacktick = false;
         boolean inBracket = false;
+        boolean seenSemicolon = false;
+        boolean hasInternalSemicolon = false;
 
         for (int i = 0; i < n; i++) {
             char c = sql.charAt(i);
@@ -301,82 +346,34 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
                 if (c == ']') {
                     inBracket = false;
                 }
-            } else {
-                if (c == '-' && next == '-') {
-                    i += 2;
-                    while (i < n && sql.charAt(i) != '\n') {
-                        i++;
-                    }
-                    if (i < n) {
-                        out.append('\n');
-                    }
-                } else if (c == '/' && next == '*') {
-                    i += 2;
-                    while (i + 1 < n && !(sql.charAt(i) == '*' && sql.charAt(i + 1) == '/')) {
-                        i++;
-                    }
+            } else if (c == '-' && next == '-') {
+                flushToken(currentToken, tokens);
+                i += 2;
+                while (i < n && sql.charAt(i) != '\n') {
                     i++;
-                    out.append(' ');
-                } else {
-                    if (c == '\'') inSingleQuote = true;
-                    else if (c == '"') inDoubleQuote = true;
-                    else if (c == '`') inBacktick = true;
-                    else if (c == '[') inBracket = true;
-                    out.append(c);
                 }
-            }
-        }
-        return out.toString();
-    }
-
-    private boolean isReadOnlySelectQuery(String sanitizedSql) {
-        List<String> tokens = extractUnquotedTokensAndCheckSemicolons(sanitizedSql);
-        if (tokens == null || tokens.isEmpty()) {
-            return false;
-        }
-        String first = tokens.get(0);
-        if (!"SELECT".equals(first) && !"WITH".equals(first)) {
-            return false;
-        }
-        for (String token : tokens) {
-            if (FORBIDDEN_KEYWORDS.contains(token)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private List<String> extractUnquotedTokensAndCheckSemicolons(String sql) {
-        List<String> tokens = new ArrayList<>();
-        StringBuilder currentToken = new StringBuilder();
-        int n = sql.length();
-        boolean inSingleQuote = false;
-        boolean inDoubleQuote = false;
-        boolean inBacktick = false;
-        boolean inBracket = false;
-
-        for (int i = 0; i < n; i++) {
-            char c = sql.charAt(i);
-            char next = (i + 1 < n) ? sql.charAt(i + 1) : '\0';
-
-            if (inSingleQuote) {
-                if (c == '\'') {
-                    if (next == '\'') i++;
-                    else inSingleQuote = false;
+                if (i < n) {
+                    out.append('\n');
                 }
-            } else if (inDoubleQuote) {
-                if (c == '"') {
-                    if (next == '"') i++;
-                    else inDoubleQuote = false;
+            } else if (c == '/' && next == '*') {
+                flushToken(currentToken, tokens);
+                int closeIdx = sql.indexOf("*/", i + 2);
+                if (closeIdx < 0) {
+                    return new AnalyzedSql("", tokens, hasInternalSemicolon, true);
                 }
-            } else if (inBacktick) {
-                if (c == '`') inBacktick = false;
-            } else if (inBracket) {
-                if (c == ']') inBracket = false;
+                i = closeIdx + 1;
+                out.append(' ');
             } else {
                 if (c == ';') {
-                    return null;
+                    flushToken(currentToken, tokens);
+                    seenSemicolon = true;
+                    out.append(c);
+                    continue;
                 }
+                if (seenSemicolon && !Character.isWhitespace(c)) {
+                    hasInternalSemicolon = true;
+                }
+                out.append(c);
                 if (c == '\'') {
                     flushToken(currentToken, tokens);
                     inSingleQuote = true;
@@ -396,8 +393,30 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
                 }
             }
         }
+
         flushToken(currentToken, tokens);
-        return tokens;
+        String sanitized = out.toString().trim();
+        while (!hasInternalSemicolon && sanitized.endsWith(";")) {
+            sanitized = sanitized.substring(0, sanitized.length() - 1).trim();
+        }
+        return new AnalyzedSql(sanitized, tokens, hasInternalSemicolon, false);
+    }
+
+    private boolean isReadOnlyTokens(AnalyzedSql analyzed) {
+        List<String> tokens = analyzed.tokens();
+        if (analyzed.hasInternalSemicolon() || tokens.isEmpty()) {
+            return false;
+        }
+        String first = tokens.get(0);
+        if (!"SELECT".equals(first) && !"WITH".equals(first)) {
+            return false;
+        }
+        for (String token : tokens) {
+            if (FORBIDDEN_KEYWORDS.contains(token)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void flushToken(StringBuilder currentToken, List<String> tokens) {
