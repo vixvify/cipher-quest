@@ -1,7 +1,3 @@
-# ด่าน 6 — SQL: GROUP BY และ Aggregate
-#
-# ผู้เล่นต้องนับจำนวนครั้งที่แต่ละ user เข้าถึงระบบ
-
 id: 6
 type: database
 title: "Database Recon IV"
@@ -15,4 +11,3 @@ expected_query: "SELECT user_id, COUNT(*) as access_count FROM access_logs GROUP
 answer_hash: "correct_if_grouped_and_sorted"
 
 hint: "ใช้ GROUP BY ร่วมกับ COUNT(*) และ ORDER BY"
-

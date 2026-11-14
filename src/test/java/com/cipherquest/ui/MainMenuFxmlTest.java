@@ -10,13 +10,12 @@ public class MainMenuFxmlTest {
     @Test
     void testResourcesExist() {
         InputStream fxmlStream = getClass().getResourceAsStream("/fxml/main-menu.fxml");
-        assertNotNull(fxmlStream, "main-menu.fxml should exist in classpath");
+        assertNotNull(fxmlStream);
 
         InputStream cssStream = getClass().getResourceAsStream("/css/main-menu.css");
-        assertNotNull(cssStream, "main-menu.css should exist in classpath");
+        assertNotNull(cssStream);
 
         InputStream bgStream = getClass().getResourceAsStream("/images/background.png");
-        assertNotNull(bgStream, "background.png should exist in classpath");
+        assertNotNull(bgStream);
     }
 }
-
