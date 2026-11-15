@@ -1,18 +1,18 @@
 id: 6
 mission_code: "M04"
 type: database
-title: "M04 — The Hidden Records"
-difficulty: "Intermediate–Advanced"
+title: "M04 — บันทึกที่ถูกซ่อน"
+difficulty: "ปานกลาง–ยาก"
 sql_concepts:
   - SELECT
   - JOIN
   - ON
   - WHERE
 description: |
-  The player discovers that the Prime Core was involved in a classified experiment.
-  Uncover the hidden experiment records linked to it.
+  คุณพบว่าแกนพลัง Prime Core เคยถูกนำไปใช้ในการทดลองลับ
+  ลองดึงบันทึกการทดลองที่เชื่อมโยงกับโบราณวัตถุชิ้นนี้ออกมาดู
 
-task: "Retrieve the experiment associated with the Prime Core (artifact_name, experiment_type, result, clue)."
+task: "ค้นหาข้อมูลการทดลองของ Prime Core โดยเชื่อมข้อมูลจาก 2 ตาราง (artifact_name, experiment_type, result, clue)"
 schema: |
   CREATE TABLE artifacts (
     artifact_id TEXT PRIMARY KEY,
@@ -34,6 +34,6 @@ main_clue_id: "MC04"
 answer_hash: "correct_if_returns_prime_core_experiment"
 
 hints:
-  - "Level 1 (Concept): Use JOIN ... ON to combine rows from two related tables based on a shared foreign key column."
-  - "Level 2 (Structure): SELECT a.col1, e.col2, e.col3, e.col4 FROM table1 a JOIN table2 e ON a.id = e.id WHERE a.id = 'value';"
-  - "Level 3 (Specific): Join artifacts a and experiments e ON a.artifact_id = e.artifact_id WHERE a.artifact_id = 'A003', selecting artifact_name, experiment_type, result, clue."
+  - "ระดับ 1 (แนวคิด): ใช้ JOIN ... ON เพื่อเชื่อมแถวจาก 2 ตารางเข้าด้วยกันผ่านคอลัมน์รหัสที่ตรงกัน"
+  - "ระดับ 2 (โครงสร้าง): SELECT a.col1, e.col2, e.col3, e.col4 FROM table1 a JOIN table2 e ON a.id = e.id WHERE a.id = 'value';"
+  - "ระดับ 3 (เจาะจง): เชื่อม artifacts a JOIN experiments e ON a.artifact_id = e.artifact_id แล้วกรอง WHERE a.artifact_id = 'A003' เพื่อเลือก artifact_name, experiment_type, result, clue"

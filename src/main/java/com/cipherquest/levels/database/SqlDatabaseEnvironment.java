@@ -82,11 +82,11 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
                     "description TEXT NULL);");
 
             stmt.execute("INSERT INTO locations (location_id, location_name, description) VALUES " +
-                    "('L001', 'Ancient Temple', 'Ancient surface ruins where Arin''s last signal was detected'), " +
-                    "('L002', 'Relic Chamber', 'Inner chamber sealed by the Sun and Moon symbols'), " +
-                    "('L003', 'Observatory Hall', 'Collapsed stargazing gallery with ancient stone carvings'), " +
-                    "('L004', 'Research Sanctum', 'Restricted laboratory used for high-energy artifact testing'), " +
-                    "('L005', 'Archive Vault', 'Deep subterranean vault housing the civilization''s final records');");
+                    "('L001', 'Ancient Temple', 'ซากโบราณสถานบนพื้นดิน จุดที่ตรวจพบสัญญาณล่าสุดของ Arin'), " +
+                    "('L002', 'Relic Chamber', 'ห้องโถงชั้นในที่ถูกปิดผนึกด้วยสัญลักษณ์ Sun และ Moon'), " +
+                    "('L003', 'Observatory Hall', 'หอดูดาวที่พังทลาย พร้อมภาพสลักหินโบราณ'), " +
+                    "('L004', 'Research Sanctum', 'ห้องทดลองลับที่จำกัดสิทธิ์ ใช้ทดสอบโบราณวัตถุพลังงานสูง'), " +
+                    "('L005', 'Archive Vault', 'ห้องนิรภัยใต้ดินชั้นลึก ที่เก็บบันทึกชุดสุดท้ายของอารยธรรมโบราณ');");
 
             stmt.execute("CREATE TABLE explorers (" +
                     "explorer_id TEXT PRIMARY KEY, " +
@@ -95,10 +95,10 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
                     "clue TEXT NULL);");
 
             stmt.execute("INSERT INTO explorers (explorer_id, explorer_name, status, clue) VALUES " +
-                    "('E001', 'Arin', 'Missing', 'Last signal detected near the Ancient Temple'), " +
-                    "('E002', 'Lyra', 'Active', 'Surveying the outer perimeter of the ruins'), " +
-                    "('E003', 'Kael', 'Retired', 'Compiled early translations of surface tablets'), " +
-                    "('E004', 'Voss', 'Active', 'Maintaining communications relay at base camp');");
+                    "('E001', 'Arin', 'Missing', 'พบสัญญาณล่าสุดใกล้ Ancient Temple'), " +
+                    "('E002', 'Lyra', 'Active', 'กำลังสำรวจพื้นที่รอบนอกของซากโบราณสถาน'), " +
+                    "('E003', 'Kael', 'Retired', 'รวบรวมคำแปลจารึกบนพื้นผิวชุดแรกไว้แล้ว'), " +
+                    "('E004', 'Voss', 'Active', 'ดูแลจุดส่งสัญญาณสื่อสารอยู่ที่แคมป์ฐาน');");
 
             stmt.execute("CREATE TABLE expedition_logs (" +
                     "log_id INTEGER PRIMARY KEY, " +
@@ -110,11 +110,11 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
                     "FOREIGN KEY (location_id) REFERENCES locations(location_id));");
 
             stmt.execute("INSERT INTO expedition_logs (log_id, explorer_id, location_id, message, clue) VALUES " +
-                    "(100, 'E001', 'L001', 'Arrived at the Ancient Temple entrance at dusk', 'Outer pillars match the archive map'), " +
-                    "(101, 'E001', 'L001', 'The entrance requires two symbols', 'Sun and Moon symbols unlock the Relic Chamber (L002)'), " +
-                    "(102, 'E001', 'L002', 'Inside the Relic Chamber; energy readings are off the charts', 'High-power artifacts detected on central pedestals'), " +
-                    "(103, 'E002', 'L001', 'Found Arin''s discarded compass near the symbol gate', 'Check E001 expedition logs'), " +
-                    "(104, 'E003', 'L003', 'Recorded celestial alignments in the Observatory Hall', NULL);");
+                    "(100, 'E001', 'L001', 'เดินทางมาถึงทางเข้า Ancient Temple ช่วงพลบค่ำ', 'เสาหินด้านนอกตรงกับแผนที่ในคลังข้อมูล'), " +
+                    "(101, 'E001', 'L001', 'ทางเข้าต้องใช้สัญลักษณ์ (symbol) สองอย่างในการเปิด', 'สัญลักษณ์ Sun และ Moon จะช่วยเปิดทางสู่ Relic Chamber (L002)'), " +
+                    "(102, 'E001', 'L002', 'เข้ามาใน Relic Chamber แล้ว ค่าพลังงานสูงผิดปกติ', 'ตรวจพบโบราณวัตถุพลังงานสูงบนแท่นวางตรงกลาง'), " +
+                    "(103, 'E002', 'L001', 'พบเข็มทิศของ Arin ตกอยู่ใกล้ประตูสัญลักษณ์', 'ลองตรวจสอบบันทึกการสำรวจของ E001'), " +
+                    "(104, 'E003', 'L003', 'บันทึกตำแหน่งดวงดาวภายใน Observatory Hall เรียบร้อย', NULL);");
 
             stmt.execute("CREATE TABLE inscriptions (" +
                     "inscription_id INTEGER PRIMARY KEY, " +
@@ -125,8 +125,8 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
                     "FOREIGN KEY (location_id) REFERENCES locations(location_id));");
 
             stmt.execute("INSERT INTO inscriptions (inscription_id, symbol_type, inscription_text, location_id, clue) VALUES " +
-                    "(201, 'Sun', 'The radiant disc awakens the chamber', 'L001', 'First key of the Relic Chamber'), " +
-                    "(202, 'Moon', 'The silver crescent balances the flame', 'L001', 'Second key of the Relic Chamber');");
+                    "(201, 'Sun', 'The radiant disc awakens the chamber', 'L001', 'กุญแจดอกแรกของ Relic Chamber'), " +
+                    "(202, 'Moon', 'The silver crescent balances the flame', 'L001', 'กุญแจดอกที่สองของ Relic Chamber');");
 
             stmt.execute("CREATE TABLE artifacts (" +
                     "artifact_id TEXT PRIMARY KEY, " +
@@ -138,14 +138,14 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
                     "FOREIGN KEY (location_id) REFERENCES locations(location_id));");
 
             stmt.execute("INSERT INTO artifacts (artifact_id, artifact_name, artifact_type, power_level, location_id, clue) VALUES " +
-                    "('A001', 'Solar Core', 'Energy Core', 95, 'L002', 'Contains solar energy'), " +
-                    "('A002', 'Moon Relic', 'Relic', 75, 'L002', 'Related to lunar energy'), " +
-                    "('A003', 'Prime Core', 'Energy Core', 100, 'L002', 'Experimental records are restricted'), " +
-                    "('A004', 'Cracked Conduit', 'Fragment', 20, 'L002', 'Power level too low to activate'), " +
-                    "('A006', 'Gilded Chalice', 'Treasure', 40, 'L005', 'Ceremonial vessel of minor power'), " +
-                    "('A007', 'Sovereign Diadem', 'Treasure', 70, 'L005', 'Royal emblem preserved in the vault'), " +
-                    "('A008', 'Memory Archive', 'Treasure', 100, 'L005', 'Contains the memories of an ancient civilization'), " +
-                    "('A009', 'Vault Sentinel Core', 'Guardian', 100, 'L005', 'Security matrix guarding the Archive Vault');");
+                    "('A001', 'Solar Core', 'Energy Core', 95, 'L002', 'บรรจุพลังงานแสงอาทิตย์'), " +
+                    "('A002', 'Moon Relic', 'Relic', 75, 'L002', 'เชื่อมโยงกับพลังงานดวงจันทร์'), " +
+                    "('A003', 'Prime Core', 'Energy Core', 100, 'L002', 'รายละเอียดการทดลองถูกแยกเก็บไว้ในบันทึกอีกชุดหนึ่ง'), " +
+                    "('A004', 'Cracked Conduit', 'Fragment', 20, 'L002', 'ระดับพลังงานต่ำเกินกว่าจะเปิดใช้งาน'), " +
+                    "('A006', 'Gilded Chalice', 'Treasure', 40, 'L005', 'ภาชนะพิธีกรรมที่มีพลังงานต่ำ'), " +
+                    "('A007', 'Sovereign Diadem', 'Treasure', 70, 'L005', 'ตราสัญลักษณ์ราชวงศ์ที่เก็บรักษาไว้ในห้องนิรภัย'), " +
+                    "('A008', 'Memory Archive', 'Treasure', 100, 'L005', 'เก็บรักษาความทรงจำของอารยธรรมโบราณเอาไว้'), " +
+                    "('A009', 'Vault Sentinel Core', 'Guardian', 100, 'L005', 'ระบบรักษาความปลอดภัยที่เฝ้า Archive Vault');");
 
             stmt.execute("CREATE TABLE experiments (" +
                     "experiment_id INTEGER PRIMARY KEY, " +
@@ -156,9 +156,9 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
                     "FOREIGN KEY (artifact_id) REFERENCES artifacts(artifact_id));");
 
             stmt.execute("INSERT INTO experiments (experiment_id, experiment_type, artifact_id, result, clue) VALUES " +
-                    "(301, 'Solar Calibration', 'A001', 'Stable', 'Maintains steady thermal output'), " +
-                    "(302, 'Lunar Harmonic Test', 'A002', 'Resonant', 'Responds to solar frequency'), " +
-                    "(303, 'Energy Amplification', 'A003', 'Unknown', 'Unlocks Archive Vault at L005, containing the civilization''s final records');");
+                    "(301, 'Solar Calibration', 'A001', 'Stable', 'รักษาค่าความร้อนให้อยู่ในระดับคงที่'), " +
+                    "(302, 'Lunar Harmonic Test', 'A002', 'Resonant', 'ตอบสนองต่อคลื่นความถี่ของแสงอาทิตย์'), " +
+                    "(303, 'Energy Amplification', 'A003', 'Unknown', 'เปิดทางสู่ Archive Vault ที่ L005 ซึ่งเก็บบันทึกชุดสุดท้ายของอารยธรรมโบราณ');");
         }
     }
 

@@ -1,8 +1,8 @@
 id: 7
 mission_code: "M05"
 type: database
-title: "M05 — The Lost Treasure"
-difficulty: "Advanced"
+title: "M05 — สมบัติที่สาบสูญ"
+difficulty: "ท้าทาย"
 sql_concepts:
   - SELECT
   - JOIN
@@ -12,10 +12,10 @@ sql_concepts:
   - Subquery
   - MAX
 description: |
-  The player finally reaches the vault revealed by the previous experiment clue.
-  Track down the most powerful Treasure hidden inside it.
+  ในที่สุดคุณก็มาถึงห้องนิรภัยที่เบาะแสการทดลองก่อนหน้าชี้ไว้
+  ภารกิจสุดท้ายคือตามหา Treasure ที่ทรงพลังที่สุดที่ซ่อนอยู่ข้างใน
 
-task: "Find the highest-power Treasure inside the vault from the previous clue (artifact_name, artifact_type, location_name, power_level, clue)."
+task: "ค้นหา Treasure ที่พลังสูงสุดในห้องนิรภัยจากเบาะแสเดิม (artifact_name, artifact_type, location_name, power_level, clue)"
 schema: |
   CREATE TABLE artifacts (
     artifact_id TEXT PRIMARY KEY,
@@ -46,6 +46,6 @@ main_clue_id: "MC05"
 answer_hash: "correct_if_returns_memory_archive"
 
 hints:
-  - "Level 1 (Concept): Combine a JOIN between two tables with a WHERE subquery that uses the MAX() aggregate function to find the highest value."
-  - "Level 2 (Structure): SELECT ... FROM table1 a JOIN table2 l ON a.loc_id = l.loc_id WHERE a.loc_id = '...' AND a.type = '...' AND a.power = (SELECT MAX(power) FROM table1 WHERE ...);"
-  - "Level 3 (Specific): Join artifacts a with locations l on location_id, filter by location_id = 'L005' AND artifact_type = 'Treasure', and match power_level = (SELECT MAX(power_level) FROM artifacts WHERE location_id = 'L005' AND artifact_type = 'Treasure')."
+  - "ระดับ 1 (แนวคิด): ใช้ JOIN เชื่อมตารางสถานที่ ร่วมกับ Subquery และ MAX() ใน WHERE เพื่อหาชิ้นที่มีค่าพลังสูงสุด"
+  - "ระดับ 2 (โครงสร้าง): SELECT ... FROM table1 a JOIN table2 l ON a.loc_id = l.loc_id WHERE a.loc_id = '...' AND a.type = '...' AND a.power = (SELECT MAX(power) FROM table1 WHERE ...);"
+  - "ระดับ 3 (เจาะจง): เชื่อม artifacts a JOIN locations l ON a.location_id = l.location_id กรอง location_id = 'L005' AND artifact_type = 'Treasure' และให้ power_level = (SELECT MAX(power_level) FROM artifacts WHERE location_id = 'L005' AND artifact_type = 'Treasure')"

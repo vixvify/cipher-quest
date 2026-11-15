@@ -178,9 +178,9 @@ class GameEngineTest {
         String hint2 = engine.requestHint();
         String hint3 = engine.requestHint();
 
-        assertTrue(hint1.contains("Level 1"));
-        assertTrue(hint2.contains("Level 2"));
-        assertTrue(hint3.contains("Level 3"));
+        assertTrue(hint1.contains("ระดับ 1"));
+        assertTrue(hint2.contains("ระดับ 2"));
+        assertTrue(hint3.contains("ระดับ 3"));
         assertEquals(3, engine.getCurrentLevel().getHintLevel());
         assertEquals(1, engine.getPlayer().getHintsUsed());
     }
@@ -197,17 +197,17 @@ class GameEngineTest {
 
             String hint1 = engine.requestHint();
             expectedHintsUsed++;
-            assertTrue(hint1.contains("Level 1"), "CP " + cp + " hint 1 should be Level 1");
+            assertTrue(hint1.contains("ระดับ 1"), "CP " + cp + " hint 1 should be ระดับ 1");
             assertEquals(1, engine.getCurrentLevel().getHintLevel());
             assertEquals(expectedHintsUsed, engine.getPlayer().getHintsUsed());
 
             String hint2 = engine.requestHint();
-            assertTrue(hint2.contains("Level 2"), "CP " + cp + " hint 2 should be Level 2");
+            assertTrue(hint2.contains("ระดับ 2"), "CP " + cp + " hint 2 should be ระดับ 2");
             assertEquals(2, engine.getCurrentLevel().getHintLevel());
             assertEquals(expectedHintsUsed, engine.getPlayer().getHintsUsed());
 
             String hint3 = engine.requestHint();
-            assertTrue(hint3.contains("Level 3"), "CP " + cp + " hint 3 should be Level 3");
+            assertTrue(hint3.contains("ระดับ 3"), "CP " + cp + " hint 3 should be ระดับ 3");
             assertEquals(3, engine.getCurrentLevel().getHintLevel());
 
             String hint4 = engine.requestHint();
@@ -261,19 +261,19 @@ class GameEngineTest {
 
         AnswerResult syntaxErr = engine.submitAnswer("SELECT * FORM explorers");
         assertFalse(syntaxErr.isCorrect());
-        assertTrue(syntaxErr.getMessage().startsWith("SQL Error"));
+        assertTrue(syntaxErr.getMessage().startsWith("ข้อผิดพลาด SQL"));
 
         AnswerResult emptyRes = engine.submitAnswer(
                 "SELECT explorer_id, explorer_name, status, clue FROM explorers WHERE explorer_name = 'UnknownPerson'"
         );
         assertFalse(emptyRes.isCorrect());
-        assertTrue(emptyRes.getMessage().startsWith("Empty query result"));
+        assertTrue(emptyRes.getMessage().startsWith("ไม่พบข้อมูล"));
 
         AnswerResult wrongRes = engine.submitAnswer(
                 "SELECT explorer_id, explorer_name, status, clue FROM explorers"
         );
         assertFalse(wrongRes.isCorrect());
-        assertTrue(wrongRes.getMessage().startsWith("Incorrect result"));
+        assertTrue(wrongRes.getMessage().startsWith("ผลลัพธ์ยังไม่ถูกต้อง"));
     }
 
     @Test
@@ -403,7 +403,7 @@ class GameEngineTest {
         assertTrue(engine.selectCheckpoint(3));
         assertTrue(engine.getCurrentLevel().isCompleted());
         String replayHint = engine.requestHint();
-        assertTrue(replayHint.contains("Level 1"));
+        assertTrue(replayHint.contains("ระดับ 1"));
         assertEquals(hintsBeforeReplay, engine.getPlayer().getHintsUsed());
     }
 
