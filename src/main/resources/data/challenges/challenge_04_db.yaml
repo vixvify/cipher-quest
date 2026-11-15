@@ -13,7 +13,7 @@ description: |
   Most records contain ordinary expedition information, but one message mentions a mysterious symbol.
   Identify the relevant message.
 
-task: "Find Arin's expedition message (log_id, explorer_id, message, clue) from expedition_logs for explorer_id 'E001' containing the word 'symbol'."
+task: "Find Arin's expedition message containing the word 'symbol' (log_id, explorer_id, message, clue)."
 schema: |
   CREATE TABLE expedition_logs (
     log_id INTEGER PRIMARY KEY,

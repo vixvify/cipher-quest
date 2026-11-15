@@ -9,10 +9,10 @@ sql_concepts:
   - ON
   - WHERE
 description: |
-  The player discovers that the Prime Core (A003) has been involved in a classified experiment.
-  Combine the artifacts and experiments tables to reveal the hidden experiment records.
+  The player discovers that the Prime Core was involved in a classified experiment.
+  Uncover the hidden experiment records linked to it.
 
-task: "Retrieve the experiment associated with the Prime Core (artifact_name, experiment_type, result, clue) by joining artifacts and experiments where artifact_id = 'A003'."
+task: "Retrieve the experiment associated with the Prime Core (artifact_name, experiment_type, result, clue)."
 schema: |
   CREATE TABLE artifacts (
     artifact_id TEXT PRIMARY KEY,

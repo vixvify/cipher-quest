@@ -339,7 +339,12 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
             } else if (inBacktick) {
                 out.append(c);
                 if (c == '`') {
-                    inBacktick = false;
+                    if (next == '`') {
+                        out.append(next);
+                        i++;
+                    } else {
+                        inBacktick = false;
+                    }
                 }
             } else if (inBracket) {
                 out.append(c);

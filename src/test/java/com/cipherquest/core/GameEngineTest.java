@@ -397,4 +397,40 @@ class GameEngineTest {
                         + "AND a.power_level = (SELECT MAX(power_level) FROM artifacts WHERE location_id = 'L005' AND artifact_type = 'Treasure')"
         );
     }
+
+    @Test
+    void testRequestHintDuringReplayDoesNotInflateHintsUsed() {
+        completeCheckpointsThrough(3);
+        int hintsBeforeReplay = engine.getPlayer().getHintsUsed();
+        assertEquals(0, hintsBeforeReplay);
+
+        assertTrue(engine.selectCheckpoint(3));
+        assertTrue(engine.getCurrentLevel().isCompleted());
+        String replayHint = engine.requestHint();
+        assertTrue(replayHint.contains("Level 1"));
+        assertEquals(hintsBeforeReplay, engine.getPlayer().getHintsUsed());
+    }
+
+    @Test
+    void testLoadSavedGameAfterVictoryAndRetryCurrentCheckpoint() {
+        completeCheckpointsThrough(7);
+        assertEquals(GameState.VICTORY, engine.getGameState());
+        assertTrue(engine.isMainEndingUnlocked());
+
+        engine.startNewGame("TemporaryPlayer");
+        assertFalse(engine.isMainEndingUnlocked());
+
+        assertTrue(engine.loadSavedGame());
+        assertTrue(engine.isMainEndingUnlocked());
+        assertEquals(7, engine.getCurrentCheckpoint());
+        assertTrue(engine.getCurrentLevel().isCompleted());
+        assertEquals(5, engine.getPlayer().getDiscoveredMainClues().size());
+
+        engine.selectCheckpoint(1);
+        assertFalse(engine.requestHint().isBlank());
+        engine.retryCurrentCheckpoint();
+        assertEquals(1, engine.getCurrentCheckpoint());
+        assertEquals(GameState.PLAYING, engine.getGameState());
+        assertEquals(0, engine.getCurrentLevel().getAttempts());
+    }
 }

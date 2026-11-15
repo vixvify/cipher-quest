@@ -14,6 +14,7 @@ public class CaesarLevel extends BaseLevel {
 
     @Override
     public void loadChallenge() {
+        resetProgressState();
         setTitle("Operation Caesar");
         setDescription("ถอดรหัสข้อความ Ciphertext 5 ตัวอักษร เพื่อค้นหา Passkey");
         setHint("ตัวเลข Shift อยู่ในช่วง 3 - 7");

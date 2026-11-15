@@ -10,11 +10,10 @@ sql_concepts:
   - ORDER BY
   - LIMIT
 description: |
-  The player accesses the artifact records stored in the Relic Chamber (L002).
-  Several artifacts have been recorded, but only some appear to have significant power levels.
-  Identify the highest-power artifacts and investigate their associated information.
+  The player enters the chamber revealed by the previous clue.
+  Several artifacts have been recorded there, but only those within a significant power range are worth investigating.
 
-task: "Find the five highest-power artifacts (artifact_id, artifact_name, artifact_type, power_level, clue) in location 'L002' with power_level between 50 and 100, ordered by power_level descending."
+task: "Find up to five artifacts from the clue location with power from 50 to 100, ranked from highest to lowest (artifact_id, artifact_name, artifact_type, power_level, clue)."
 schema: |
   CREATE TABLE artifacts (
     artifact_id TEXT PRIMARY KEY,

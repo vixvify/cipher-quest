@@ -304,5 +304,11 @@ class SqlDatabaseEnvironmentTest {
         assertThrows(UnsupportedOperationException.class, () -> immutableResult.getColumnNames().add("extra"));
         assertThrows(UnsupportedOperationException.class, () -> immutableResult.getRows().add(List.of("extra")));
         assertThrows(UnsupportedOperationException.class, () -> immutableResult.getRows().get(0).add("extra"));
+
+        QueryResult escapedBacktickAlias = dbEnv.executeQuery(
+                "SELECT explorer_name AS `drop``;name` FROM explorers WHERE explorer_id = 'E001'"
+        );
+        assertTrue(escapedBacktickAlias.isSuccess());
+        assertEquals("Arin", escapedBacktickAlias.getRows().get(0).get(0));
     }
 }

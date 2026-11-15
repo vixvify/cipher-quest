@@ -13,6 +13,7 @@ public class LinuxLevel extends BaseLevel {
 
     @Override
     public void loadChallenge() {
+        resetProgressState();
         setTitle("Terminal Access");
         setDescription("ค้นหาโปรแกรมที่ซ่อนอยู่ในระบบแล้วรันขึ้นมาเพื่อเจาะระบบ");
         setHint("ลองสำรวจโฟลเดอร์ /opt หรือใช้คำสั่ง find / -name '*.bin' เพื่อค้นหาโปรแกรมแล้วรันด้วย ./");

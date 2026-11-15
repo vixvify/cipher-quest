@@ -12,10 +12,10 @@ sql_concepts:
   - Subquery
   - MAX
 description: |
-  The player finally accesses the Archive Vault (L005).
-  Combine artifacts and locations and use a subquery with MAX(power_level) to identify the most powerful Treasure stored in the vault.
+  The player finally reaches the vault revealed by the previous experiment clue.
+  Track down the most powerful Treasure hidden inside it.
 
-task: "Find the Treasure with the highest power level inside the Archive Vault (artifact_name, artifact_type, location_name, power_level, clue) for location_id = 'L005' and artifact_type = 'Treasure'."
+task: "Find the highest-power Treasure inside the vault from the previous clue (artifact_name, artifact_type, location_name, power_level, clue)."
 schema: |
   CREATE TABLE artifacts (
     artifact_id TEXT PRIMARY KEY,

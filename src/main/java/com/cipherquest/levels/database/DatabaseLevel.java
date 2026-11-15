@@ -61,7 +61,7 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
                 this.story = "The player accesses the expedition logs associated with Arin. "
                         + "Most records contain ordinary expedition information, but one message mentions a mysterious symbol.";
                 setDescription(this.story);
-                this.task = "Find Arin's expedition message (log_id, explorer_id, message, clue).";
+                this.task = "Find Arin's expedition message containing the word 'symbol' (log_id, explorer_id, message, clue).";
                 setHints(List.of(
                         "Level 1 (Concept): Combine two filtering conditions using WHERE and AND, and use LIKE with '%' wildcards to search for a substring.",
                         "Level 2 (Structure): SELECT col1, col2, col3, col4 FROM table_name WHERE id_col = 'ID' AND text_col LIKE '%keyword%';",
@@ -152,16 +152,20 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
 
         boolean matched = dbEnv.evaluateAnswer(lastQueryResult, expectedQuery);
         if (matched) {
-            this.lastFeedback = "Query OK! Result matches mission objective (" + lastQueryResult.getRowCount() + " rows).";
+            this.lastFeedback = "Query OK! Result matches mission objective (" + formatRowCount(lastQueryResult.getRowCount()) + ").";
             return true;
         } else {
             if (lastQueryResult.getRowCount() == 0) {
                 this.lastFeedback = "Empty query result: Query executed successfully (0 rows), but returned no matching records.";
             } else {
-                this.lastFeedback = "Incorrect result: Query executed successfully (" + lastQueryResult.getRowCount() + " rows), but does not match mission objective.";
+                this.lastFeedback = "Incorrect result: Query executed successfully (" + formatRowCount(lastQueryResult.getRowCount()) + "), but does not match mission objective.";
             }
             return false;
         }
+    }
+
+    private String formatRowCount(int rowCount) {
+        return rowCount == 1 ? "1 row" : rowCount + " rows";
     }
 
     @Override

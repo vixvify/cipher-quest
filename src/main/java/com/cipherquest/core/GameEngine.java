@@ -217,7 +217,7 @@ public class GameEngine {
         }
 
         boolean firstTime = currentLevel.useHint();
-        if (firstTime && player != null) {
+        if (firstTime && player != null && !currentLevel.isCompleted()) {
             player.recordHintUsed();
         }
 

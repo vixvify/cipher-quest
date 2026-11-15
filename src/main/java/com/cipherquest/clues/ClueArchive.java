@@ -112,21 +112,13 @@ public class ClueArchive {
     }
 
     public List<Clue> getAllDiscoveredClues() {
-        List<Clue> result = new ArrayList<>();
-        for (String id : discoveredClueIds) {
-            Clue clue = catalog.get(id);
-            if (clue != null) {
-                result.add(clue);
-            }
-        }
-        return Collections.unmodifiableList(result);
+        return getDiscoveredCluesByType(null);
     }
 
     private List<Clue> getDiscoveredCluesByType(ClueType type) {
         List<Clue> result = new ArrayList<>();
-        for (String id : discoveredClueIds) {
-            Clue clue = catalog.get(id);
-            if (clue != null && clue.getType() == type) {
+        for (Clue clue : catalog.values()) {
+            if (discoveredClueIds.contains(clue.getId()) && (type == null || clue.getType() == type)) {
                 result.add(clue);
             }
         }

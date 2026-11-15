@@ -12,7 +12,7 @@ description: |
   The first available records contain information about explorers who investigated the archaeological site.
   Identify Arin and retrieve the last known information about the missing explorer.
 
-task: "Find Arin's explorer record (explorer_id, explorer_name, status, clue) from the explorers table."
+task: "Find Arin's explorer record (explorer_id, explorer_name, status, clue)."
 schema: |
   CREATE TABLE explorers (
     explorer_id TEXT PRIMARY KEY,

@@ -43,4 +43,18 @@ class ClueArchiveTest {
         archive.reset();
         assertTrue(archive.getAllDiscoveredClues().isEmpty());
     }
+
+    @Test
+    void testDiscoveredCluesMaintainCanonicalCatalogOrderAfterRestore() {
+        archive.restoreClueIds(List.of("MC05", "MC02", "MC01"));
+        List<String> ids = archive.getAllDiscoveredClues().stream()
+                .map(Clue::getId)
+                .toList();
+        assertEquals(List.of("MC01", "MC02", "MC05"), ids);
+
+        List<String> mainIds = archive.getDiscoveredMainClues().stream()
+                .map(Clue::getId)
+                .toList();
+        assertEquals(List.of("MC01", "MC02", "MC05"), mainIds);
+    }
 }
