@@ -38,6 +38,10 @@ class DatabaseLevelTest {
         try (DatabaseLevel m02 = new DatabaseLevel(4)) {
             m02.loadChallenge();
             assertTrue(
+                    m02.getTask().contains("สัญลักษณ์"),
+                    "M02 task must keep the non-spoiler 'สัญลักษณ์' filter requirement"
+            );
+            assertTrue(
                     m02.getTask().contains("symbol"),
                     "M02 task must keep the non-spoiler 'symbol' filter requirement"
             );

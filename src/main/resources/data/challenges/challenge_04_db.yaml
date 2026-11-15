@@ -12,7 +12,7 @@ description: |
   คุณเปิดดูบันทึกการเดินทางของ Arin ได้แล้ว
   บันทึกส่วนใหญ่เป็นข้อมูลทั่วไป แต่มีข้อความหนึ่งที่พูดถึงสัญลักษณ์ลึกลับ
 
-task: "ค้นหาบันทึกของ Arin ที่มีคำว่า 'symbol' (log_id, explorer_id, message, clue)"
+task: "ค้นหาบันทึกของ Arin ที่มีคำว่า 'สัญลักษณ์ (symbol)' (log_id, explorer_id, message, clue)"
 schema: |
   CREATE TABLE expedition_logs (
     log_id INTEGER PRIMARY KEY,

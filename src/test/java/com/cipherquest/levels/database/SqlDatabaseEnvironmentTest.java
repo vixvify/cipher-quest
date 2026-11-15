@@ -52,7 +52,7 @@ class SqlDatabaseEnvironmentTest {
         QueryResult result = dbEnv.executeQuery(expected);
         assertTrue(result.isSuccess());
         assertEquals(1, result.getRowCount());
-        assertEquals(List.of("E001", "Arin", "Missing", "Last signal detected near the Ancient Temple"), result.getRows().get(0));
+        assertEquals(List.of("E001", "Arin", "Missing", "พบสัญญาณล่าสุดใกล้ Ancient Temple"), result.getRows().get(0));
 
         assertTrue(dbEnv.evaluateAnswer(expected, expected));
         assertTrue(dbEnv.evaluateAnswer(

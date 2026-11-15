@@ -61,7 +61,7 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
                 this.story = "คุณเปิดดูบันทึกการเดินทางของ Arin ได้แล้ว "
                         + "บันทึกส่วนใหญ่เป็นข้อมูลทั่วไป แต่มีข้อความหนึ่งที่พูดถึงสัญลักษณ์ลึกลับ";
                 setDescription(this.story);
-                this.task = "ค้นหาบันทึกของ Arin ที่มีคำว่า 'symbol' (log_id, explorer_id, message, clue)";
+                this.task = "ค้นหาบันทึกของ Arin ที่มีคำว่า 'สัญลักษณ์ (symbol)' (log_id, explorer_id, message, clue)";
                 setHints(List.of(
                         "ระดับ 1 (แนวคิด): ใช้ WHERE ... AND ... เพื่อกรอง 2 เงื่อนไขพร้อมกัน และใช้ LIKE กับ '%' เพื่อค้นหาคำบางส่วนในข้อความ",
                         "ระดับ 2 (โครงสร้าง): SELECT col1, col2, col3, col4 FROM table_name WHERE id_col = 'ID' AND text_col LIKE '%keyword%';",
@@ -113,7 +113,7 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
                 setSqlConcepts(List.of("SELECT", "JOIN", "ON", "WHERE", "AND", "Subquery", "MAX"));
                 this.requiredTables = List.of("artifacts", "locations");
                 this.story = "ในที่สุดคุณก็มาถึงห้องนิรภัยที่เบาะแสการทดลองก่อนหน้าชี้ไว้ "
-                        + "ภารกิจสุดท้ายคือตามหา Treasure ที่ทรงพลังที่สุดที่ซ่อนอยู่ข้างใน";
+                        + "ภารกิจสุดท้ายคือตามหาสมบัติที่ทรงพลังที่สุดที่ซ่อนอยู่ข้างใน";
                 setDescription(this.story);
                 this.task = "ค้นหา Treasure ที่พลังสูงสุดในห้องนิรภัยจากเบาะแสเดิม (artifact_name, artifact_type, location_name, power_level, clue)";
                 setHints(List.of(
