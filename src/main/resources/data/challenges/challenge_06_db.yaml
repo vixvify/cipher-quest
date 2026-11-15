@@ -1,13 +1,39 @@
 id: 6
+mission_code: "M04"
 type: database
-title: "Database Recon IV"
+title: "M04 — The Hidden Records"
+difficulty: "Intermediate–Advanced"
+sql_concepts:
+  - SELECT
+  - JOIN
+  - ON
+  - WHERE
 description: |
-  นับว่าแต่ละ user เข้าถึงระบบกี่ครั้ง เรียงจากมากไปน้อย
+  The player discovers that the Prime Core was involved in a classified experiment.
+  Uncover the hidden experiment records linked to it.
 
-task: "นับจำนวนแถวใน access_logs แต่ละ user_id แล้วเรียงจากมากไปน้อย"
+task: "Retrieve the experiment associated with the Prime Core (artifact_name, experiment_type, result, clue)."
 schema: |
-  CREATE TABLE access_logs (id INTEGER, user_id INTEGER, filename TEXT, accessed_at TEXT);
-expected_query: "SELECT user_id, COUNT(*) as access_count FROM access_logs GROUP BY user_id ORDER BY access_count DESC"
-answer_hash: "correct_if_grouped_and_sorted"
+  CREATE TABLE artifacts (
+    artifact_id TEXT PRIMARY KEY,
+    artifact_name TEXT NOT NULL,
+    artifact_type TEXT NOT NULL,
+    power_level INTEGER NOT NULL,
+    location_id TEXT NOT NULL,
+    clue TEXT NULL
+  );
+  CREATE TABLE experiments (
+    experiment_id INTEGER PRIMARY KEY,
+    experiment_type TEXT NOT NULL,
+    artifact_id TEXT NOT NULL,
+    result TEXT NULL,
+    clue TEXT NULL
+  );
+expected_query: "SELECT a.artifact_name, e.experiment_type, e.result, e.clue FROM artifacts a JOIN experiments e ON a.artifact_id = e.artifact_id WHERE a.artifact_id = 'A003'"
+main_clue_id: "MC04"
+answer_hash: "correct_if_returns_prime_core_experiment"
 
-hint: "ใช้ GROUP BY ร่วมกับ COUNT(*) และ ORDER BY"
+hints:
+  - "Level 1 (Concept): Use JOIN ... ON to combine rows from two related tables based on a shared foreign key column."
+  - "Level 2 (Structure): SELECT a.col1, e.col2, e.col3, e.col4 FROM table1 a JOIN table2 e ON a.id = e.id WHERE a.id = 'value';"
+  - "Level 3 (Specific): Join artifacts a and experiments e ON a.artifact_id = e.artifact_id WHERE a.artifact_id = 'A003', selecting artifact_name, experiment_type, result, clue."

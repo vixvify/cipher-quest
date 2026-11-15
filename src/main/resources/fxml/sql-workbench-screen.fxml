@@ -43,7 +43,7 @@
                             <padding>
                                 <Insets top="8" left="8" />
                             </padding>
-                            <Label text="▾ 🗄  cipherquest_db" styleClass="sql-schema-db" />
+                            <Label text="▾ 🗄  ancient_archive" styleClass="sql-schema-db" />
                             <VBox styleClass="sql-schema-tables" spacing="1">
                                 <padding>
                                     <Insets left="16" />
@@ -53,9 +53,12 @@
                                     <padding>
                                         <Insets left="12" />
                                     </padding>
-                                    <Label fx:id="tableItem1" text="📋 users" styleClass="sql-table-item" />
-                                    <Label fx:id="tableItem2" text="📋 access_logs" styleClass="sql-table-item" />
-                                    <Label fx:id="tableItem3" text="📋 files" styleClass="sql-table-item" />
+                                    <Label fx:id="tableItem1" text="📋 explorers" styleClass="sql-table-item" />
+                                    <Label fx:id="tableItem2" text="📋 expedition_logs" styleClass="sql-table-item" />
+                                    <Label fx:id="tableItem3" text="📋 inscriptions" styleClass="sql-table-item" />
+                                    <Label fx:id="tableItem4" text="📋 locations" styleClass="sql-table-item" />
+                                    <Label fx:id="tableItem5" text="📋 artifacts" styleClass="sql-table-item" />
+                                    <Label fx:id="tableItem6" text="📋 experiments" styleClass="sql-table-item" />
                                 </VBox>
                             </VBox>
                         </VBox>
@@ -115,13 +118,12 @@
                                 </TableView>
                             </ScrollPane>
 
-                            <HBox styleClass="sql-status-bar" alignment="CENTER_LEFT" spacing="20">
+                            <HBox styleClass="sql-status-bar" alignment="CENTER_LEFT" spacing="20" minHeight="-Infinity">
                                 <padding>
                                     <Insets top="4" right="12" bottom="4" left="12" />
                                 </padding>
-                                <Label fx:id="feedbackLabel" text="" styleClass="sql-feedback" />
-                                <Region HBox.hgrow="ALWAYS" />
-                                <Label fx:id="rowCountLabel" text="0 rows" styleClass="sql-row-count" />
+                                <Label fx:id="feedbackLabel" text="" styleClass="sql-feedback" wrapText="true" HBox.hgrow="ALWAYS" minWidth="0" maxWidth="1.7976931348623157E308" minHeight="-Infinity" />
+                                <Label fx:id="rowCountLabel" text="0 rows" styleClass="sql-row-count" minWidth="-Infinity" />
                             </HBox>
                         </VBox>
 
@@ -133,7 +135,7 @@
                     <padding>
                         <Insets right="14" />
                     </padding>
-                    <Label text="cipherquest_db@localhost" styleClass="screen-status-text" />
+                    <Label text="ancient_archive@terminal" styleClass="screen-status-text" />
                     <Label fx:id="statusLabel" text="●  CONNECTED" styleClass="screen-status-ok" />
                 </HBox>
 

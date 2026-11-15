@@ -1,18 +1,30 @@
 id: 3
+mission_code: "M01"
 type: database
-title: "Database Recon I"
+title: "M01 — The Missing Explorer"
+difficulty: "Beginner"
+sql_concepts:
+  - SELECT
+  - FROM
+  - WHERE
 description: |
-  คุณเจาะเข้าถึงฐานข้อมูลได้แล้ว ดึงรายชื่อผู้ใช้ทั้งหมดในตาราง users
+  The player activates the Ancient Technology Terminal and accesses the Ancient Archive.
+  The first available records contain information about explorers who investigated the archaeological site.
+  Identify Arin and retrieve the last known information about the missing explorer.
 
-task: "แสดงคอลัมน์ username และ email ของผู้ใช้ทุกคนในตาราง users"
+task: "Find Arin's explorer record (explorer_id, explorer_name, status, clue)."
 schema: |
-  CREATE TABLE users (
-    id INTEGER PRIMARY KEY,
-    username TEXT,
-    email TEXT,
-    role TEXT
+  CREATE TABLE explorers (
+    explorer_id TEXT PRIMARY KEY,
+    explorer_name TEXT NOT NULL,
+    status TEXT NOT NULL,
+    clue TEXT NULL
   );
-expected_query: "SELECT username, email FROM users"
-answer_hash: "correct_if_returns_all_users"
+expected_query: "SELECT explorer_id, explorer_name, status, clue FROM explorers WHERE explorer_name = 'Arin'"
+main_clue_id: "MC01"
+answer_hash: "correct_if_returns_arin_record"
 
-hint: "ใช้ SELECT เพื่อเลือกคอลัมน์ที่ต้องการ"
+hints:
+  - "Level 1 (Concept): Use SELECT, FROM, and WHERE to retrieve specific columns and filter rows by an exact text value."
+  - "Level 2 (Structure): SELECT col1, col2, col3, col4 FROM table_name WHERE column_name = 'value';"
+  - "Level 3 (Specific): Select explorer_id, explorer_name, status, and clue from the explorers table where explorer_name equals 'Arin'."
