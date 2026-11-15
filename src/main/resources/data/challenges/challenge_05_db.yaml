@@ -13,7 +13,7 @@ description: |
   The player enters the chamber revealed by the previous clue.
   Several artifacts have been recorded there, but only those within a significant power range are worth investigating.
 
-task: "Find up to five artifacts from the clue location with power from 50 to 100, ranked from highest to lowest (artifact_id, artifact_name, artifact_type, power_level, clue)."
+task: "Find top 5 clue-location artifacts with power 50-100, highest first (artifact_id, artifact_name, artifact_type, power_level, clue)."
 schema: |
   CREATE TABLE artifacts (
     artifact_id TEXT PRIMARY KEY,

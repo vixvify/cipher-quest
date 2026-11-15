@@ -79,7 +79,7 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
                 this.story = "The player enters the chamber revealed by the previous clue. "
                         + "Several artifacts have been recorded there, but only those within a significant power range are worth investigating.";
                 setDescription(this.story);
-                this.task = "Find up to five artifacts from the clue location with power from 50 to 100, ranked from highest to lowest (artifact_id, artifact_name, artifact_type, power_level, clue).";
+                this.task = "Find top 5 clue-location artifacts with power 50-100, highest first (artifact_id, artifact_name, artifact_type, power_level, clue).";
                 setHints(List.of(
                         "Level 1 (Concept): Use BETWEEN for inclusive numeric ranges, ORDER BY ... DESC to sort highest to lowest, and LIMIT to cap the number of returned rows.",
                         "Level 2 (Structure): SELECT ... FROM table_name WHERE loc_col = '...' AND num_col BETWEEN min AND max ORDER BY num_col DESC LIMIT n;",
