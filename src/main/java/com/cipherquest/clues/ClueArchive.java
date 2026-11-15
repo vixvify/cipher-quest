@@ -18,75 +18,77 @@ public class ClueArchive {
     private void initializeCatalog() {
         registerClue(new Clue(
                 "MC01",
-                "Main Clue 01 — The Missing Explorer",
+                "เบาะแสหลัก 01 — นักสำรวจที่หายตัวไป",
                 ClueType.MAIN,
                 "explorers (E001)",
-                "Explorer Arin (E001) is Missing; last signal detected near the Ancient Temple.",
+                "Arin (E001) หายตัวไปหลังจากตรวจพบสัญญาณครั้งสุดท้ายใกล้ Ancient Temple (L001) บันทึกการสำรวจของเขาอาจเปิดเผยสิ่งที่เกิดขึ้นหลังจากนั้น",
                 List.of(
-                        "Explorer: Arin",
-                        "Explorer ID: E001",
-                        "Status: Missing",
-                        "Last signal: Ancient Temple"
+                        "นักสำรวจ: Arin",
+                        "รหัสนักสำรวจ: E001",
+                        "สถานะ: Missing",
+                        "สัญญาณล่าสุด: Ancient Temple (L001)",
+                        "เบาะแสต่อเนื่อง: ตรวจสอบบันทึกการสำรวจของ Arin"
                 )
         ));
         checkpointToMainClueId.put(3, "MC01");
 
         registerClue(new Clue(
                 "MC02",
-                "Main Clue 02 — The Last Message",
+                "เบาะแสหลัก 02 — ข้อความสุดท้าย",
                 ClueType.MAIN,
                 "expedition_logs (101)",
-                "Sun and Moon symbols unlock the Relic Chamber (L002).",
+                "ข้อความของ Arin ระบุว่าสัญลักษณ์ Sun และ Moon เป็นกุญแจสำคัญในการเปิด Relic Chamber (L002)",
                 List.of(
-                        "Required Symbols: Sun and Moon",
-                        "Destination: Relic Chamber",
-                        "Location ID: L002"
+                        "สัญลักษณ์ที่ต้องใช้: Sun and Moon",
+                        "จุดหมายถัดไป: Relic Chamber",
+                        "รหัสสถานที่: L002"
                 )
         ));
         checkpointToMainClueId.put(4, "MC02");
 
         registerClue(new Clue(
                 "MC03",
-                "Main Clue 03 — The Forgotten Relics",
+                "เบาะแสหลัก 03 — โบราณวัตถุที่ถูกลืม",
                 ClueType.MAIN,
                 "artifacts (A003)",
-                "Prime Core (A003) has power level 100, and its experimental records are restricted.",
+                "Prime Core (A003) มีระดับพลังงานสูงถึง 100 แต่รายละเอียดการทดลองที่เกี่ยวข้องถูกแยกเก็บไว้ในบันทึกอีกชุดหนึ่ง",
                 List.of(
-                        "Artifact: Prime Core",
-                        "Artifact ID: A003",
-                        "Power Level: 100",
-                        "Important Information: Experimental records are restricted"
+                        "โบราณวัตถุ: Prime Core",
+                        "รหัสโบราณวัตถุ: A003",
+                        "ระดับพลัง: 100",
+                        "ข้อมูลสำคัญ: รายละเอียดการทดลองถูกแยกเก็บไว้ในบันทึกอีกชุดหนึ่ง"
                 )
         ));
         checkpointToMainClueId.put(5, "MC03");
 
         registerClue(new Clue(
                 "MC04",
-                "Main Clue 04 — The Hidden Records",
+                "เบาะแสหลัก 04 — บันทึกที่ถูกซ่อน",
                 ClueType.MAIN,
                 "experiments (303)",
-                "Prime Core experiment 'Energy Amplification' (Result: Unknown) unlocks the Archive Vault at L005.",
+                "Prime Core ถูกนำไปใช้ในการทดลอง Energy Amplification แต่ผลลัพธ์ยังไม่สามารถระบุได้ เบาะแสจากการทดลองชี้ไปยัง Archive Vault (L005) ซึ่งเก็บบันทึกชุดสุดท้ายของอารยธรรมโบราณ",
                 List.of(
-                        "Artifact: Prime Core",
-                        "Experiment: Energy Amplification",
-                        "Result: Unknown",
-                        "Destination: Archive Vault",
-                        "Location ID: L005"
+                        "โบราณวัตถุ: Prime Core",
+                        "การทดลอง: Energy Amplification",
+                        "ผลลัพธ์: Unknown (ไม่สามารถระบุได้)",
+                        "จุดหมายถัดไป: Archive Vault",
+                        "รหัสสถานที่: L005",
+                        "ข้อมูลสำคัญ: เก็บบันทึกชุดสุดท้ายของอารยธรรมโบราณ"
                 )
         ));
         checkpointToMainClueId.put(6, "MC04");
 
         registerClue(new Clue(
                 "MC05",
-                "Main Clue 05 — The Lost Treasure",
+                "เบาะแสหลัก 05 — สมบัติที่สาบสูญ",
                 ClueType.MAIN,
                 "artifacts (A008) / locations (L005)",
-                "The Memory Archive in the Archive Vault (Power Level 100) contains the memories of an ancient civilization.",
+                "Memory Archive คือคลังข้อมูลที่เก็บรักษาความทรงจำ ประวัติศาสตร์ และองค์ความรู้ของอารยธรรมโบราณเอาไว้ นี่คือความหมายที่แท้จริงของ Lost Treasure",
                 List.of(
-                        "Treasure: Memory Archive",
-                        "Location: Archive Vault",
-                        "Power Level: 100",
-                        "Description: Contains the memories of an ancient civilization"
+                        "สมบัติ: Memory Archive",
+                        "สถานที่: Archive Vault (L005)",
+                        "ระดับพลัง: 100",
+                        "คำอธิบาย: เก็บรักษาความทรงจำ ประวัติศาสตร์ และองค์ความรู้ของอารยธรรมโบราณ"
                 )
         ));
         checkpointToMainClueId.put(7, "MC05");

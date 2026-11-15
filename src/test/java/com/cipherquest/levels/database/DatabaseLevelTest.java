@@ -50,11 +50,11 @@ class DatabaseLevelTest {
             m01.loadChallenge();
 
             assertFalse(m01.checkAnswer("SELECT explorer_id, explorer_name, status, clue FROM explorers"));
-            assertTrue(m01.getFailureFeedback().contains("(4 rows)"), m01.getFailureFeedback());
+            assertTrue(m01.getFailureFeedback().contains("(4 แถว)"), m01.getFailureFeedback());
 
             assertTrue(m01.useHint());
             assertTrue(m01.checkAnswer(m01.getExpectedQuery()));
-            assertTrue(m01.getSuccessFeedback().contains("(1 row)"), m01.getSuccessFeedback());
+            assertTrue(m01.getSuccessFeedback().contains("(1 แถว)"), m01.getSuccessFeedback());
             assertNotNull(m01.getLastQueryResult());
 
             m01.markCompleted();

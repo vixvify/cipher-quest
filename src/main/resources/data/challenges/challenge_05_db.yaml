@@ -1,8 +1,8 @@
 id: 5
 mission_code: "M03"
 type: database
-title: "M03 — The Forgotten Relics"
-difficulty: "Intermediate"
+title: "M03 — โบราณวัตถุที่ถูกลืม"
+difficulty: "ปานกลาง"
 sql_concepts:
   - SELECT
   - WHERE
@@ -10,10 +10,10 @@ sql_concepts:
   - ORDER BY
   - LIMIT
 description: |
-  The player enters the chamber revealed by the previous clue.
-  Several artifacts have been recorded there, but only those within a significant power range are worth investigating.
+  คุณเดินเข้าสู่ห้องลับตามเบาะแสที่ได้มา ภายในห้องมีโบราณวัตถุบันทึกอยู่หลายชิ้น
+  แต่มีเพียงชิ้นที่มีระดับพลังอยู่ในช่วงสำคัญเท่านั้นที่น่าตรวจสอบ
 
-task: "Find top 5 clue-location artifacts with power 50-100, highest first (artifact_id, artifact_name, artifact_type, power_level, clue)."
+task: "ค้นหาโบราณวัตถุในห้องจากเบาะแสเดิม ที่มีพลัง 50-100 สูงสุด 5 อันดับแรก (artifact_id, artifact_name, artifact_type, power_level, clue)"
 schema: |
   CREATE TABLE artifacts (
     artifact_id TEXT PRIMARY KEY,
@@ -28,6 +28,6 @@ main_clue_id: "MC03"
 answer_hash: "correct_if_returns_relic_chamber_artifacts"
 
 hints:
-  - "Level 1 (Concept): Use BETWEEN for inclusive numeric ranges, ORDER BY ... DESC to sort highest to lowest, and LIMIT to cap the number of returned rows."
-  - "Level 2 (Structure): SELECT ... FROM table_name WHERE loc_col = '...' AND num_col BETWEEN min AND max ORDER BY num_col DESC LIMIT n;"
-  - "Level 3 (Specific): Select artifact_id, artifact_name, artifact_type, power_level, and clue from artifacts where location_id = 'L002' and power_level is BETWEEN 50 AND 100, ordered by power_level DESC with LIMIT 5."
+  - "ระดับ 1 (แนวคิด): ใช้ BETWEEN เพื่อกรองช่วงตัวเลข ใช้ ORDER BY ... DESC เรียงจากมากไปน้อย และใช้ LIMIT จำกัดจำนวนแถว"
+  - "ระดับ 2 (โครงสร้าง): SELECT ... FROM table_name WHERE loc_col = '...' AND num_col BETWEEN min AND max ORDER BY num_col DESC LIMIT n;"
+  - "ระดับ 3 (เจาะจง): เลือก artifact_id, artifact_name, artifact_type, power_level, clue จาก artifacts โดยกรอง location_id = 'L002' และ power_level BETWEEN 50 AND 100 เรียงด้วย ORDER BY power_level DESC แล้ว LIMIT 5"

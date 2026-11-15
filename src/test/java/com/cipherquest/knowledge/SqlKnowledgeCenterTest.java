@@ -29,14 +29,14 @@ class SqlKnowledgeCenterTest {
     @Test
     void testCoversAllEightGddCategoriesInLearningOrder() {
         List<String> expectedCategories = List.of(
-                "Basic Queries",
-                "Filtering",
-                "Pattern Matching",
-                "Range Filtering",
-                "Sorting and Limiting",
-                "Table Relationships",
-                "Aggregate Functions",
-                "Advanced Queries"
+                "พื้นฐานการดึงข้อมูล",
+                "การกรองข้อมูล",
+                "การค้นหาข้อความบางส่วน",
+                "การกรองช่วงตัวเลข",
+                "การเรียงลำดับและจำกัดจำนวน",
+                "การเชื่อมหลายตาราง",
+                "ฟังก์ชันคำนวณค่าสรุป",
+                "คำสั่งซ้อนขั้นสูง"
         );
 
         assertEquals(expectedCategories, knowledgeCenter.getCategories());
@@ -70,12 +70,12 @@ class SqlKnowledgeCenterTest {
     @Test
     void testLookupByIdCategoryAndNullSafety() {
         assertTrue(knowledgeCenter.getTopicById("kc04").isPresent());
-        assertEquals("LIKE & Wildcards (%)", knowledgeCenter.getTopicById("KC04").orElseThrow().getTitle());
+        assertEquals("LIKE & % — ค้นหาคำบางส่วน", knowledgeCenter.getTopicById("KC04").orElseThrow().getTitle());
         assertTrue(knowledgeCenter.getTopicById(null).isEmpty());
         assertTrue(knowledgeCenter.getTopicById("   ").isEmpty());
         assertTrue(knowledgeCenter.getTopicById("KC999").isEmpty());
 
-        assertEquals(2, knowledgeCenter.getTopicsByCategory("filtering").size());
+        assertEquals(2, knowledgeCenter.getTopicsByCategory(" การกรองข้อมูล ").size());
         assertTrue(knowledgeCenter.getTopicsByCategory(null).isEmpty());
         assertTrue(knowledgeCenter.getTopicsByCategory("Unknown Category").isEmpty());
     }
@@ -144,7 +144,7 @@ class SqlKnowledgeCenterTest {
     void testReturnedCollectionsAreUnmodifiable() {
         List<SqlTopic> all = knowledgeCenter.getAllTopics();
         List<String> categories = knowledgeCenter.getCategories();
-        List<SqlTopic> filtered = knowledgeCenter.getTopicsByCategory("Filtering");
+        List<SqlTopic> filtered = knowledgeCenter.getTopicsByCategory("การกรองข้อมูล");
         List<SqlTopic> byConcepts = knowledgeCenter.findTopicsForConcepts(List.of("SELECT", "WHERE"));
         List<String> concepts = all.get(0).getRelatedConcepts();
 
