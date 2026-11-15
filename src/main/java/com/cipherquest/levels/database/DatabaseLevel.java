@@ -43,7 +43,7 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
                         + "The first available records contain information about explorers who investigated the archaeological site. "
                         + "You must identify Arin and retrieve the last known information about the missing explorer.";
                 setDescription(this.story);
-                this.task = "Find Arin's explorer record (explorer_id, explorer_name, status, clue) from the explorers table.";
+                this.task = "Find Arin's explorer record (explorer_id, explorer_name, status, clue).";
                 setHints(List.of(
                         "Level 1 (Concept): Use SELECT, FROM, and WHERE to retrieve specific columns and filter rows by an exact text value.",
                         "Level 2 (Structure): SELECT col1, col2, col3, col4 FROM table_name WHERE column_name = 'value';",
@@ -61,7 +61,7 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
                 this.story = "The player accesses the expedition logs associated with Arin. "
                         + "Most records contain ordinary expedition information, but one message mentions a mysterious symbol.";
                 setDescription(this.story);
-                this.task = "Find Arin's expedition message (log_id, explorer_id, message, clue) from expedition_logs for explorer_id 'E001' containing the word 'symbol'.";
+                this.task = "Find Arin's expedition message (log_id, explorer_id, message, clue).";
                 setHints(List.of(
                         "Level 1 (Concept): Combine two filtering conditions using WHERE and AND, and use LIKE with '%' wildcards to search for a substring.",
                         "Level 2 (Structure): SELECT col1, col2, col3, col4 FROM table_name WHERE id_col = 'ID' AND text_col LIKE '%keyword%';",
@@ -76,10 +76,10 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
                 setDifficulty("Intermediate");
                 setSqlConcepts(List.of("SELECT", "WHERE", "BETWEEN", "ORDER BY", "LIMIT"));
                 this.requiredTables = List.of("artifacts");
-                this.story = "The player accesses the artifact records stored in the Relic Chamber (L002). "
-                        + "Several artifacts have been recorded, but only some appear to have significant power levels.";
+                this.story = "The player enters the chamber revealed by the previous clue. "
+                        + "Several artifacts have been recorded there, but only those within a significant power range are worth investigating.";
                 setDescription(this.story);
-                this.task = "Find the five highest-power artifacts (artifact_id, artifact_name, artifact_type, power_level, clue) in location 'L002' with power_level between 50 and 100, ordered by power_level descending.";
+                this.task = "Find up to five artifacts from the clue location with power from 50 to 100, ranked from highest to lowest (artifact_id, artifact_name, artifact_type, power_level, clue).";
                 setHints(List.of(
                         "Level 1 (Concept): Use BETWEEN for inclusive numeric ranges, ORDER BY ... DESC to sort highest to lowest, and LIMIT to cap the number of returned rows.",
                         "Level 2 (Structure): SELECT ... FROM table_name WHERE loc_col = '...' AND num_col BETWEEN min AND max ORDER BY num_col DESC LIMIT n;",
@@ -94,10 +94,10 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
                 setDifficulty("Intermediate–Advanced");
                 setSqlConcepts(List.of("SELECT", "JOIN", "ON", "WHERE"));
                 this.requiredTables = List.of("artifacts", "experiments");
-                this.story = "The player discovers that the Prime Core (A003) has been involved in a classified experiment. "
-                        + "Combine the artifacts and experiments tables to reveal the hidden experiment records.";
+                this.story = "The player discovers that the Prime Core was involved in a classified experiment. "
+                        + "Uncover the hidden experiment records linked to it.";
                 setDescription(this.story);
-                this.task = "Retrieve the experiment associated with the Prime Core (artifact_name, experiment_type, result, clue) by joining artifacts and experiments where artifact_id = 'A003'.";
+                this.task = "Retrieve the experiment associated with the Prime Core (artifact_name, experiment_type, result, clue).";
                 setHints(List.of(
                         "Level 1 (Concept): Use JOIN ... ON to combine rows from two related tables based on a shared foreign key column.",
                         "Level 2 (Structure): SELECT a.col1, e.col2, e.col3, e.col4 FROM table1 a JOIN table2 e ON a.id = e.id WHERE a.id = 'value';",
@@ -112,10 +112,10 @@ public class DatabaseLevel extends BaseLevel implements AutoCloseable {
                 setDifficulty("Advanced");
                 setSqlConcepts(List.of("SELECT", "JOIN", "ON", "WHERE", "AND", "Subquery", "MAX"));
                 this.requiredTables = List.of("artifacts", "locations");
-                this.story = "The player finally accesses the Archive Vault (L005). "
-                        + "Combine artifacts and locations and use a subquery with MAX(power_level) to find the most powerful Treasure inside the Archive Vault.";
+                this.story = "The player finally reaches the vault revealed by the previous experiment clue. "
+                        + "Track down the most powerful Treasure hidden inside it.";
                 setDescription(this.story);
-                this.task = "Find the Treasure with the highest power level inside the Archive Vault (artifact_name, artifact_type, location_name, power_level, clue) for location_id = 'L005' and artifact_type = 'Treasure'.";
+                this.task = "Find the highest-power Treasure inside the vault from the previous clue (artifact_name, artifact_type, location_name, power_level, clue).";
                 setHints(List.of(
                         "Level 1 (Concept): Combine a JOIN between two tables with a WHERE subquery that uses the MAX() aggregate function to find the highest value.",
                         "Level 2 (Structure): SELECT ... FROM table1 a JOIN table2 l ON a.loc_id = l.loc_id WHERE a.loc_id = '...' AND a.type = '...' AND a.power = (SELECT MAX(power) FROM table1 WHERE ...);",
