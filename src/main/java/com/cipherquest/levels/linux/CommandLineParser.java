@@ -3,8 +3,6 @@ package com.cipherquest.levels.linux;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Minimal shell-like tokenizer. Supports whitespace, quotes, and backslash escaping.
- * Does not expand shell variables or execute pipes/redirections. */
 public final class CommandLineParser {
     private CommandLineParser() {}
 

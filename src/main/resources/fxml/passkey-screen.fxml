@@ -32,18 +32,32 @@
                     <Label text="CQ-OS — SECURE TERMINAL v2.5" styleClass="screen-title-bar" HBox.hgrow="ALWAYS" />
                 </HBox>
 
-                <VBox styleClass="screen-body" alignment="CENTER" spacing="24" VBox.vgrow="ALWAYS">
-                    <padding>
-                        <Insets top="40" right="50" bottom="40" left="50" />
-                    </padding>
-
-                    <VBox alignment="CENTER" spacing="6">
-                        <Label text="⬛⬛⬛" styleClass="screen-lock-icon" />
-                        <Label text="SYSTEM LOCKED" styleClass="screen-locked-title" />
-                        <Label text="Authentication required to access this workstation" styleClass="screen-locked-sub" />
+                <VBox styleClass="screen-body" spacing="0" VBox.vgrow="ALWAYS">
+                    
+                    <!-- Mission/Task Panel (Always visible at top) -->
+                    <VBox styleClass="mission-panel" spacing="8">
+                        <padding>
+                            <Insets top="16" right="24" bottom="16" left="24" />
+                        </padding>
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="📋" styleClass="mission-icon" />
+                            <Label text="MISSION OBJECTIVE" styleClass="mission-header" />
+                        </HBox>
+                        <Label fx:id="missionLabel" text="ถอดรหัส Ciphertext เพื่อหา Passkey" 
+                               styleClass="mission-text" wrapText="true" />
                     </VBox>
+                    
+                    <!-- Main Content Area -->
+                    <VBox alignment="CENTER" spacing="24" VBox.vgrow="ALWAYS">
+                        <padding>
+                            <Insets top="20" right="50" bottom="40" left="50" />
+                        </padding>
 
-                    <Region prefHeight="10" />
+                        <VBox alignment="CENTER" spacing="6">
+                            <Label text="⬛⬛⬛" styleClass="screen-lock-icon" />
+                            <Label text="SYSTEM LOCKED" styleClass="screen-locked-title" />
+                            <Label text="Authentication required to access this workstation" styleClass="screen-locked-sub" />
+                        </VBox>
 
                     <VBox alignment="CENTER" spacing="10" styleClass="passkey-form">
                         <Label text="ENTER PASSKEY:" styleClass="passkey-label" />
