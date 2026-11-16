@@ -30,17 +30,23 @@ public class SqlWorkbenchController implements Initializable {
     @FXML private Label statusLabel;
     @FXML private Label checkpointLabel;
     @FXML private Label resultStatusLabel;
+    @FXML private Label taskLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Level currentLevel = GameEngine.getInstance().getCurrentLevel();
         if (currentLevel != null) {
             checkpointLabel.setText("CHECKPOINT " + currentLevel.getCheckpointId() + " / " + GameEngine.getInstance().getTotalCheckpoints());
-            if (currentLevel instanceof DatabaseLevel dbLevel && dbLevel.getTask() != null) {
-                feedbackLabel.setText("โจทย์: " + dbLevel.getTask());
-            } else {
-                feedbackLabel.setText(currentLevel.getDescription());
+            
+            if (taskLabel != null) {
+                if (currentLevel instanceof DatabaseLevel dbLevel && dbLevel.getTask() != null) {
+                    taskLabel.setText(dbLevel.getTask());
+                } else {
+                    taskLabel.setText(currentLevel.getDescription());
+                }
             }
+            
+            feedbackLabel.setText("");
         }
         if (resultStatusLabel != null) {
             resultStatusLabel.setText("Ready");

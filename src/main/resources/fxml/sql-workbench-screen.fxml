@@ -66,6 +66,19 @@
 
                     <VBox VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" styleClass="sql-main-area" spacing="0">
 
+                        <!-- Mission/Task Panel (Always visible at top) -->
+                        <VBox styleClass="sql-mission-panel" spacing="6">
+                            <padding>
+                                <Insets top="12" right="16" bottom="12" left="16" />
+                            </padding>
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label text="📋" styleClass="mission-icon" />
+                                <Label text="TASK:" styleClass="sql-mission-header" />
+                            </HBox>
+                            <Label fx:id="taskLabel" text="เขียน Query เพื่อดึงข้อมูลตามที่โจทย์กำหนด" 
+                                   styleClass="sql-mission-text" wrapText="true" />
+                        </VBox>
+
                         <HBox styleClass="sql-toolbar" spacing="6" alignment="CENTER_LEFT">
                             <padding>
                                 <Insets top="6" right="10" bottom="6" left="10" />

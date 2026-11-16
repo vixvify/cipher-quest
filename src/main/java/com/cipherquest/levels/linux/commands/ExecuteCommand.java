@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-/** Simulates execution; never launches a process on the player's machine. */
 public final class ExecuteCommand implements Command {
     @Override public String execute(List<String> args, TerminalContext ctx) {
         String command = args.get(0);

@@ -20,12 +20,18 @@ public class PasskeyScreenController implements Initializable {
     @FXML private Label feedbackLabel;
     @FXML private Label hintLabel;
     @FXML private Label ciphertextLabel;
+    @FXML private Label missionLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Level currentLevel = GameEngine.getInstance().getCurrentLevel();
         if (currentLevel != null) {
+            if (missionLabel != null) {
+                missionLabel.setText(currentLevel.getDescription());
+            }
+            
             hintLabel.setText(currentLevel.getHint());
+            
             if (currentLevel instanceof CaesarLevel caesar) {
                 ciphertextLabel.setText(caesar.getCiphertext());
             }

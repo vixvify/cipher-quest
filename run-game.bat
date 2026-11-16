@@ -1,0 +1,3 @@
+@echo off
+echo Starting CipherQuest...
+mvn javafx:run

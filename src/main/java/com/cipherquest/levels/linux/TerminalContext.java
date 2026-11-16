@@ -32,9 +32,16 @@ public final class TerminalContext implements AutoCloseable {
             Files.createDirectories(fileSystem.getPath(directory));
         }
         write("/home/agent/readme.txt",
-                "SECURITY MEMO:\n" +
-                "The system security breach tool has been moved to /opt/security/\n" +
-                "Find the binary file and execute it to override access controls.");
+                "┌─────────────────────────────────────────┐\n" +
+                "│  SECURITY MEMO - READ IMMEDIATELY       │\n" +
+                "└─────────────────────────────────────────┘\n\n" +
+                "โจทย์ของภารกิจนี้อยู่ในไฟล์:\n" +
+                "  ~/documents/mission.txt\n\n" +
+                "ใช้คำสั่ง: cat ~/documents/mission.txt\n" +
+                "เพื่ออ่านโจทย์และรายละเอียดภารกิจ\n\n" +
+                "SYSTEM NOTE:\n" +
+                "The security breach tool has been moved to /opt/security/\n" +
+                "Find and execute it to override access controls.");
         write("/home/agent/notes.txt",
                 "Command cheat sheet:\n" +
                 "  ls -la               : list all files including hidden ones\n" +
@@ -44,7 +51,20 @@ public final class TerminalContext implements AutoCloseable {
                 "  ./<program>          : run executable program");
         write("/home/agent/.bash_history", "cd /opt\nls -la\ncat /var/log/syslog");
         write("/home/agent/documents/mission.txt",
-                "TARGET: breach.bin\nLOCATION: /opt/security/breach.bin\nClearance required: execute");
+                "═══════════════════════════════════════════════\n" +
+                "          MISSION BRIEFING - CHECKPOINT 2\n" +
+                "═══════════════════════════════════════════════\n\n" +
+                "OBJECTIVE:\n" +
+                "ค้นหาโปรแกรมเจาะระบบที่ซ่อนอยู่แล้วรันขึ้นมา\n\n" +
+                "TARGET FILE: breach.bin\n" +
+                "ESTIMATED LOCATION: /opt/security/\n\n" +
+                "HINTS:\n" +
+                "  • ใช้ 'ls' เพื่อดูไฟล์ในโฟลเดอร์ปัจจุบัน\n" +
+                "  • ใช้ 'cd <path>' เพื่อย้ายไปยังโฟลเดอร์อื่น\n" +
+                "  • ใช้ 'find / -name \"*.bin\"' เพื่อค้นหาไฟล์ .bin\n" +
+                "  • ใช้ './<filename>' เพื่อรันโปรแกรม\n\n" +
+                "CLEARANCE REQUIRED: Execute permission\n" +
+                "═══════════════════════════════════════════════");
         write("/etc/hostname", "cipherquest-terminal");
         write("/etc/os-release", "NAME=CipherQuest Linux\nVERSION=2.5.0\nID=cipherquest");
         write("/var/log/syslog",

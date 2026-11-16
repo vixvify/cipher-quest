@@ -263,3 +263,25 @@
   -fx-background-radius: 4px;
   -fx-text-fill: #c8d8f0;
 }
+
+.sql-mission-panel {
+  -fx-background-color: linear-gradient(to bottom, rgba(0, 100, 140, 0.12), rgba(0, 60, 90, 0.15));
+  -fx-border-color: rgba(0, 140, 180, 0.25);
+  -fx-border-width: 0 0 1px 0;
+}
+
+.sql-mission-header {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #3ec97e;
+  -fx-letter-spacing: 1px;
+}
+
+.sql-mission-text {
+  -fx-font-family: "Consolas", monospace;
+  -fx-font-size: 13px;
+  -fx-text-fill: #c8dae8;
+  -fx-padding: 2px 0 0 26px;
+  -fx-line-spacing: 2px;
+}
