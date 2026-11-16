@@ -1,8 +1,17 @@
 .passkey-root {
-  -fx-background-color: linear-gradient(to bottom, #1a1209, #0d0a05);
+  -fx-background-color: transparent;
 }
 
-.screen-body {
+.wall-surface {
+  -fx-background-color: linear-gradient(to bottom, #0d0f14, #111520, #161c28);
+}
+
+.desk-surface {
+  -fx-background-color: linear-gradient(to bottom, #5c3812, #4a2e0e, #3a230a);
+  -fx-border-color: #7a4f1e;
+  -fx-border-width: 4px 0 0 0;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 20, 0.7, 0, -6);
+}
   -fx-background-color: #0a0f16;
 }
 
@@ -162,4 +171,43 @@
   -fx-text-fill: #d4e0f0;
   -fx-padding: 4px 0 0 26px;
   -fx-line-spacing: 2px;
+}
+
+
+.postit-note {
+  -fx-background-color: linear-gradient(to bottom right, #fffabc, #fff59d 40%, #ffe680);
+  -fx-border-color: rgba(232, 216, 117, 0.6);
+  -fx-border-width: 0 0 2px 0;
+  -fx-background-radius: 2px;
+  -fx-border-radius: 2px;
+  -fx-padding: 18px;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 15, 0.6, 3, 5);
+  -fx-pref-width: 240px;
+  -fx-pref-height: 240px;
+}
+
+.postit-header {
+  -fx-font-family: "Segoe UI", "Arial", sans-serif;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #7a6330;
+  -fx-letter-spacing: 0.8px;
+}
+
+.postit-ciphertext {
+  -fx-font-family: "Courier New", "Consolas", monospace;
+  -fx-font-size: 48px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1a1410;
+  -fx-letter-spacing: 10px;
+  -fx-padding: 24px 0;
+  -fx-alignment: center;
+}
+
+.postit-footer {
+  -fx-font-family: "Segoe UI", "Arial", sans-serif;
+  -fx-font-size: 11px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #a08540;
+  -fx-letter-spacing: 0.5px;
 }

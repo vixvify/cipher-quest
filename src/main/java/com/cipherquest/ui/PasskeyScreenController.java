@@ -29,9 +29,7 @@ public class PasskeyScreenController implements Initializable {
             if (missionLabel != null) {
                 missionLabel.setText(currentLevel.getDescription());
             }
-            
             hintLabel.setText(currentLevel.getHint());
-            
             if (currentLevel instanceof CaesarLevel caesar) {
                 ciphertextLabel.setText(caesar.getCiphertext());
             }

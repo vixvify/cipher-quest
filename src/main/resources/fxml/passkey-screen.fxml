@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -9,17 +10,13 @@
            fx:controller="com.cipherquest.ui.PasskeyScreenController"
            styleClass="passkey-root">
 
-    <Region styleClass="desk-surface" />
-
-    <VBox alignment="CENTER" spacing="0">
-        <Region styleClass="monitor-stand-neck" prefWidth="12" prefHeight="40" />
-        <Region styleClass="monitor-stand-base" prefWidth="120" prefHeight="14" />
+    <VBox spacing="0">
+        <Region styleClass="wall-surface" VBox.vgrow="ALWAYS" />
+        <Region styleClass="desk-surface" prefHeight="220" />
     </VBox>
 
     <VBox alignment="CENTER" spacing="0">
-
-        <StackPane styleClass="monitor-frame">
-
+        <StackPane styleClass="monitor-frame" maxWidth="900" maxHeight="600">
             <VBox styleClass="monitor-bezel" alignment="CENTER" spacing="0">
 
                 <HBox styleClass="monitor-screen-top-bar" prefHeight="28" alignment="CENTER_LEFT" spacing="8">
@@ -33,7 +30,7 @@
                 </HBox>
 
                 <VBox styleClass="screen-body" spacing="0" VBox.vgrow="ALWAYS">
-                    
+
                     <VBox styleClass="mission-panel" spacing="8">
                         <padding>
                             <Insets top="16" right="24" bottom="16" left="24" />
@@ -42,10 +39,10 @@
                             <Label text="📋" styleClass="mission-icon" />
                             <Label text="MISSION OBJECTIVE" styleClass="mission-header" />
                         </HBox>
-                        <Label fx:id="missionLabel" text="ถอดรหัส Ciphertext เพื่อหา Passkey" 
+                        <Label fx:id="missionLabel" text="ถอดรหัส Ciphertext เพื่อหา Passkey"
                                styleClass="mission-text" wrapText="true" />
                     </VBox>
-                    
+
                     <VBox alignment="CENTER" spacing="24" VBox.vgrow="ALWAYS">
                         <padding>
                             <Insets top="20" right="50" bottom="40" left="50" />
@@ -79,11 +76,6 @@
                             <Label text="HINT:" styleClass="hint-label" />
                             <Label fx:id="hintLabel" text="ถอดรหัส Ciphertext ด้านบนเพื่อหา Passkey" styleClass="hint-text" wrapText="true" />
                         </HBox>
-
-                        <VBox styleClass="ciphertext-box" alignment="CENTER" spacing="6">
-                            <Label text="INTERCEPTED MESSAGE:" styleClass="cipher-box-title" />
-                            <Label fx:id="ciphertextLabel" text="VZJXY" styleClass="ciphertext-display" />
-                        </VBox>
                     </VBox>
                 </VBox>
 
@@ -96,11 +88,29 @@
                 </HBox>
 
             </VBox>
-
         </StackPane>
 
-        <Region styleClass="monitor-chin" prefHeight="22" />
-
+        <VBox alignment="CENTER" spacing="0">
+            <Region styleClass="monitor-neck" prefWidth="16" maxWidth="16" prefHeight="60" />
+            <Region styleClass="monitor-base" prefWidth="200" maxWidth="200" prefHeight="14" />
+        </VBox>
     </VBox>
+
+    <StackPane styleClass="postit-note" maxWidth="240" maxHeight="240" minWidth="240" minHeight="240"
+               rotate="-4" StackPane.alignment="TOP_RIGHT">
+        <StackPane.margin>
+            <Insets top="150" right="80" />
+        </StackPane.margin>
+        <VBox alignment="TOP_LEFT" spacing="10">
+            <padding>
+                <Insets top="18" right="18" bottom="18" left="18" />
+            </padding>
+            <Label text="📝 INTERCEPTED" styleClass="postit-header" />
+            <Region prefHeight="12" />
+            <Label fx:id="ciphertextLabel" text="VZJXY" styleClass="postit-ciphertext" />
+            <Region VBox.vgrow="ALWAYS" />
+            <Label text="⚠ CLASSIFIED" styleClass="postit-footer" />
+        </VBox>
+    </StackPane>
 
 </StackPane>
