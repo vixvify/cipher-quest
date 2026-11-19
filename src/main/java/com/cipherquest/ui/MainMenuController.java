@@ -1,99 +1,61 @@
 package com.cipherquest.ui;
 
-import com.cipherquest.core.GameEngine;
-import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
-import java.net.URL;
-import java.util.Random;
-import java.util.ResourceBundle;
-
-public class MainMenuController implements Initializable {
+public class MainMenuController {
+    private static final PseudoClass COMPACT = PseudoClass.getPseudoClass("compact");
 
     @FXML private StackPane rootPane;
-    @FXML private Canvas matrixCanvas;
+    @FXML private Canvas rainCanvas;
+    @FXML private VBox heroCopy;
 
-    private static final String GLYPHS = "010101017F4CAE298F#*+=-~/\\%@!&$?ABCDEF";
-    private final Random random = new Random();
-    private int[] dropPositions;
-    private AnimationTimer matrixTimer;
-    private long lastUpdate = 0;
-    private static final int FONT_SIZE = 14;
+    @FXML
+    private void initialize() {
+        rootPane.widthProperty().addListener((property, before, width) ->
+                rootPane.pseudoClassStateChanged(COMPACT, width.doubleValue() < 960));
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        setupMatrixCanvas();
-    }
-
-    private void setupMatrixCanvas() {
-        if (matrixCanvas == null || rootPane == null) return;
-        matrixCanvas.widthProperty().bind(rootPane.widthProperty());
-        matrixCanvas.heightProperty().bind(rootPane.heightProperty());
-        matrixCanvas.widthProperty().addListener((obs, o, n) -> initDrops());
-        initDrops();
-        startMatrixRain();
-    }
-
-    private void initDrops() {
-        int columns = (int) Math.max(1, matrixCanvas.getWidth() / FONT_SIZE);
-        dropPositions = new int[columns];
-        for (int i = 0; i < columns; i++) {
-            dropPositions[i] = random.nextInt(80);
-        }
-    }
-
-    private void startMatrixRain() {
-        matrixTimer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                if (now - lastUpdate < 50_000_000L) return;
-                lastUpdate = now;
-                renderMatrix();
+        rainCanvas.widthProperty().bind(rootPane.widthProperty());
+        rainCanvas.heightProperty().bind(rootPane.heightProperty());
+        MenuRain rain = new MenuRain(rainCanvas);
+        ParallelTransition intro = createIntro();
+        rootPane.sceneProperty().addListener((property, before, scene) -> {
+            if (scene == null) {
+                rain.stop();
+                intro.stop();
+                return;
             }
-        };
-        matrixTimer.start();
+            rain.start();
+            if (!Platform.getPreferences().isReducedMotion()) {
+                intro.playFromStart();
+            }
+        });
     }
 
-    private void renderMatrix() {
-        double w = matrixCanvas.getWidth();
-        double h = matrixCanvas.getHeight();
-        if (w <= 0 || h <= 0 || dropPositions == null) return;
-
-        GraphicsContext gc = matrixCanvas.getGraphicsContext2D();
-        gc.setFill(Color.rgb(6, 11, 19, 0.10));
-        gc.fillRect(0, 0, w, h);
-        gc.setFont(Font.font("Consolas", FONT_SIZE));
-
-        int columns = Math.min(dropPositions.length, (int) (w / FONT_SIZE));
-        for (int i = 0; i < columns; i++) {
-            char ch = GLYPHS.charAt(random.nextInt(GLYPHS.length()));
-            double x = i * FONT_SIZE;
-            double y = dropPositions[i] * FONT_SIZE;
-
-            if (random.nextInt(12) == 0) {
-                gc.setFill(Color.rgb(200, 240, 230, 0.6));
-            } else {
-                gc.setFill(Color.rgb(0, 180, 130, 0.25));
-            }
-            gc.fillText(String.valueOf(ch), x, y);
-
-            if (y > h && random.nextDouble() > 0.975) {
-                dropPositions[i] = 0;
-            } else {
-                dropPositions[i]++;
-            }
-        }
+    private ParallelTransition createIntro() {
+        Duration duration = Duration.millis(460);
+        FadeTransition fade = new FadeTransition(duration, heroCopy);
+        fade.setFromValue(0.55);
+        fade.setToValue(1);
+        TranslateTransition slide = new TranslateTransition(duration, heroCopy);
+        slide.setFromY(15);
+        slide.setToY(0);
+        slide.setInterpolator(Interpolator.EASE_OUT);
+        return new ParallelTransition(fade, slide);
     }
 
     @FXML
     private void onStartGame() {
-        GameEngine.getInstance().startNewGame();
+        ScreenNavigator.SESSION.start();
         ScreenNavigator.navigateToCurrentLevel();
     }
 }

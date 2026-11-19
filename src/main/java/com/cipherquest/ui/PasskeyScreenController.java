@@ -1,70 +1,94 @@
 package com.cipherquest.ui;
 
 import com.cipherquest.core.AnswerResult;
-import com.cipherquest.core.GameEngine;
-import com.cipherquest.levels.Level;
-import com.cipherquest.levels.caesar.CaesarLevel;
-import javafx.animation.PauseTransition;
+import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.util.Duration;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class PasskeyScreenController implements Initializable {
+public class PasskeyScreenController {
+    private static final PseudoClass REVEALED = PseudoClass.getPseudoClass("revealed");
+    private String ciphertext;
+    private boolean evidenceRevealed;
+    private boolean flipping;
 
     @FXML private PasswordField passkeyField;
+    @FXML private Button authenticateButton;
+    @FXML private Button evidenceButton;
     @FXML private Label feedbackLabel;
     @FXML private Label hintLabel;
-    @FXML private Label ciphertextLabel;
+    @FXML private Label evidenceCaption;
+    @FXML private Label evidenceText;
     @FXML private Label missionLabel;
+    @FXML private Label missionTitle;
+    @FXML private Label checkpointLabel;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        Level currentLevel = GameEngine.getInstance().getCurrentLevel();
-        if (currentLevel != null) {
-            if (missionLabel != null) {
-                missionLabel.setText(currentLevel.getDescription());
-            }
-            hintLabel.setText(currentLevel.getHint());
-            if (currentLevel instanceof CaesarLevel caesar) {
-                ciphertextLabel.setText(caesar.getCiphertext());
-            }
+    @FXML
+    private void initialize() {
+        ScreenNavigator.SESSION.currentMission().ifPresent(mission -> {
+            missionTitle.setText(mission.title());
+            missionLabel.setText(mission.description());
+            checkpointLabel.setText(ScreenNavigator.checkpointText(mission));
+        });
+        ScreenNavigator.SESSION.passkeyBrief().ifPresent(brief -> {
+            hintLabel.setText(brief.hint());
+            ciphertext = brief.ciphertext();
+        });
+        evidenceButton.setDisable(ciphertext == null);
+    }
+
+    @FXML
+    private void onFlipEvidence() {
+        if (flipping) {
+            return;
         }
-        feedbackLabel.setText("");
+        if (Platform.getPreferences().isReducedMotion()) {
+            showOtherSide();
+            return;
+        }
+
+        flipping = true;
+        ScaleTransition close = new ScaleTransition(Duration.millis(120), evidenceButton);
+        close.setToX(0.06);
+        close.setOnFinished(event -> {
+            showOtherSide();
+            ScaleTransition open = new ScaleTransition(Duration.millis(155), evidenceButton);
+            open.setToX(1);
+            open.setOnFinished(finished -> flipping = false);
+            open.play();
+        });
+        close.play();
+    }
+
+    private void showOtherSide() {
+        evidenceRevealed = !evidenceRevealed;
+        evidenceButton.pseudoClassStateChanged(REVEALED, evidenceRevealed);
+        evidenceCaption.setText(evidenceRevealed ? "CIPHERTEXT" : "INTERCEPTED");
+        evidenceText.setText(evidenceRevealed ? ciphertext : "พลิกดูด้านหลัง  ↻");
+        evidenceButton.setAccessibleText(evidenceRevealed ? "ข้อความเข้ารหัส " + ciphertext : "พลิกบัตรหลักฐาน");
     }
 
     @FXML
     private void onSubmitPasskey() {
         String input = passkeyField.getText();
-        if (input == null || input.trim().isEmpty()) {
-            feedbackLabel.setText("กรุณากรอก Passkey ก่อนกดยืนยัน");
+        if (input.isBlank()) {
+            Feedback.show(feedbackLabel, "กรุณากรอก Passkey ก่อนกดยืนยัน", false, true);
             return;
         }
 
-        AnswerResult result = GameEngine.getInstance().submitAnswer(input);
-
+        AnswerResult result = ScreenNavigator.SESSION.submit(input);
+        Feedback.show(feedbackLabel, result.getMessage(), result.isCorrect(), !result.isCorrect());
         if (result.isCorrect()) {
-            feedbackLabel.setStyle("-fx-text-fill: #3ec97e;");
-            feedbackLabel.setText("✔ " + result.getMessage());
-
-            PauseTransition pause = new PauseTransition(Duration.seconds(1.2));
-            pause.setOnFinished(e -> {
-                if (result.getStatus() == AnswerResult.Status.GAME_CLEARED) {
-                    ScreenNavigator.navigateToMainMenu();
-                } else {
-                    GameEngine.getInstance().advanceToNextCheckpoint();
-                    ScreenNavigator.navigateToCurrentLevel();
-                }
-            });
-            pause.play();
+            passkeyField.setDisable(true);
+            authenticateButton.setDisable(true);
+            ScreenNavigator.continueAfterFeedback(passkeyField, result, Duration.seconds(1.2));
         } else {
-            feedbackLabel.setStyle("-fx-text-fill: #e05252;");
-            feedbackLabel.setText("✖ " + result.getMessage());
             passkeyField.clear();
+            passkeyField.requestFocus();
         }
     }
 }

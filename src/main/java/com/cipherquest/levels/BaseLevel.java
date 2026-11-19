@@ -1,7 +1,5 @@
 package com.cipherquest.levels;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseLevel implements Level {
@@ -10,6 +8,7 @@ public abstract class BaseLevel implements Level {
     private String title;
     private String description;
     private String hint;
+    private String endingMessage;
     private List<String> hints;
     private int currentHintLevel;
     private String difficulty;
@@ -20,10 +19,10 @@ public abstract class BaseLevel implements Level {
 
     protected BaseLevel(int checkpointId) {
         this.checkpointId = checkpointId;
-        this.hints = new ArrayList<>();
+        this.hints = List.of();
         this.currentHintLevel = 0;
         this.difficulty = "Normal";
-        this.sqlConcepts = new ArrayList<>();
+        this.sqlConcepts = List.of();
         this.completed = false;
         this.attempts = 0;
         this.hintUsed = false;
@@ -51,7 +50,7 @@ public abstract class BaseLevel implements Level {
     @Override
     public List<String> getHints() {
         if (!hints.isEmpty()) {
-            return Collections.unmodifiableList(hints);
+            return hints;
         }
         return hint != null ? List.of(hint) : List.of();
     }
@@ -73,7 +72,7 @@ public abstract class BaseLevel implements Level {
 
     @Override
     public List<String> getSqlConcepts() {
-        return Collections.unmodifiableList(sqlConcepts);
+        return sqlConcepts;
     }
 
     @Override
@@ -81,40 +80,28 @@ public abstract class BaseLevel implements Level {
         return checkpointId;
     }
 
-    protected void setTitle(String title) {
-        this.title = title;
+    protected final void loadCommonFields(ChallengeDefinition challenge) {
+        resetProgressState();
+        title = challenge.required("title");
+        description = challenge.required("description");
+        hint = challenge.optional("hint");
+        endingMessage = challenge.optional("ending_message");
+        hints = challenge.list("hints");
+        String configuredDifficulty = challenge.optional("difficulty");
+        difficulty = configuredDifficulty == null ? "Normal" : configuredDifficulty;
+        sqlConcepts = challenge.list("sql_concepts");
     }
 
-    protected void setDescription(String description) {
-        this.description = description;
-    }
-
-    protected void setHint(String hint) {
-        this.hint = hint;
-        this.hints = new ArrayList<>();
-        if (hint != null) {
-            this.hints.add(hint);
-        }
-    }
-
-    protected void setHints(List<String> hints) {
-        this.hints = hints != null ? new ArrayList<>(hints) : new ArrayList<>();
-        this.hint = this.hints.isEmpty() ? null : this.hints.get(0);
-    }
-
-    protected void setDifficulty(String difficulty) {
-        this.difficulty = difficulty != null ? difficulty : "Normal";
-    }
-
-    protected void setSqlConcepts(List<String> sqlConcepts) {
-        this.sqlConcepts = sqlConcepts != null ? new ArrayList<>(sqlConcepts) : new ArrayList<>();
+    @Override
+    public String getEndingMessage() {
+        return endingMessage == null ? Level.super.getEndingMessage() : endingMessage;
     }
 
     protected void recordAttempt() {
         attempts++;
     }
 
-    protected void resetProgressState() {
+    private void resetProgressState() {
         this.currentHintLevel = 0;
         this.attempts = 0;
         this.hintUsed = false;

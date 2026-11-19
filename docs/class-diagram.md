@@ -15,17 +15,21 @@ graph TD
     end
 
     subgraph Core["core"]
+        GS["GameSession"]
         GE["GameEngine\nSingleton"]
-        LM["LevelManager"]
         SC["ScoreCalculator"]
         PS["ProgressSaveManager"]
     end
 
     subgraph Levels["levels"]
+        LM["LevelManager"]
+        CD["ChallengeDefinition"]
         CL["CaesarLevel\ncheckpoint 1"]
         LL["LinuxLevel\ncheckpoint 2"]
         DL["DatabaseLevel\ncheckpoint 3-7"]
     end
+
+    Choices["Checkpoint .properties"]
 
     subgraph PlayerPkg["player + clues"]
         P["Player"]
@@ -33,11 +37,12 @@ graph TD
     end
 
     Main --> SN
-    SN --> GE
-    MM --> GE
-    PK --> GE
-    TM --> GE
-    SQL --> GE
+    MM --> SN
+    PK --> SN
+    TM --> SN
+    SQL --> SN
+    SN --> GS
+    GS --> GE
 
     GE --> LM
     GE --> SC
@@ -47,6 +52,10 @@ graph TD
     LM --> CL
     LM --> LL
     LM --> DL
+    CL --> CD
+    LL --> CD
+    DL --> CD
+    CD --> Choices
 
     P --> CA
 ```
@@ -103,50 +112,16 @@ classDiagram
 
 ---
 
-## 3. Linux Terminal — Command Pattern
+## 3. Linux Terminal
 
-> `VirtualTerminal` จำลอง Linux terminal ใน RAM — รับ input → parse → dispatch → คืน output โดยไม่แตะ filesystem จริงของเครื่อง
+`LinuxLevel` ใช้ `VirtualTerminal` จัดการ Node.js worker หนึ่งตัวต่อด่าน คำสั่งและไฟล์ของผู้เล่นอยู่ใน session ของ just-bash ส่วน Java ใช้ผลการรันโปรแกรมภารกิจเพื่อประเมินว่าผ่านด่านหรือยัง
 
 ```mermaid
-classDiagram
-    class VirtualTerminal {
-        -commands Map~String,Command~
-        -context TerminalContext
-        +execute(rawCommand) String
-        +reset()
-    }
-
-    class Command {
-        <<interface>>
-        +execute(args, ctx) String
-    }
-
-    class TerminalContext {
-        filesystem จำลองด้วย Jimfs ใน RAM
-        -fileSystem FileSystem
-        -currentPath Path
-        -targetExecuted bool
-        +resolve(input) Path
-        +isExecutable(path) bool
-        +markTargetExecuted()
-    }
-
-    class CdCommand
-    class LsCommand
-    class CatCommand
-    class FindCommand
-    class ExecuteCommand
-    class OtherCommands["pwd / echo / whoami\nuname / help / clear"]
-
-    VirtualTerminal *-- TerminalContext
-    VirtualTerminal o-- Command
-
-    Command <|.. CdCommand
-    Command <|.. LsCommand
-    Command <|.. CatCommand
-    Command <|.. FindCommand
-    Command <|.. ExecuteCommand
-    Command <|.. OtherCommands
+flowchart LR
+    LL["LinuxLevel"] --> VT["VirtualTerminal"]
+    VT <-->|"stdin / stdout"| Worker["Node.js worker"]
+    Worker --> Bash["just-bash"]
+    Bash --> FS["InMemoryFs"]
 ```
 
 ---
@@ -219,7 +194,7 @@ classDiagram
 |---|---|---|
 | **Singleton** | `GameEngine` | มี instance เดียวตลอด |
 | **Template Method** | `BaseLevel` → 3 subclasses | base กำหนด skeleton, subclass override เฉพาะส่วนต่าง |
-| **Command** | `Command` ← 11 classes | terminal dispatch ผ่าน `Map` ไม่มี if-else |
+| **Adapter** | `VirtualTerminal` | เชื่อม Java กับ shell session ของ just-bash |
 | **Strategy** | `ScoreCalculator` | สลับ algorithm คะแนนได้ไม่แตะ Engine |
 | **Observer** | `GameEventListener` | Engine ยิง event ไปทุก listener เมื่อ state เปลี่ยน |
 | **Factory Method** | `LevelManager.createLevel()` | สร้าง Level subclass ถูกตัวตาม checkpoint id |

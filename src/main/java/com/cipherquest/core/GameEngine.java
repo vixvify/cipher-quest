@@ -140,9 +140,7 @@ public class GameEngine {
                 saveProgress();
                 changeGameState(GameState.VICTORY);
                 AnswerResult result = AnswerResult.gameCleared(
-                        "Main Story Completed — The True Lost Treasure: Memory Archive recovered! "
-                                + "The Lost Treasure is not gold or physical wealth, but the complete memories, "
-                                + "history, and accumulated knowledge of the ancient civilization.",
+                        currentLevel.getEndingMessage(),
                         earnedScore,
                         player.getScore()
                 );

@@ -51,6 +51,10 @@ public interface Level {
 
     String getFailureFeedback();
 
+    default String getEndingMessage() {
+        return "Main Story Completed";
+    }
+
     ScreenType getScreenType();
 
     enum ScreenType {

@@ -1,116 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx/21"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.cipherquest.ui.PasskeyScreenController"
-           styleClass="passkey-root">
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.cipherquest.ui.PasskeyScreenController" styleClass="mission-root, passkey-root">
+    <Region mouseTransparent="true" styleClass="passkey-ambient-art" />
+    <VBox spacing="20" maxWidth="1090" maxHeight="-Infinity" styleClass="mission-shell">
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="mission-bar">
+            <Region styleClass="signal-mark" />
+            <Label text="CIPHERQUEST  /  DECRYPTION" styleClass="mission-channel" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="checkpointLabel" styleClass="checkpoint-tag" />
+        </HBox>
 
-    <VBox spacing="0">
-        <Region styleClass="wall-surface" VBox.vgrow="ALWAYS" />
-        <Region styleClass="desk-surface" prefHeight="220" />
-    </VBox>
-
-    <VBox alignment="CENTER" spacing="0">
-        <StackPane styleClass="monitor-frame" maxWidth="900" maxHeight="600">
-            <VBox styleClass="monitor-bezel" alignment="CENTER" spacing="0">
-
-                <HBox styleClass="monitor-screen-top-bar" prefHeight="28" alignment="CENTER_LEFT" spacing="8">
-                    <padding>
-                        <Insets left="14" />
-                    </padding>
-                    <Region styleClass="dot-red" />
-                    <Region styleClass="dot-yellow" />
-                    <Region styleClass="dot-green" />
-                    <Label text="CQ-OS — SECURE TERMINAL v2.5" styleClass="screen-title-bar" HBox.hgrow="ALWAYS" />
-                </HBox>
-
-                <VBox styleClass="screen-body" spacing="0" VBox.vgrow="ALWAYS">
-
-                    <VBox styleClass="mission-panel" spacing="8">
-                        <padding>
-                            <Insets top="16" right="24" bottom="16" left="24" />
-                        </padding>
-                        <HBox alignment="CENTER_LEFT" spacing="8">
-                            <Label text="📋" styleClass="mission-icon" />
-                            <Label text="MISSION OBJECTIVE" styleClass="mission-header" />
-                        </HBox>
-                        <Label fx:id="missionLabel" text="ถอดรหัส Ciphertext เพื่อหา Passkey"
-                               styleClass="mission-text" wrapText="true" />
-                    </VBox>
-
-                    <VBox alignment="CENTER" spacing="24" VBox.vgrow="ALWAYS">
-                        <padding>
-                            <Insets top="20" right="50" bottom="40" left="50" />
-                        </padding>
-
-                        <VBox alignment="CENTER" spacing="6">
-                            <Label text="⬛⬛⬛" styleClass="screen-lock-icon" />
-                            <Label text="SYSTEM LOCKED" styleClass="screen-locked-title" />
-                            <Label text="Authentication required to access this workstation" styleClass="screen-locked-sub" />
-                        </VBox>
-
-                        <VBox alignment="CENTER" spacing="10" styleClass="passkey-form">
-                            <Label text="ENTER PASSKEY:" styleClass="passkey-label" />
-
-                            <HBox alignment="CENTER" spacing="0" styleClass="passkey-input-box">
-                                <PasswordField fx:id="passkeyField"
-                                              promptText="_ _ _ _ _"
-                                              styleClass="passkey-field"
-                                              HBox.hgrow="ALWAYS"
-                                              onAction="#onSubmitPasskey" />
-                            </HBox>
-
-                            <Label fx:id="feedbackLabel" text="" styleClass="passkey-feedback" />
-
-                            <Button text="[ AUTHENTICATE ]" onAction="#onSubmitPasskey" styleClass="auth-btn" />
-                        </VBox>
-
-                        <Region prefHeight="10" />
-
-                        <HBox alignment="CENTER" spacing="6">
-                            <Label text="HINT:" styleClass="hint-label" />
-                            <Label fx:id="hintLabel" text="ถอดรหัส Ciphertext ด้านบนเพื่อหา Passkey" styleClass="hint-text" wrapText="true" />
-                        </HBox>
-                    </VBox>
+        <HBox spacing="20" styleClass="passkey-layout">
+            <VBox spacing="15" minWidth="0" prefWidth="505" HBox.hgrow="ALWAYS" styleClass="brief-panel">
+                <Label text="MISSION BRIEF" styleClass="eyebrow" />
+                <Label fx:id="missionTitle" wrapText="true" styleClass="mission-title" />
+                <Label fx:id="missionLabel" wrapText="true" styleClass="mission-description" />
+                <StackPane alignment="CENTER_LEFT" styleClass="evidence-mount">
+                    <Button fx:id="evidenceButton" onAction="#onFlipEvidence" styleClass="evidence-card"
+                            accessibleText="พลิกบัตรหลักฐาน" contentDisplay="GRAPHIC_ONLY">
+                        <graphic>
+                            <VBox spacing="4" mouseTransparent="true">
+                                <Label fx:id="evidenceCaption" text="INTERCEPTED" styleClass="evidence-caption" />
+                                <Label fx:id="evidenceText" text="พลิกดูด้านหลัง  ↻" styleClass="evidence-text" />
+                            </VBox>
+                        </graphic>
+                    </Button>
+                    <Region mouseTransparent="true" maxWidth="55" maxHeight="14" translateX="61" translateY="-5"
+                            StackPane.alignment="TOP_LEFT" styleClass="evidence-tape" />
+                </StackPane>
+                <VBox spacing="6" styleClass="hint-panel">
+                    <Label text="คำใบ้" styleClass="panel-title" />
+                    <Label fx:id="hintLabel" wrapText="true" styleClass="hint-text" />
                 </VBox>
-
-                <HBox styleClass="monitor-screen-bottom-bar" prefHeight="22" alignment="CENTER_RIGHT" spacing="16">
-                    <padding>
-                        <Insets right="14" />
-                    </padding>
-                    <Label text="CHECKPOINT 1 / 7" styleClass="screen-status-text" />
-                    <Label text="●  LOCKED" styleClass="screen-status-locked" />
-                </HBox>
-
             </VBox>
-        </StackPane>
 
-        <VBox alignment="CENTER" spacing="0">
-            <Region styleClass="monitor-neck" prefWidth="16" maxWidth="16" prefHeight="60" />
-            <Region styleClass="monitor-base" prefWidth="200" maxWidth="200" prefHeight="14" />
-        </VBox>
+            <VBox alignment="CENTER_LEFT" spacing="13" minWidth="0" prefWidth="440" HBox.hgrow="ALWAYS" styleClass="passkey-panel">
+                <Label text="WORKSTATION ACCESS" styleClass="eyebrow" />
+                <Label text="ปลดล็อกเครื่อง" styleClass="mission-title" />
+                <Label text="รหัสผ่านที่ถอดได้" styleClass="panel-title" />
+                <PasswordField fx:id="passkeyField" promptText="กรอก Passkey" accessibleText="รหัสผ่านที่ถอดได้"
+                               styleClass="text-entry" onAction="#onSubmitPasskey" />
+                <Button fx:id="authenticateButton" text="ยืนยันรหัส  →" onAction="#onSubmitPasskey"
+                        styleClass="primary-button" maxWidth="Infinity" />
+                <Label fx:id="feedbackLabel" wrapText="true" styleClass="passkey-feedback" />
+            </VBox>
+        </HBox>
     </VBox>
-
-    <StackPane styleClass="postit-note" maxWidth="240" maxHeight="240" minWidth="240" minHeight="240"
-               rotate="-4" StackPane.alignment="TOP_RIGHT">
-        <StackPane.margin>
-            <Insets top="150" right="80" />
-        </StackPane.margin>
-        <VBox alignment="TOP_LEFT" spacing="10">
-            <padding>
-                <Insets top="18" right="18" bottom="18" left="18" />
-            </padding>
-            <Label text="📝 INTERCEPTED" styleClass="postit-header" />
-            <Region prefHeight="12" />
-            <Label fx:id="ciphertextLabel" text="VZJXY" styleClass="postit-ciphertext" />
-            <Region VBox.vgrow="ALWAYS" />
-            <Label text="⚠ CLASSIFIED" styleClass="postit-footer" />
-        </VBox>
-    </StackPane>
-
 </StackPane>

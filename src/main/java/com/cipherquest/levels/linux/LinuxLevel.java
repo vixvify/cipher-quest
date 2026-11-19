@@ -1,8 +1,9 @@
 package com.cipherquest.levels.linux;
 
 import com.cipherquest.levels.BaseLevel;
+import com.cipherquest.levels.ChallengeDefinition;
 
-public class LinuxLevel extends BaseLevel {
+public class LinuxLevel extends BaseLevel implements AutoCloseable {
 
     private final VirtualTerminal terminal;
 
@@ -13,10 +14,7 @@ public class LinuxLevel extends BaseLevel {
 
     @Override
     public void loadChallenge() {
-        resetProgressState();
-        setTitle("Terminal Access");
-        setDescription("ค้นหาโปรแกรมที่ซ่อนอยู่ในระบบแล้วรันขึ้นมาเพื่อเจาะระบบ");
-        setHint("ลองสำรวจโฟลเดอร์ /opt หรือใช้คำสั่ง find / -name '*.bin' เพื่อค้นหาโปรแกรมแล้วรันด้วย ./");
+        loadCommonFields(ChallengeDefinition.load(2));
         terminal.reset();
     }
 
@@ -44,5 +42,10 @@ public class LinuxLevel extends BaseLevel {
 
     public VirtualTerminal getTerminal() {
         return terminal;
+    }
+
+    @Override
+    public void close() {
+        terminal.close();
     }
 }

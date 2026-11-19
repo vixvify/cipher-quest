@@ -1,16 +1,21 @@
 package com.cipherquest.ui;
 
 import com.cipherquest.core.GameEngine;
-import com.cipherquest.levels.Level;
+import com.cipherquest.core.AnswerResult;
+import com.cipherquest.core.GameSession;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
 public class ScreenNavigator {
 
+    static final GameSession SESSION = new GameSession(GameEngine.getInstance());
     private static Stage primaryStage;
 
     public static void setPrimaryStage(Stage stage) {
@@ -26,30 +31,47 @@ public class ScreenNavigator {
     }
 
     public static void navigateToCurrentLevel() {
-        Level currentLevel = GameEngine.getInstance().getCurrentLevel();
-        if (currentLevel == null) {
-            navigateToMainMenu();
-            return;
-        }
+        SESSION.currentMission().ifPresentOrElse(ScreenNavigator::showMission, ScreenNavigator::navigateToMainMenu);
+    }
 
-        Level.ScreenType screenType = currentLevel.getScreenType();
-        switch (screenType) {
+    private static void showMission(GameSession.Mission mission) {
+        String title = "CipherQuest — " + mission.title();
+        switch (mission.screenType()) {
             case PASSKEY -> loadScene(
                     "/fxml/passkey-screen.fxml",
                     new String[]{"/css/monitor-shared.css", "/css/passkey-screen.css"},
-                    "CipherQuest - Checkpoint " + currentLevel.getCheckpointId() + " (Passkey)"
+                    title
             );
             case TERMINAL -> loadScene(
                     "/fxml/terminal-screen.fxml",
                     new String[]{"/css/monitor-shared.css", "/css/terminal-screen.css"},
-                    "CipherQuest - Checkpoint " + currentLevel.getCheckpointId() + " (Terminal)"
+                    title
             );
             case SQL_WORKBENCH -> loadScene(
                     "/fxml/sql-workbench-screen.fxml",
                     new String[]{"/css/monitor-shared.css", "/css/sql-workbench-screen.css"},
-                    "CipherQuest - Checkpoint " + currentLevel.getCheckpointId() + " (SQL Workbench)"
+                    title
             );
         }
+    }
+
+    static String checkpointText(GameSession.Mission mission) {
+        return "CHECKPOINT " + mission.checkpoint() + " / " + mission.total();
+    }
+
+    static void continueAfterFeedback(Node screenControl, AnswerResult answer, Duration delay) {
+        PauseTransition pause = new PauseTransition(delay);
+        pause.setOnFinished(event -> {
+            if (screenControl.getScene() == null) {
+                return;
+            }
+            if (answer.getStatus() == AnswerResult.Status.GAME_CLEARED) {
+                navigateToMainMenu();
+            } else if (SESSION.advance()) {
+                navigateToCurrentLevel();
+            }
+        });
+        pause.play();
     }
 
     private static void loadScene(String fxmlPath, String cssPath, String title) {

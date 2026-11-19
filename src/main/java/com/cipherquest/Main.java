@@ -8,6 +8,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        stage.setMinWidth(700);
+        stage.setMinHeight(560);
         ScreenNavigator.setPrimaryStage(stage);
         ScreenNavigator.navigateToMainMenu();
         stage.show();
