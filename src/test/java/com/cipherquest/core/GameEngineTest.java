@@ -92,7 +92,7 @@ class GameEngineTest {
 
         AnswerResult catResult = engine.submitAnswer("cat readme.txt");
         assertFalse(catResult.isCorrect());
-        assertTrue(catResult.getMessage().contains("/opt/security/"));
+        assertTrue(catResult.getMessage().contains("/var/log/syslog"));
 
         AnswerResult cdResult = engine.submitAnswer("cd /opt/security");
         assertFalse(cdResult.isCorrect());
@@ -100,7 +100,7 @@ class GameEngineTest {
         AnswerResult execResult = engine.submitAnswer("./breach.bin");
         assertTrue(execResult.isCorrect());
         assertEquals(GameState.CHECKPOINT_CLEARED, engine.getGameState());
-        assertTrue(execResult.getMessage().contains("ROOT ACCESS ACQUIRED"));
+        assertTrue(execResult.getMessage().contains("ACCESS GRANTED"));
     }
 
     @Test

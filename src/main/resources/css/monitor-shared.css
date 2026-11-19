@@ -1,122 +1,94 @@
-.desk-surface {
-  -fx-background-color: transparent;
+.mission-root {
+  -fx-background-color: radial-gradient(center 31% 12%, radius 85%, #252040, #111025 76%);
+  -fx-font-family: "Segoe UI";
+  -fx-padding: 24px;
 }
-
-.monitor-frame {
-  -fx-background-color: linear-gradient(to bottom, #1c1c1e, #0f0f10);
-  -fx-background-radius: 12px;
-  -fx-border-color: linear-gradient(to bottom, #4a4a4c, #2a2a2c);
-  -fx-border-width: 4px;
-  -fx-border-radius: 12px;
-  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.95), 50, 0.6, 0, 20);
-  -fx-pref-width: 900px;
-  -fx-pref-height: 600px;
+.mission-shell {
+  -fx-fill-width: true;
 }
-
-.monitor-bezel {
-  -fx-background-color: #0a0a0c;
-  -fx-background-radius: 8px;
-  -fx-padding: 12px;
+.mission-bar {
+  -fx-background-color: #1f1c35;
+  -fx-border-color: #413656;
+  -fx-background-radius: 10px;
+  -fx-border-radius: 10px;
+  -fx-padding: 11px 14px;
+  -fx-min-height: 51px;
 }
-
-.monitor-chin {
-  -fx-background-color: linear-gradient(to bottom, #1c1c1e, #151517);
-  -fx-border-color: #2a2a2c;
-  -fx-border-width: 0 2px 2px 2px;
-  -fx-border-radius: 0 0 8px 8px;
-  -fx-background-radius: 0 0 8px 8px;
+.signal-mark {
+  -fx-min-width: 8px;
+  -fx-max-width: 8px;
+  -fx-min-height: 8px;
+  -fx-max-height: 8px;
+  -fx-background-color: #d2fb86;
+  -fx-rotate: 45;
 }
-
-.monitor-stand-wrapper {
-  -fx-padding: 0;
-}
-
-.monitor-neck {
-  -fx-background-color: linear-gradient(to right, 
-    #1a1a1c 0%, 
-    #2c2c2e 50%, 
-    #1a1a1c 100%);
-  -fx-border-color: #0d0d0f;
-  -fx-border-width: 0 1px;
-}
-
-.monitor-base {
-  -fx-background-color: linear-gradient(to bottom, 
-    #2c2c2e 0%,
-    #232325 50%,
-    #1a1a1c 100%);
-  -fx-border-color: #0d0d0f;
-  -fx-border-width: 1px;
-  -fx-border-radius: 4px;
-  -fx-background-radius: 4px;
-  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.85), 20, 0.5, 0, 6);
-}
-
-.monitor-screen-top-bar {
-  -fx-background-color: #1e1e20;
-  -fx-border-color: #2c2c2e;
-  -fx-border-width: 0 0 1px 0;
-  -fx-background-radius: 9px 9px 0 0;
-}
-
-.monitor-screen-bottom-bar {
-  -fx-background-color: #141416;
-  -fx-border-color: #252528;
-  -fx-border-width: 1px 0 0 0;
-  -fx-background-radius: 0 0 9px 9px;
-  -fx-padding: 0 0 0 0;
-}
-
-.dot-red {
-  -fx-background-color: #ff5f56;
-  -fx-background-radius: 6px;
-  -fx-pref-width: 12px;
-  -fx-pref-height: 12px;
-  -fx-margin: 0 4px 0 0;
-}
-
-.dot-yellow {
-  -fx-background-color: #ffbd2e;
-  -fx-background-radius: 6px;
-  -fx-pref-width: 12px;
-  -fx-pref-height: 12px;
-  -fx-margin: 0 4px;
-}
-
-.dot-green {
-  -fx-background-color: #27c93f;
-  -fx-background-radius: 6px;
-  -fx-pref-width: 12px;
-  -fx-pref-height: 12px;
-}
-
-.screen-title-bar {
-  -fx-font-family: "Consolas", monospace;
+.mission-channel, .checkpoint-tag, .eyebrow {
+  -fx-font-family: "Consolas";
+  -fx-font-weight: bold;
   -fx-font-size: 12px;
-  -fx-text-fill: #666670;
-  -fx-padding: 0 0 0 10px;
 }
-
-.screen-status-text {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 11px;
-  -fx-text-fill: #55667a;
+.mission-channel { -fx-text-fill: #f1e8ff; }
+.eyebrow { -fx-text-fill: #c7a8fb; }
+.checkpoint-tag {
+  -fx-background-color: #32284b;
+  -fx-background-radius: 6px;
+  -fx-text-fill: #e3d4f4;
+  -fx-padding: 4px 9px;
 }
-
-.screen-status-ok {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 11px;
-  -fx-text-fill: #3ec97e;
+.mission-title {
+  -fx-font-size: 34px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #fff8ff;
 }
-
-.screen-status-locked {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 11px;
-  -fx-text-fill: #e05252;
+.mission-description {
+  -fx-font-size: 15px;
+  -fx-line-spacing: 2px;
+  -fx-text-fill: #d3cce4;
 }
-
-.screen-status-warn {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 11px;
-  -fx-text-fill: #d4a230;
+.panel-title {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #eee8f8;
+}
+.brief-panel {
+  -fx-padding: 22px;
+  -fx-background-color: #231d39;
+  -fx-background-radius: 12px;
+  -fx-border-color: #493961;
+  -fx-border-radius: 12px;
+}
+.separator .line {
+  -fx-border-color: #4b3d60 transparent transparent transparent;
+}
+.primary-button, .secondary-button {
+  -fx-font-weight: bold;
+  -fx-font-size: 13px;
+  -fx-padding: 8px 15px;
+  -fx-background-radius: 6px;
+  -fx-border-radius: 6px;
+  -fx-cursor: hand;
+}
+.primary-button {
+  -fx-background-color: #d2fb86;
+  -fx-border-color: transparent;
+  -fx-text-fill: #202319;
+}
+.primary-button:hover { -fx-background-color: #e5ffa9; }
+.secondary-button {
+  -fx-background-color: #302741;
+  -fx-border-color: #564767;
+  -fx-text-fill: #e1d5f4;
+}
+.secondary-button:hover { -fx-background-color: #403252; }
+.primary-button:focused, .secondary-button:focused { -fx-border-color: #fff8ff; }
+.passkey-feedback, .sql-feedback {
+  -fx-text-fill: #ddd4ee;
+  -fx-font-size: 13px;
+}
+.passkey-feedback:success, .sql-feedback:success, .terminal-status:success { -fx-text-fill: #d2fb86; }
+.passkey-feedback:error, .sql-feedback:error, .terminal-status:error { -fx-text-fill: #ffb4c3; }
+.terminal-status {
+  -fx-font-family: "Consolas";
+  -fx-font-size: 12px;
+  -fx-text-fill: #bfcaa8;
 }

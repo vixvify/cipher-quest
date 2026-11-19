@@ -1,6 +1,7 @@
 package com.cipherquest.levels.caesar;
 
 import com.cipherquest.levels.BaseLevel;
+import com.cipherquest.levels.ChallengeDefinition;
 
 public class CaesarLevel extends BaseLevel {
 
@@ -14,13 +15,11 @@ public class CaesarLevel extends BaseLevel {
 
     @Override
     public void loadChallenge() {
-        resetProgressState();
-        setTitle("Operation Caesar");
-        setDescription("ถอดรหัสข้อความ Ciphertext 5 ตัวอักษร เพื่อค้นหา Passkey");
-        setHint("ตัวเลข Shift อยู่ในช่วง 3 - 7");
-        this.ciphertext = "VZJXY";
-        this.expectedPlaintext = "QUEST";
-        this.shift = 5;
+        ChallengeDefinition challenge = ChallengeDefinition.load(1);
+        loadCommonFields(challenge);
+        ciphertext = challenge.required("ciphertext");
+        expectedPlaintext = challenge.required("answer");
+        shift = Integer.parseInt(challenge.required("shift"));
     }
 
     @Override

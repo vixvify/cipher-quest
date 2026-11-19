@@ -27,6 +27,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb xauth
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: terminal/package-lock.json
+
+      - name: Install the terminal runtime
+        run: npm ci --prefix terminal --ignore-scripts --omit=optional
+
       - name: Build with Maven
         run: |
           xvfb-run -a -s "-screen 0 1920x1080x24" \
@@ -37,5 +46,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cipherquest-build
-          path: target/*.jar
+          path: |
+            target/*.jar
+            terminal/*.mjs
+            terminal/package*.json
           retention-days: 7

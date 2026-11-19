@@ -162,6 +162,11 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
         }
     }
 
+    public List<String> getTableNames() {
+        QueryResult result = executeQuery("SELECT name FROM sqlite_schema WHERE type = 'table' ORDER BY name");
+        return result.getRows().stream().map(row -> row.getFirst()).toList();
+    }
+
     public QueryResult executeQuery(String sql) {
         if (sql == null || sql.trim().isEmpty()) {
             return QueryResult.error(

@@ -1,213 +1,88 @@
-.passkey-root {
-  -fx-background-color: transparent;
+.passkey-ambient-art {
+  -fx-background-image: url("../images/background.png");
+  -fx-background-size: cover;
+  -fx-background-position: center;
+  -fx-background-repeat: no-repeat;
+  -fx-opacity: 0.13;
 }
-
-.wall-surface {
-  -fx-background-color: linear-gradient(to bottom, #0d0f14, #111520, #161c28);
+.passkey-root .brief-panel {
+  -fx-padding: 28px;
+  -fx-background-color: linear-gradient(to bottom right, #302247, #201a36);
 }
-
-.desk-surface {
-  -fx-background-color: linear-gradient(to bottom, #5c3812, #4a2e0e, #3a230a);
-  -fx-border-color: #7a4f1e;
-  -fx-border-width: 4px 0 0 0;
-  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 20, 0.7, 0, -6);
+.hint-panel {
+  -fx-padding: 12px 14px;
+  -fx-background-color: #372c4b;
+  -fx-background-radius: 7px;
+  -fx-border-color: transparent transparent transparent #c3a0f6;
+  -fx-border-width: 0 0 0 2px;
 }
-  -fx-background-color: #0a0f16;
-}
-
-.screen-lock-icon {
-  -fx-font-size: 48px;
-  -fx-text-fill: #3a3a4a;
-}
-
-.screen-locked-title {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 22px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #c8cfdb;
-  -fx-effect: dropshadow(gaussian, rgba(100, 150, 255, 0.3), 10, 0.3, 0, 0);
-}
-
-.screen-locked-sub {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 13px;
-  -fx-text-fill: #4a5568;
-}
-
-.passkey-form {
-  -fx-background-color: rgba(15, 22, 35, 0.8);
-  -fx-border-color: rgba(80, 120, 200, 0.3);
-  -fx-border-width: 1px;
-  -fx-border-radius: 8px;
-  -fx-background-radius: 8px;
-  -fx-padding: 24px 32px;
-  -fx-max-width: 420px;
-}
-
-.passkey-label {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 12px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #6a7fa0;
-  -fx-letter-spacing: 1px;
-}
-
-.passkey-input-box {
-  -fx-background-color: #060c16;
-  -fx-border-color: rgba(80, 140, 230, 0.5);
-  -fx-border-width: 1.5px;
-  -fx-border-radius: 6px;
-  -fx-background-radius: 6px;
-}
-
-.passkey-field {
-  -fx-background-color: transparent;
-  -fx-text-fill: #c8e0ff;
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 20px;
-  -fx-letter-spacing: 6px;
-  -fx-padding: 10px 14px;
-  -fx-border-width: 0;
-  -fx-background-insets: 0;
-  -fx-background-radius: 0;
-}
-
-.passkey-field:focused {
-  -fx-border-color: transparent;
-  -fx-background-color: transparent;
-}
-
-.passkey-input-box:focused-within {
-  -fx-border-color: #5080e6;
-  -fx-effect: dropshadow(gaussian, rgba(80, 128, 230, 0.5), 10, 0.4, 0, 0);
-}
-
-.passkey-feedback {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 13px;
-  -fx-text-fill: #e05252;
-  -fx-min-height: 18px;
-}
-
-.auth-btn {
-  -fx-background-color: rgba(50, 80, 160, 0.9);
-  -fx-text-fill: #c8e0ff;
-  -fx-font-family: "Consolas", monospace;
+.hint-text {
   -fx-font-size: 14px;
-  -fx-font-weight: bold;
-  -fx-border-color: rgba(80, 140, 230, 0.6);
-  -fx-border-width: 1.5px;
-  -fx-border-radius: 5px;
-  -fx-background-radius: 5px;
-  -fx-padding: 10px 30px;
+  -fx-text-fill: #ded1ee;
+}
+.passkey-panel {
+  -fx-background-color: #19172c;
+  -fx-background-radius: 12px;
+  -fx-border-color: #493961;
+  -fx-border-radius: 12px;
+  -fx-padding: 23px;
+}
+.evidence-mount {
+  -fx-padding: 7px 0 4px 4px;
+}
+.evidence-card {
+  -fx-alignment: center-left;
+  -fx-min-width: 175px;
+  -fx-min-height: 81px;
+  -fx-padding: 10px 13px;
+  -fx-background-color: #f2d991;
+  -fx-background-radius: 3px;
+  -fx-border-color: #a98c55;
+  -fx-border-radius: 3px;
+  -fx-rotate: -4;
+  -fx-effect: dropshadow(gaussian, rgba(9, 7, 19, 0.48), 12, 0.1, 2, 4);
   -fx-cursor: hand;
 }
-
-.auth-btn:hover {
-  -fx-background-color: rgba(70, 110, 200, 0.9);
-  -fx-effect: dropshadow(gaussian, rgba(80, 140, 230, 0.6), 12, 0.4, 0, 0);
+.evidence-card:hover {
+  -fx-background-color: #ffe8ab;
 }
-
-.hint-label {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 12px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #d4a230;
+.evidence-card:focused {
+  -fx-border-color: #fff8ff;
+  -fx-border-width: 2px;
 }
-
-.hint-text {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 12px;
-  -fx-text-fill: #8a9ab0;
+.evidence-tape {
+  -fx-background-color: rgba(230, 223, 187, 0.62);
+  -fx-background-radius: 1px;
+  -fx-rotate: 7;
 }
-
-.ciphertext-box {
-  -fx-background-color: rgba(10, 20, 10, 0.6);
-  -fx-border-color: rgba(0, 200, 100, 0.25);
-  -fx-border-width: 1px;
-  -fx-border-radius: 6px;
-  -fx-background-radius: 6px;
-  -fx-padding: 14px 24px;
-}
-
-.cipher-box-title {
-  -fx-font-family: "Consolas", monospace;
+.evidence-caption {
+  -fx-font-family: "Consolas";
   -fx-font-size: 11px;
-  -fx-text-fill: #3a5040;
   -fx-font-weight: bold;
+  -fx-text-fill: #674c39;
 }
-
-.ciphertext-display {
-  -fx-font-family: "Consolas", monospace;
+.evidence-text {
+  -fx-font-size: 15px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #34283b;
+}
+.evidence-card:revealed {
+  -fx-background-color: #f4e5bb;
+}
+.evidence-card:revealed .evidence-text {
+  -fx-font-family: "Consolas";
   -fx-font-size: 28px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #3ec97e;
-  -fx-letter-spacing: 6px;
-  -fx-effect: dropshadow(gaussian, rgba(0, 200, 100, 0.4), 10, 0.3, 0, 0);
+  -fx-text-fill: #30244c;
 }
-
-.mission-panel {
-  -fx-background-color: linear-gradient(to bottom, rgba(30, 60, 120, 0.15), rgba(20, 40, 80, 0.2));
-  -fx-border-color: rgba(80, 140, 230, 0.3);
-  -fx-border-width: 0 0 2px 0;
-  -fx-padding: 16px 24px;
+.text-entry {
+  -fx-background-color: #121021;
+  -fx-background-radius: 6px;
+  -fx-border-radius: 6px;
+  -fx-border-color: #514064;
+  -fx-text-fill: #f8efff;
+  -fx-prompt-text-fill: #a59ab7;
+  -fx-font-size: 15px;
+  -fx-padding: 9px 11px;
 }
-
-.mission-icon {
-  -fx-font-size: 18px;
-}
-
-.mission-header {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 13px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #5ba4ff;
-  -fx-letter-spacing: 1px;
-}
-
-.mission-text {
-  -fx-font-family: "Consolas", monospace;
-  -fx-font-size: 14px;
-  -fx-text-fill: #d4e0f0;
-  -fx-padding: 4px 0 0 26px;
-  -fx-line-spacing: 2px;
-}
-
-
-.postit-note {
-  -fx-background-color: linear-gradient(to bottom right, #fffabc, #fff59d 40%, #ffe680);
-  -fx-border-color: rgba(232, 216, 117, 0.6);
-  -fx-border-width: 0 0 2px 0;
-  -fx-background-radius: 2px;
-  -fx-border-radius: 2px;
-  -fx-padding: 18px;
-  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 15, 0.6, 3, 5);
-  -fx-pref-width: 240px;
-  -fx-pref-height: 240px;
-}
-
-.postit-header {
-  -fx-font-family: "Segoe UI", "Arial", sans-serif;
-  -fx-font-size: 12px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #7a6330;
-  -fx-letter-spacing: 0.8px;
-}
-
-.postit-ciphertext {
-  -fx-font-family: "Courier New", "Consolas", monospace;
-  -fx-font-size: 48px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #1a1410;
-  -fx-letter-spacing: 10px;
-  -fx-padding: 24px 0;
-  -fx-alignment: center;
-}
-
-.postit-footer {
-  -fx-font-family: "Segoe UI", "Arial", sans-serif;
-  -fx-font-size: 11px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #a08540;
-  -fx-letter-spacing: 0.5px;
-}
+.text-entry:focused { -fx-border-color: #d2fb86; }
+.passkey-feedback { -fx-min-height: 20px; }

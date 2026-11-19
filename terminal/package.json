@@ -1,0 +1,11 @@
+{
+  "name": "cipherquest-terminal",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "just-bash": "3.6.1"
+  }
+}

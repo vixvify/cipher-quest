@@ -4,160 +4,57 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx/21"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.cipherquest.ui.SqlWorkbenchController"
-           styleClass="sql-root">
-
-    <Region styleClass="desk-surface" />
-
-    <VBox alignment="CENTER" spacing="0">
-
-        <StackPane styleClass="monitor-frame">
-
-            <VBox styleClass="monitor-bezel" spacing="0">
-
-                <HBox styleClass="monitor-screen-top-bar" prefHeight="28" alignment="CENTER_LEFT" spacing="0">
-                    <padding>
-                        <Insets left="6" />
-                    </padding>
-                    <Region styleClass="dot-red" />
-                    <Region styleClass="dot-yellow" />
-                    <Region styleClass="dot-green" />
-                    <HBox spacing="0" styleClass="sql-menu-bar">
-                        <Label text="  File" styleClass="sql-menu-item" />
-                        <Label text="  Edit" styleClass="sql-menu-item" />
-                        <Label text="  Query" styleClass="sql-menu-item" />
-                        <Label text="  Database" styleClass="sql-menu-item" />
-                        <Label text="  Help" styleClass="sql-menu-item" />
-                    </HBox>
-                    <Region HBox.hgrow="ALWAYS" />
-                    <Label text="CQ-SQL Workbench  " styleClass="screen-title-bar" />
-                </HBox>
-
-                <HBox VBox.vgrow="ALWAYS" styleClass="sql-layout">
-
-                    <VBox styleClass="sql-sidebar" prefWidth="200" spacing="0">
-                        <Label text="SCHEMAS" styleClass="sql-sidebar-header" />
-                        <VBox styleClass="sql-schema-tree" spacing="2">
-                            <padding>
-                                <Insets top="8" left="8" />
-                            </padding>
-                            <Label text="▾ 🗄  ancient_archive" styleClass="sql-schema-db" />
-                            <VBox styleClass="sql-schema-tables" spacing="1">
-                                <padding>
-                                    <Insets left="16" />
-                                </padding>
-                                <Label text="▾ Tables" styleClass="sql-schema-group" />
-                                <VBox spacing="1">
-                                    <padding>
-                                        <Insets left="12" />
-                                    </padding>
-                                    <Label fx:id="tableItem1" text="📋 explorers" styleClass="sql-table-item" />
-                                    <Label fx:id="tableItem2" text="📋 expedition_logs" styleClass="sql-table-item" />
-                                    <Label fx:id="tableItem3" text="📋 inscriptions" styleClass="sql-table-item" />
-                                    <Label fx:id="tableItem4" text="📋 locations" styleClass="sql-table-item" />
-                                    <Label fx:id="tableItem5" text="📋 artifacts" styleClass="sql-table-item" />
-                                    <Label fx:id="tableItem6" text="📋 experiments" styleClass="sql-table-item" />
-                                </VBox>
-                            </VBox>
-                        </VBox>
-                    </VBox>
-
-                    <VBox VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" styleClass="sql-main-area" spacing="0">
-
-                        <!-- Mission/Task Panel (Always visible at top) -->
-                        <VBox styleClass="sql-mission-panel" spacing="6">
-                            <padding>
-                                <Insets top="12" right="16" bottom="12" left="16" />
-                            </padding>
-                            <HBox alignment="CENTER_LEFT" spacing="8">
-                                <Label text="📋" styleClass="mission-icon" />
-                                <Label text="TASK:" styleClass="sql-mission-header" />
-                            </HBox>
-                            <Label fx:id="taskLabel" text="เขียน Query เพื่อดึงข้อมูลตามที่โจทย์กำหนด" 
-                                   styleClass="sql-mission-text" wrapText="true" />
-                        </VBox>
-
-                        <HBox styleClass="sql-toolbar" spacing="6" alignment="CENTER_LEFT">
-                            <padding>
-                                <Insets top="6" right="10" bottom="6" left="10" />
-                            </padding>
-                            <Button text="▶  Run Query" onAction="#onRunQuery" styleClass="sql-run-btn" />
-                            <Button text="⌫  Clear" onAction="#onClearQuery" styleClass="sql-toolbar-btn" />
-                            <Region HBox.hgrow="ALWAYS" />
-                            <Label fx:id="checkpointLabel" text="CHECKPOINT 3 / 7" styleClass="screen-status-text" />
-                        </HBox>
-
-                        <VBox styleClass="sql-editor-pane" VBox.vgrow="ALWAYS" spacing="0">
-                            <HBox styleClass="sql-editor-header" alignment="CENTER_LEFT" spacing="6">
-                                <padding>
-                                    <Insets top="4" left="10" bottom="4" />
-                                </padding>
-                                <Label text="query.sql" styleClass="sql-tab-active" />
-                            </HBox>
-
-                            <HBox VBox.vgrow="ALWAYS">
-                                <VBox styleClass="sql-line-numbers" prefWidth="40" alignment="TOP_RIGHT">
-                                    <padding>
-                                        <Insets top="10" right="8" />
-                                    </padding>
-                                    <Label fx:id="lineNumbers" text="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8" styleClass="sql-line-num" />
-                                </VBox>
-                                <TextArea fx:id="queryArea"
-                                          promptText="-- Write your SQL query here..."
-                                          styleClass="sql-editor"
-                                          HBox.hgrow="ALWAYS"
-                                          wrapText="false" />
-                            </HBox>
-                        </VBox>
-
-                        <VBox styleClass="sql-result-pane" prefHeight="200" spacing="0">
-                            <HBox styleClass="sql-result-header" alignment="CENTER_LEFT" spacing="12">
-                                <padding>
-                                    <Insets top="4" left="10" bottom="4" />
-                                </padding>
-                                <Label text="Result Grid" styleClass="sql-result-tab-active" />
-                                <Label text="Output" styleClass="sql-result-tab" />
-                                <Region HBox.hgrow="ALWAYS" />
-                                <Label fx:id="resultStatusLabel" text="Ready" styleClass="sql-result-status" />
-                            </HBox>
-
-                            <ScrollPane styleClass="sql-result-scroll" VBox.vgrow="ALWAYS" fitToWidth="true">
-                                <TableView fx:id="resultTable" styleClass="sql-result-table" VBox.vgrow="ALWAYS">
-                                    <placeholder>
-                                        <Label text="Run a query to see results here" styleClass="sql-result-placeholder" />
-                                    </placeholder>
-                                </TableView>
-                            </ScrollPane>
-
-                            <HBox styleClass="sql-status-bar" alignment="CENTER_LEFT" spacing="20" minHeight="-Infinity">
-                                <padding>
-                                    <Insets top="4" right="12" bottom="4" left="12" />
-                                </padding>
-                                <Label fx:id="feedbackLabel" text="" styleClass="sql-feedback" wrapText="true" HBox.hgrow="ALWAYS" minWidth="0" maxWidth="1.7976931348623157E308" minHeight="-Infinity" />
-                                <Label fx:id="rowCountLabel" text="0 rows" styleClass="sql-row-count" minWidth="-Infinity" />
-                            </HBox>
-                        </VBox>
-
-                    </VBox>
-
-                </HBox>
-
-                <HBox styleClass="monitor-screen-bottom-bar" prefHeight="22" alignment="CENTER_RIGHT" spacing="16">
-                    <padding>
-                        <Insets right="14" />
-                    </padding>
-                    <Label text="ancient_archive@terminal" styleClass="screen-status-text" />
-                    <Label fx:id="statusLabel" text="●  CONNECTED" styleClass="screen-status-ok" />
-                </HBox>
-
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.cipherquest.ui.SqlWorkbenchController" styleClass="mission-root, sql-root">
+    <VBox spacing="16" maxWidth="1380" styleClass="mission-shell">
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="mission-bar">
+            <Region styleClass="signal-mark" />
+            <Label text="CIPHERQUEST  /  SQL WORKBENCH" styleClass="mission-channel" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="checkpointLabel" styleClass="checkpoint-tag" />
+        </HBox>
+        <HBox spacing="16" VBox.vgrow="ALWAYS">
+            <VBox spacing="12" minWidth="150" prefWidth="185" styleClass="schema-panel">
+                <Label text="DATABASE" styleClass="eyebrow" />
+                <Label text="ancient_archive" styleClass="panel-title" />
+                <Separator />
+                <Label text="Tables" styleClass="schema-caption" />
+                <VBox fx:id="schemaTables" spacing="5" />
             </VBox>
-
-        </StackPane>
-
-        <Region styleClass="monitor-chin" prefHeight="22" />
-
+            <VBox spacing="10" minWidth="0" HBox.hgrow="ALWAYS">
+                <VBox spacing="6" styleClass="sql-mission-panel">
+                    <Label fx:id="missionTitle" styleClass="sql-mission-title" wrapText="true" />
+                    <Label fx:id="taskLabel" styleClass="mission-description" wrapText="true" minHeight="-Infinity" />
+                </VBox>
+                <SplitPane orientation="VERTICAL" dividerPositions="0.48" VBox.vgrow="ALWAYS" styleClass="sql-split">
+                    <VBox minHeight="100" styleClass="sql-panel">
+                        <HBox alignment="CENTER_LEFT" spacing="8" styleClass="sql-panel-header">
+                            <Label text="query.sql" styleClass="panel-title" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button fx:id="clearButton" text="Clear" onAction="#onClearQuery" styleClass="secondary-button" />
+                            <Button fx:id="runButton" text="Run Query  →" onAction="#onRunQuery" styleClass="primary-button" />
+                        </HBox>
+                        <TextArea fx:id="queryArea" accessibleText="SQL query" promptText="-- เขียน SELECT ที่นี่"
+                                  styleClass="sql-editor" VBox.vgrow="ALWAYS" minHeight="50" />
+                    </VBox>
+                    <VBox minHeight="100" styleClass="sql-panel">
+                        <HBox alignment="CENTER_LEFT" spacing="14" styleClass="sql-panel-header">
+                            <Label text="Results" styleClass="panel-title" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Label fx:id="rowCountLabel" text="0 rows" styleClass="schema-caption" />
+                            <Label fx:id="resultStatusLabel" text="Ready" styleClass="schema-caption" />
+                        </HBox>
+                        <TableView fx:id="resultTable" VBox.vgrow="ALWAYS" minHeight="45" styleClass="sql-result-table">
+                            <placeholder><Label text="ผลการค้นหาจะแสดงที่นี่" styleClass="schema-caption" /></placeholder>
+                        </TableView>
+                    </VBox>
+                </SplitPane>
+                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="sql-footer">
+                    <Label fx:id="feedbackLabel" wrapText="true" minWidth="0" maxWidth="Infinity" minHeight="-Infinity"
+                           HBox.hgrow="ALWAYS" styleClass="sql-feedback" />
+                    <Label fx:id="statusLabel" text="●  CONNECTED" styleClass="terminal-status" />
+                </HBox>
+            </VBox>
+        </HBox>
     </VBox>
-
 </StackPane>

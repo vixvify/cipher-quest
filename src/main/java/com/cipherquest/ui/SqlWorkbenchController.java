@@ -1,148 +1,116 @@
 package com.cipherquest.ui;
 
 import com.cipherquest.core.AnswerResult;
-import com.cipherquest.core.GameEngine;
-import com.cipherquest.levels.Level;
-import com.cipherquest.levels.database.DatabaseLevel;
+import com.cipherquest.core.GameSession;
 import com.cipherquest.levels.database.QueryResult;
-import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
-public class SqlWorkbenchController implements Initializable {
+public class SqlWorkbenchController {
 
     @FXML private TextArea queryArea;
     @FXML private TableView<List<String>> resultTable;
+    @FXML private VBox schemaTables;
+    @FXML private Button runButton;
+    @FXML private Button clearButton;
     @FXML private Label feedbackLabel;
     @FXML private Label rowCountLabel;
     @FXML private Label statusLabel;
     @FXML private Label checkpointLabel;
     @FXML private Label resultStatusLabel;
     @FXML private Label taskLabel;
+    @FXML private Label missionTitle;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        Level currentLevel = GameEngine.getInstance().getCurrentLevel();
-        if (currentLevel != null) {
-            checkpointLabel.setText("CHECKPOINT " + currentLevel.getCheckpointId() + " / " + GameEngine.getInstance().getTotalCheckpoints());
-            
-            if (taskLabel != null) {
-                if (currentLevel instanceof DatabaseLevel dbLevel && dbLevel.getTask() != null) {
-                    taskLabel.setText(dbLevel.getTask());
-                } else {
-                    taskLabel.setText(currentLevel.getDescription());
-                }
+    @FXML
+    private void initialize() {
+        runButton.setTooltip(new Tooltip("Ctrl + Enter"));
+        queryArea.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER && event.isControlDown()) {
+                runButton.fire();
+                event.consume();
             }
-            
-            feedbackLabel.setText("");
-        }
-        if (resultStatusLabel != null) {
-            resultStatusLabel.setText("Ready");
-        }
-        rowCountLabel.setText("0 rows");
+        });
+        ScreenNavigator.SESSION.currentMission().ifPresent(mission -> {
+            checkpointLabel.setText(ScreenNavigator.checkpointText(mission));
+            missionTitle.setText(mission.title());
+        });
+        ScreenNavigator.SESSION.sqlBrief().ifPresent(brief -> {
+            taskLabel.setText(brief.task());
+            for (String table : brief.tables()) {
+                Label name = new Label(table);
+                name.getStyleClass().add("sql-table-item");
+                schemaTables.getChildren().add(name);
+            }
+        });
     }
 
     @FXML
     private void onRunQuery() {
         String query = queryArea.getText();
-        if (query == null || query.trim().isEmpty()) {
-            feedbackLabel.setStyle("-fx-text-fill: #e05252;");
-            feedbackLabel.setText("กรุณาพิมพ์ SQL Query ก่อนกดรัน");
+        if (query.isBlank()) {
+            Feedback.show(feedbackLabel, "กรุณาพิมพ์ SQL Query ก่อนกดรัน", false, true);
             return;
         }
 
-        AnswerResult result = GameEngine.getInstance().submitAnswer(query);
-        Level currentLevel = GameEngine.getInstance().getCurrentLevel();
+        GameSession.SqlSubmission submission = ScreenNavigator.SESSION.runQuery(query);
+        AnswerResult answer = submission.answer();
+        QueryResult result = submission.result();
+        if (result == null) {
+            Feedback.show(feedbackLabel, answer.getMessage(), false, true);
+            return;
+        }
+        if (!result.isSuccess()) {
+            clearResults("Error");
+            Feedback.show(feedbackLabel, result.getErrorMessage(), false, true);
+            return;
+        }
 
-        if (currentLevel instanceof DatabaseLevel dbLevel) {
-            QueryResult qr = dbLevel.getLastQueryResult();
-            if (qr != null) {
-                if (qr.isSuccess()) {
-                    populateTable(qr.getColumnNames(), qr.getRows());
-                    rowCountLabel.setText(qr.getRowCount() + " rows");
-                    if (resultStatusLabel != null) {
-                        resultStatusLabel.setText(qr.getRowCount() + " rows retrieved in " + qr.getExecutionTimeMs() + "ms");
-                    }
-
-                    if (result.isCorrect()) {
-                        feedbackLabel.setStyle("-fx-text-fill: #3ec97e;");
-                        feedbackLabel.setText("✔ " + result.getMessage());
-                        statusLabel.setText("●  MISSION CLEARED");
-                        statusLabel.setStyle("-fx-text-fill: #3ec97e;");
-
-                        PauseTransition pause = new PauseTransition(Duration.seconds(2.0));
-                        pause.setOnFinished(e -> {
-                            if (result.getStatus() == AnswerResult.Status.GAME_CLEARED) {
-                                ScreenNavigator.navigateToMainMenu();
-                            } else {
-                                GameEngine.getInstance().advanceToNextCheckpoint();
-                                ScreenNavigator.navigateToCurrentLevel();
-                            }
-                        });
-                        pause.play();
-                    } else {
-                        feedbackLabel.setStyle("-fx-text-fill: #94a3b8;");
-                        feedbackLabel.setText(result.getMessage());
-                    }
-                } else {
-                    resultTable.getColumns().clear();
-                    resultTable.getItems().clear();
-                    rowCountLabel.setText("0 rows");
-                    if (resultStatusLabel != null) {
-                        resultStatusLabel.setText("Error");
-                    }
-                    feedbackLabel.setStyle("-fx-text-fill: #e05252;");
-                    feedbackLabel.setText("✖ " + qr.getErrorMessage());
-                }
-            }
+        populateTable(result.getColumnNames(), result.getRows());
+        rowCountLabel.setText(result.getRowCount() + " rows");
+        resultStatusLabel.setText(result.getExecutionTimeMs() + " ms");
+        Feedback.show(feedbackLabel, answer.getMessage(), answer.isCorrect(), false);
+        if (answer.isCorrect()) {
+            Feedback.show(statusLabel, "●  MISSION CLEARED", true, false);
+            queryArea.setEditable(false);
+            runButton.setDisable(true);
+            clearButton.setDisable(true);
+            ScreenNavigator.continueAfterFeedback(queryArea, answer, Duration.seconds(2));
         }
     }
 
     private void populateTable(List<String> columnNames, List<List<String>> rows) {
         resultTable.getColumns().clear();
-        resultTable.getItems().clear();
-
-        if (columnNames == null || columnNames.isEmpty()) {
-            return;
-        }
-
         for (int i = 0; i < columnNames.size(); i++) {
-            final int colIndex = i;
+            int index = i;
             TableColumn<List<String>, String> column = new TableColumn<>(columnNames.get(i));
-            column.setCellValueFactory(param -> {
-                List<String> row = param.getValue();
-                String val = (row != null && colIndex < row.size()) ? row.get(colIndex) : "";
-                return new SimpleStringProperty(val);
-            });
+            column.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().get(index)));
             resultTable.getColumns().add(column);
         }
+        resultTable.getItems().setAll(rows);
+    }
 
-        ObservableList<List<String>> data = FXCollections.observableArrayList(rows);
-        resultTable.setItems(data);
+    private void clearResults(String status) {
+        resultTable.getColumns().clear();
+        resultTable.getItems().clear();
+        rowCountLabel.setText("0 rows");
+        resultStatusLabel.setText(status);
     }
 
     @FXML
     private void onClearQuery() {
         queryArea.clear();
-        feedbackLabel.setStyle("-fx-text-fill: #94a3b8;");
-        feedbackLabel.setText("");
-        rowCountLabel.setText("0 rows");
-        if (resultStatusLabel != null) {
-            resultStatusLabel.setText("Ready");
-        }
-        resultTable.getColumns().clear();
-        resultTable.getItems().clear();
+        clearResults("Ready");
+        Feedback.show(feedbackLabel, "", false, false);
     }
 }
