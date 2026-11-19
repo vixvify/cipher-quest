@@ -1,0 +1,10 @@
+**
+!pom.xml
+!src
+!src/main
+!src/main/**
+!terminal
+!terminal/mission.mjs
+!terminal/package.json
+!terminal/package-lock.json
+!terminal/worker.mjs

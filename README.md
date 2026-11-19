@@ -21,6 +21,31 @@ run-game.bat
 
 รันคำสั่ง Maven จากโฟลเดอร์หลักของโปรเจกต์ ใช้ `mvn test` หลังติดตั้งแพ็กเกจของ Terminal เพื่อทดสอบรวมทั้งด่าน Linux
 
+### ใช้ Docker
+
+```sh
+docker build -t cipherquest .
+```
+
+เกมเปิดหน้าต่าง JavaFX ผ่าน X11 บน Linux ให้รันจากเซสชันที่มี `DISPLAY` และไฟล์ Xauthority ของผู้ใช้
+
+```sh
+mkdir -p "$HOME/.cipherquest"
+docker run --rm --user "$(id -u):$(id -g)" --hostname "$(hostname)" \
+  -e DISPLAY -e XAUTHORITY=/tmp/cipherquest.Xauthority \
+  -e JAVA_TOOL_OPTIONS=-Duser.home=/app/home \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -v "${XAUTHORITY:-$HOME/.Xauthority}:/tmp/cipherquest.Xauthority:ro" \
+  -v "$HOME/.cipherquest:/app/home/.cipherquest" \
+  cipherquest
+```
+
+บน Docker Desktop สำหรับ Windows ต้องมี X server ที่อนุญาตให้คอนเทนเนอร์เชื่อมต่อผ่าน TCP จากนั้นตั้ง `DISPLAY` ให้ตรงกับหมายเลขจอ ตัวอย่างนี้ใช้จอ 0 และเก็บเซฟใน Docker volume
+
+```powershell
+docker run --rm -e DISPLAY=host.docker.internal:0 -v cipherquest-saves:/home/cipherquest/.cipherquest cipherquest
+```
+
 ## ข้อกำหนดของระบบ
 
 - Java 25 หรือสูงกว่า
