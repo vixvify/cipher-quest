@@ -1,0 +1,57 @@
+.victory-root {
+  -fx-background-color: radial-gradient(center 50% 30%, radius 80%, #201a3c, #0c091d 85%);
+}
+
+.victory-shell {
+  -fx-padding: 30;
+}
+
+.victory-content {
+  -fx-padding: 24 16;
+}
+
+.victory-eyebrow {
+  -fx-text-fill: #dbff87;
+  -fx-font-size: 14px;
+}
+
+.victory-title {
+  -fx-font-size: 26px;
+  -fx-text-fill: #ffffff;
+}
+
+.victory-description {
+  -fx-font-size: 14px;
+  -fx-text-fill: #d8cde9;
+  -fx-max-width: 720;
+}
+
+.victory-stats-row {
+  -fx-padding: 16 0;
+}
+
+.stat-card {
+  -fx-background-color: #1f1a35;
+  -fx-border-color: #493963;
+  -fx-border-width: 1;
+  -fx-border-radius: 8;
+  -fx-background-radius: 8;
+  -fx-padding: 14 20;
+  -fx-min-width: 140;
+}
+
+.stat-caption {
+  -fx-font-size: 11px;
+  -fx-text-fill: #a595bd;
+}
+
+.stat-value {
+  -fx-font-size: 22px;
+  -fx-text-fill: #dbff87;
+  -fx-font-weight: bold;
+}
+
+.victory-button {
+  -fx-padding: 12 32;
+  -fx-font-size: 15px;
+}

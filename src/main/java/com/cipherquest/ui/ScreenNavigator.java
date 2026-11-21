@@ -59,6 +59,14 @@ public class ScreenNavigator {
         return "CHECKPOINT " + mission.checkpoint() + " / " + mission.total();
     }
 
+    public static void navigateToVictoryScreen() {
+        loadScene(
+                "/fxml/victory-screen.fxml",
+                new String[]{"/css/monitor-shared.css", "/css/victory-screen.css"},
+                "CipherQuest — Mission Accomplished"
+        );
+    }
+
     static void continueAfterFeedback(Node screenControl, AnswerResult answer, Duration delay) {
         PauseTransition pause = new PauseTransition(delay);
         pause.setOnFinished(event -> {
@@ -66,7 +74,7 @@ public class ScreenNavigator {
                 return;
             }
             if (answer.getStatus() == AnswerResult.Status.GAME_CLEARED) {
-                navigateToMainMenu();
+                navigateToVictoryScreen();
             } else if (SESSION.advance()) {
                 navigateToCurrentLevel();
             }

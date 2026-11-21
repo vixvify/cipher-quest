@@ -1,11 +1,8 @@
 package com.cipherquest.knowledge;
 
 import com.cipherquest.levels.Level;
+import com.cipherquest.util.ResourceLoader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class SqlKnowledgeCenter {
@@ -81,15 +78,7 @@ public class SqlKnowledgeCenter {
     }
 
     private static List<SqlTopic> loadTopicsFromResource() {
-        Properties properties = new Properties();
-        try (InputStream stream = SqlKnowledgeCenter.class.getResourceAsStream("/data/knowledge/sql-topics.properties")) {
-            if (stream == null) {
-                throw new IllegalStateException("Missing SQL topics resource: /data/knowledge/sql-topics.properties");
-            }
-            properties.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to load SQL topics", e);
-        }
+        Properties properties = ResourceLoader.loadProperties("/data/knowledge/sql-topics.properties");
 
         List<SqlTopic> result = new ArrayList<>();
         for (int i = 1; properties.containsKey("topic." + i + ".id"); i++) {

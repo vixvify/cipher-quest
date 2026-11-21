@@ -1,27 +1,18 @@
 package com.cipherquest.levels;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import com.cipherquest.util.ResourceLoader;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public final class ChallengeDefinition {
-    private final Properties values = new Properties();
+    private final Properties values;
     private final String path;
 
     private ChallengeDefinition(String name) {
-        path = "/data/challenges/" + name + ".properties";
-        try (InputStream stream = ChallengeDefinition.class.getResourceAsStream(path)) {
-            if (stream == null) {
-                throw new IllegalStateException("Missing challenge resource " + path);
-            }
-            values.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not read challenge resource " + path, e);
-        }
+        this.path = "/data/challenges/" + name + ".properties";
+        this.values = ResourceLoader.loadProperties(path);
     }
 
     public static ChallengeDefinition load(int checkpoint) {

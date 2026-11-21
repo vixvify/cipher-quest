@@ -1,9 +1,7 @@
 package com.cipherquest.clues;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import com.cipherquest.util.ResourceLoader;
+
 import java.util.*;
 
 public class ClueArchive {
@@ -20,15 +18,7 @@ public class ClueArchive {
     }
 
     private void initializeCatalog() {
-        Properties properties = new Properties();
-        try (InputStream stream = ClueArchive.class.getResourceAsStream("/data/clues/clues.properties")) {
-            if (stream == null) {
-                throw new IllegalStateException("Missing clues resource: /data/clues/clues.properties");
-            }
-            properties.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to load clues configuration", e);
-        }
+        Properties properties = ResourceLoader.loadProperties("/data/clues/clues.properties");
 
         for (int i = 1; properties.containsKey("clue." + i + ".id"); i++) {
             String prefix = "clue." + i + ".";

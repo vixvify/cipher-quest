@@ -1,8 +1,7 @@
 package com.cipherquest.levels.database;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import com.cipherquest.util.ResourceLoader;
+
 import java.sql.*;
 import java.util.*;
 
@@ -78,21 +77,14 @@ public class SqlDatabaseEnvironment implements AutoCloseable {
     }
 
     private void seedData() throws SQLException {
-        try (InputStream stream = SqlDatabaseEnvironment.class.getResourceAsStream("/data/database/seed.sql")) {
-            if (stream == null) {
-                throw new IllegalStateException("Missing seed database script: /data/database/seed.sql");
-            }
-            String script = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-            try (Statement stmt = connection.createStatement()) {
-                for (String command : script.split(";")) {
-                    String trimmed = command.trim();
-                    if (!trimmed.isEmpty()) {
-                        stmt.execute(trimmed);
-                    }
+        String script = ResourceLoader.loadString("/data/database/seed.sql");
+        try (Statement stmt = connection.createStatement()) {
+            for (String command : script.split(";")) {
+                String trimmed = command.trim();
+                if (!trimmed.isEmpty()) {
+                    stmt.execute(trimmed);
                 }
             }
-        } catch (IOException e) {
-            throw new SQLException("Failed to load database seed script", e);
         }
     }
 

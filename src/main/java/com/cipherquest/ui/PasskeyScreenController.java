@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.util.Duration;
 
-public class PasskeyScreenController {
+public class PasskeyScreenController extends BaseMissionController {
     private static final PseudoClass REVEALED = PseudoClass.getPseudoClass("revealed");
     private String ciphertext;
     private boolean evidenceRevealed;
@@ -23,17 +23,10 @@ public class PasskeyScreenController {
     @FXML private Label hintLabel;
     @FXML private Label evidenceCaption;
     @FXML private Label evidenceText;
-    @FXML private Label missionLabel;
-    @FXML private Label missionTitle;
-    @FXML private Label checkpointLabel;
 
     @FXML
     private void initialize() {
-        ScreenNavigator.SESSION.currentMission().ifPresent(mission -> {
-            missionTitle.setText(mission.title());
-            missionLabel.setText(mission.description());
-            checkpointLabel.setText(ScreenNavigator.checkpointText(mission));
-        });
+        initializeMissionHeader();
         ScreenNavigator.SESSION.passkeyBrief().ifPresent(brief -> {
             hintLabel.setText(brief.hint());
             ciphertext = brief.ciphertext();
@@ -85,7 +78,7 @@ public class PasskeyScreenController {
         if (result.isCorrect()) {
             passkeyField.setDisable(true);
             authenticateButton.setDisable(true);
-            ScreenNavigator.continueAfterFeedback(passkeyField, result, Duration.seconds(1.2));
+            proceedAfterFeedback(passkeyField, result, Duration.seconds(1.2));
         } else {
             passkeyField.clear();
             passkeyField.requestFocus();
