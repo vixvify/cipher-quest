@@ -104,8 +104,7 @@ public class ScreenNavigator {
             }
 
             primaryStage.setTitle(title);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 }

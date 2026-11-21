@@ -1,5 +1,9 @@
 package com.cipherquest.clues;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class ClueArchive {
@@ -16,86 +20,38 @@ public class ClueArchive {
     }
 
     private void initializeCatalog() {
-        registerClue(new Clue(
-                "MC01",
-                "เบาะแสหลัก 01 — นักสำรวจที่หายตัวไป",
-                ClueType.MAIN,
-                "explorers (E001)",
-                "Arin (E001) หายตัวไปหลังจากตรวจพบสัญญาณครั้งสุดท้ายใกล้ Ancient Temple (L001) บันทึกการสำรวจของเขาอาจเปิดเผยสิ่งที่เกิดขึ้นหลังจากนั้น",
-                List.of(
-                        "นักสำรวจ: Arin",
-                        "รหัสนักสำรวจ: E001",
-                        "สถานะ: Missing",
-                        "สัญญาณล่าสุด: Ancient Temple (L001)",
-                        "เบาะแสต่อเนื่อง: ตรวจสอบบันทึกการสำรวจของ Arin"
-                )
-        ));
-        checkpointToMainClueId.put(3, "MC01");
+        Properties properties = new Properties();
+        try (InputStream stream = ClueArchive.class.getResourceAsStream("/data/clues/clues.properties")) {
+            if (stream == null) {
+                throw new IllegalStateException("Missing clues resource: /data/clues/clues.properties");
+            }
+            properties.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load clues configuration", e);
+        }
 
-        registerClue(new Clue(
-                "MC02",
-                "เบาะแสหลัก 02 — ข้อความสุดท้าย",
-                ClueType.MAIN,
-                "expedition_logs (101)",
-                "ข้อความของ Arin ระบุว่าสัญลักษณ์ Sun และ Moon เป็นกุญแจสำคัญในการเปิด Relic Chamber (L002)",
-                List.of(
-                        "สัญลักษณ์ที่ต้องใช้: Sun and Moon",
-                        "จุดหมายถัดไป: Relic Chamber",
-                        "รหัสสถานที่: L002"
-                )
-        ));
-        checkpointToMainClueId.put(4, "MC02");
+        for (int i = 1; properties.containsKey("clue." + i + ".id"); i++) {
+            String prefix = "clue." + i + ".";
+            String id = properties.getProperty(prefix + "id");
+            String checkpointStr = properties.getProperty(prefix + "checkpoint");
+            String title = properties.getProperty(prefix + "title");
+            String typeStr = properties.getProperty(prefix + "type", "MAIN");
+            String source = properties.getProperty(prefix + "source");
+            String summary = properties.getProperty(prefix + "summary");
 
-        registerClue(new Clue(
-                "MC03",
-                "เบาะแสหลัก 03 — โบราณวัตถุที่ถูกลืม",
-                ClueType.MAIN,
-                "artifacts (A003)",
-                "Prime Core (A003) มีระดับพลังงานสูงถึง 100 แต่รายละเอียดการทดลองที่เกี่ยวข้องถูกแยกเก็บไว้ในบันทึกอีกชุดหนึ่ง",
-                List.of(
-                        "โบราณวัตถุ: Prime Core",
-                        "รหัสโบราณวัตถุ: A003",
-                        "ระดับพลัง: 100",
-                        "ข้อมูลสำคัญ: รายละเอียดการทดลองถูกแยกเก็บไว้ในบันทึกอีกชุดหนึ่ง"
-                )
-        ));
-        checkpointToMainClueId.put(5, "MC03");
+            List<String> details = new ArrayList<>();
+            for (int d = 1; properties.containsKey(prefix + "details." + d); d++) {
+                details.add(properties.getProperty(prefix + "details." + d));
+            }
 
-        registerClue(new Clue(
-                "MC04",
-                "เบาะแสหลัก 04 — บันทึกที่ถูกซ่อน",
-                ClueType.MAIN,
-                "experiments (303)",
-                "Prime Core ถูกนำไปใช้ในการทดลอง Energy Amplification แต่ผลลัพธ์ยังไม่สามารถระบุได้ เบาะแสจากการทดลองชี้ไปยัง Archive Vault (L005) ซึ่งเก็บบันทึกชุดสุดท้ายของอารยธรรมโบราณ",
-                List.of(
-                        "โบราณวัตถุ: Prime Core",
-                        "การทดลอง: Energy Amplification",
-                        "ผลลัพธ์: Unknown (ไม่สามารถระบุได้)",
-                        "จุดหมายถัดไป: Archive Vault",
-                        "รหัสสถานที่: L005",
-                        "ข้อมูลสำคัญ: เก็บบันทึกชุดสุดท้ายของอารยธรรมโบราณ"
-                )
-        ));
-        checkpointToMainClueId.put(6, "MC04");
+            ClueType type = ClueType.valueOf(typeStr.trim().toUpperCase(Locale.ROOT));
+            Clue clue = new Clue(id, title, type, source, summary, details);
+            catalog.put(clue.getId(), clue);
 
-        registerClue(new Clue(
-                "MC05",
-                "เบาะแสหลัก 05 — สมบัติที่สาบสูญ",
-                ClueType.MAIN,
-                "artifacts (A008) / locations (L005)",
-                "Memory Archive คือคลังข้อมูลที่เก็บรักษาความทรงจำ ประวัติศาสตร์ และองค์ความรู้ของอารยธรรมโบราณเอาไว้ นี่คือความหมายที่แท้จริงของ Lost Treasure",
-                List.of(
-                        "สมบัติ: Memory Archive",
-                        "สถานที่: Archive Vault (L005)",
-                        "ระดับพลัง: 100",
-                        "คำอธิบาย: เก็บรักษาความทรงจำ ประวัติศาสตร์ และองค์ความรู้ของอารยธรรมโบราณ"
-                )
-        ));
-        checkpointToMainClueId.put(7, "MC05");
-    }
-
-    private void registerClue(Clue clue) {
-        catalog.put(clue.getId(), clue);
+            if (checkpointStr != null && !checkpointStr.isBlank()) {
+                checkpointToMainClueId.put(Integer.parseInt(checkpointStr.trim()), id);
+            }
+        }
     }
 
     public Optional<Clue> unlockMainClueForCheckpoint(int checkpointId) {
