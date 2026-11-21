@@ -17,7 +17,7 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TerminalScreenController {
+public class TerminalScreenController extends BaseMissionController {
     private final List<String> history = new ArrayList<>();
     private int historyPosition;
     private String draft = "";
@@ -28,17 +28,10 @@ public class TerminalScreenController {
     @FXML private ScrollPane outputScrollPane;
     @FXML private Label statusLabel;
     @FXML private Label promptLabel;
-    @FXML private Label checkpointLabel;
-    @FXML private Label missionTitle;
-    @FXML private Label missionLabel;
 
     @FXML
     private void initialize() {
-        ScreenNavigator.SESSION.currentMission().ifPresent(mission -> {
-            missionTitle.setText(mission.title());
-            missionLabel.setText(mission.description());
-            checkpointLabel.setText(ScreenNavigator.checkpointText(mission));
-        });
+        initializeMissionHeader();
         commandField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
                 showHistory(event.getCode() == KeyCode.UP ? -1 : 1);
@@ -93,7 +86,7 @@ public class TerminalScreenController {
         if (result.isCorrect()) {
             Feedback.show(statusLabel, "●  ACCESS GRANTED", true, false);
             commandField.setDisable(true);
-            ScreenNavigator.continueAfterFeedback(commandField, result, Duration.seconds(2));
+            proceedAfterFeedback(commandField, result, Duration.seconds(2));
         } else {
             setCommandPending(false);
         }

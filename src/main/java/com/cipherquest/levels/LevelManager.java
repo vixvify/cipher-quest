@@ -4,10 +4,11 @@ import com.cipherquest.levels.caesar.CaesarLevel;
 import com.cipherquest.levels.database.DatabaseLevel;
 import com.cipherquest.levels.linux.LinuxLevel;
 
-public class LevelManager {
+public class LevelManager implements LevelFactory {
 
     private static final int TOTAL_CHECKPOINTS = 7;
 
+    @Override
     public Level createLevel(int checkpointId) {
         return switch (checkpointId) {
             case 1 -> new CaesarLevel(checkpointId);
@@ -19,6 +20,7 @@ public class LevelManager {
         };
     }
 
+    @Override
     public int getTotalCheckpoints() {
         return TOTAL_CHECKPOINTS;
     }

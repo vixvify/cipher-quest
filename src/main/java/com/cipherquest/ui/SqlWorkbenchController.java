@@ -17,7 +17,7 @@ import javafx.util.Duration;
 
 import java.util.List;
 
-public class SqlWorkbenchController {
+public class SqlWorkbenchController extends BaseMissionController {
 
     @FXML private TextArea queryArea;
     @FXML private TableView<List<String>> resultTable;
@@ -27,10 +27,8 @@ public class SqlWorkbenchController {
     @FXML private Label feedbackLabel;
     @FXML private Label rowCountLabel;
     @FXML private Label statusLabel;
-    @FXML private Label checkpointLabel;
     @FXML private Label resultStatusLabel;
     @FXML private Label taskLabel;
-    @FXML private Label missionTitle;
 
     @FXML
     private void initialize() {
@@ -41,10 +39,7 @@ public class SqlWorkbenchController {
                 event.consume();
             }
         });
-        ScreenNavigator.SESSION.currentMission().ifPresent(mission -> {
-            checkpointLabel.setText(ScreenNavigator.checkpointText(mission));
-            missionTitle.setText(mission.title());
-        });
+        initializeMissionHeader();
         ScreenNavigator.SESSION.sqlBrief().ifPresent(brief -> {
             taskLabel.setText(brief.task());
             for (String table : brief.tables()) {
@@ -85,7 +80,7 @@ public class SqlWorkbenchController {
             queryArea.setEditable(false);
             runButton.setDisable(true);
             clearButton.setDisable(true);
-            ScreenNavigator.continueAfterFeedback(queryArea, answer, Duration.seconds(2));
+            proceedAfterFeedback(queryArea, answer, Duration.seconds(2));
         }
     }
 

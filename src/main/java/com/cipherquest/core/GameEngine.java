@@ -2,6 +2,7 @@ package com.cipherquest.core;
 
 import com.cipherquest.clues.Clue;
 import com.cipherquest.levels.Level;
+import com.cipherquest.levels.LevelFactory;
 import com.cipherquest.levels.LevelManager;
 import com.cipherquest.player.Player;
 
@@ -18,15 +19,15 @@ public class GameEngine {
     private Level currentLevel;
     private boolean mainEndingUnlocked;
 
-    private final LevelManager levelManager;
-    private final ScoreCalculator scoreCalculator;
+    private LevelFactory levelFactory;
+    private ScoreCalculator scoreCalculator;
     private final CopyOnWriteArrayList<GameEventListener> eventListeners;
     private ProgressSaveManager saveManager;
 
     private static final int STARTING_CHECKPOINT = 1;
 
     private GameEngine() {
-        this.levelManager = new LevelManager();
+        this.levelFactory = new LevelManager();
         this.scoreCalculator = new DefaultScoreCalculator();
         this.eventListeners = new CopyOnWriteArrayList<>();
         this.saveManager = new ProgressSaveManager();
@@ -84,7 +85,7 @@ public class GameEngine {
             } catch (Exception ignored) {
             }
         }
-        this.currentLevel = levelManager.createLevel(checkpointId);
+        this.currentLevel = levelFactory.createLevel(checkpointId);
         this.currentLevel.loadChallenge();
         if (this.player != null && this.player.hasCompletedCheckpoint(checkpointId)) {
             this.currentLevel.markCompleted();
@@ -109,7 +110,7 @@ public class GameEngine {
             currentLevel.markCompleted();
             player.markCheckpointCompleted(currentCheckpoint);
 
-            if (currentCheckpoint < levelManager.getTotalCheckpoints()) {
+            if (currentCheckpoint < levelFactory.getTotalCheckpoints()) {
                 player.unlockCheckpoint(currentCheckpoint + 1);
             }
 
@@ -135,7 +136,7 @@ public class GameEngine {
                 }
             }
 
-            if (currentCheckpoint >= levelManager.getTotalCheckpoints()) {
+            if (currentCheckpoint >= levelFactory.getTotalCheckpoints()) {
                 this.mainEndingUnlocked = true;
                 saveProgress();
                 changeGameState(GameState.VICTORY);
@@ -181,7 +182,7 @@ public class GameEngine {
             return false;
         }
 
-        if (currentCheckpoint < levelManager.getTotalCheckpoints()) {
+        if (currentCheckpoint < levelFactory.getTotalCheckpoints()) {
             currentCheckpoint++;
             loadCheckpoint(currentCheckpoint);
             saveProgress();
@@ -191,7 +192,7 @@ public class GameEngine {
     }
 
     public boolean selectCheckpoint(int checkpointId) {
-        if (player == null || checkpointId < 1 || checkpointId > levelManager.getTotalCheckpoints()) {
+        if (player == null || checkpointId < 1 || checkpointId > levelFactory.getTotalCheckpoints()) {
             return false;
         }
         if (!isCheckpointUnlocked(checkpointId)) {
@@ -203,7 +204,7 @@ public class GameEngine {
     }
 
     public boolean isCheckpointUnlocked(int checkpointId) {
-        if (player == null || checkpointId < 1 || checkpointId > levelManager.getTotalCheckpoints()) {
+        if (player == null || checkpointId < 1 || checkpointId > levelFactory.getTotalCheckpoints()) {
             return false;
         }
         return player.isCheckpointUnlocked(checkpointId);
@@ -263,20 +264,36 @@ public class GameEngine {
                 data.getDiscoveredClueIds()
         );
         for (int cp : this.player.getCompletedCheckpoints()) {
-            if (cp < levelManager.getTotalCheckpoints()) {
+            if (cp < levelFactory.getTotalCheckpoints()) {
                 this.player.unlockCheckpoint(cp + 1);
             }
         }
         this.mainEndingUnlocked = data.isMainEndingUnlocked()
-                || this.player.hasCompletedCheckpoint(levelManager.getTotalCheckpoints());
+                || this.player.hasCompletedCheckpoint(levelFactory.getTotalCheckpoints());
 
         int targetCp = data.getCurrentCheckpoint();
-        if (targetCp < 1 || targetCp > levelManager.getTotalCheckpoints() || !isCheckpointUnlocked(targetCp)) {
+        if (targetCp < 1 || targetCp > levelFactory.getTotalCheckpoints() || !isCheckpointUnlocked(targetCp)) {
             targetCp = STARTING_CHECKPOINT;
         }
         this.currentCheckpoint = targetCp;
         loadCheckpoint(this.currentCheckpoint);
         return true;
+    }
+
+    public void setLevelFactory(LevelFactory levelFactory) {
+        this.levelFactory = Objects.requireNonNull(levelFactory, "levelFactory cannot be null");
+    }
+
+    public LevelFactory getLevelFactory() {
+        return levelFactory;
+    }
+
+    public void setScoreCalculator(ScoreCalculator scoreCalculator) {
+        this.scoreCalculator = Objects.requireNonNull(scoreCalculator, "scoreCalculator cannot be null");
+    }
+
+    public ScoreCalculator getScoreCalculator() {
+        return scoreCalculator;
     }
 
     public Player getPlayer() {
@@ -296,7 +313,7 @@ public class GameEngine {
     }
 
     public int getTotalCheckpoints() {
-        return levelManager.getTotalCheckpoints();
+        return levelFactory.getTotalCheckpoints();
     }
 
     public boolean isMainEndingUnlocked() {

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.cipherquest.ui.VictoryScreenController"
+           styleClass="mission-root, victory-root">
+    <VBox spacing="20" maxWidth="1000" maxHeight="-Infinity" styleClass="mission-shell, victory-shell" alignment="CENTER">
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="mission-bar">
+            <Region styleClass="signal-mark" />
+            <Label text="CIPHERQUEST  /  MISSION COMPLETE" styleClass="mission-channel" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label text="SYSTEM STATUS: SECURED" styleClass="checkpoint-tag" />
+        </HBox>
+
+        <VBox alignment="CENTER" spacing="16" styleClass="victory-content">
+            <Label text="MISSION ACCOMPLISHED" styleClass="eyebrow, victory-eyebrow" />
+            <Label text="กู้คืนคลังข้อมูลโบราณสำเร็จ!" styleClass="mission-title, victory-title" />
+            <Label fx:id="endingDescription" wrapText="true" textAlignment="CENTER" styleClass="mission-description, victory-description" />
+
+            <HBox alignment="CENTER" spacing="20" styleClass="victory-stats-row">
+                <VBox alignment="CENTER" spacing="6" styleClass="stat-card">
+                    <Label text="FINAL SCORE" styleClass="stat-caption" />
+                    <Label fx:id="scoreLabel" text="0" styleClass="stat-value" />
+                </VBox>
+                <VBox alignment="CENTER" spacing="6" styleClass="stat-card">
+                    <Label text="CHECKPOINTS" styleClass="stat-caption" />
+                    <Label fx:id="checkpointsLabel" text="7 / 7" styleClass="stat-value" />
+                </VBox>
+                <VBox alignment="CENTER" spacing="6" styleClass="stat-card">
+                    <Label text="HINTS USED" styleClass="stat-caption" />
+                    <Label fx:id="hintsUsedLabel" text="0" styleClass="stat-value" />
+                </VBox>
+                <VBox alignment="CENTER" spacing="6" styleClass="stat-card">
+                    <Label text="CLUES UNLOCKED" styleClass="stat-caption" />
+                    <Label fx:id="cluesFoundLabel" text="5" styleClass="stat-value" />
+                </VBox>
+            </HBox>
+
+            <Button text="กลับสู่หน้าหลัก (Main Menu)  →" onAction="#onReturnToMainMenu"
+                    styleClass="primary-button, victory-button" />
+        </VBox>
+    </VBox>
+</StackPane>

@@ -59,6 +59,13 @@ public class ScreenFxmlLoadTest {
     }
 
     @Test
+    void testLoadVictoryScreenFxml() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/victory-screen.fxml"));
+        Object root = loader.load();
+        assertNotNull(root);
+    }
+
+    @Test
     void sqlWorkbenchRendersTheActiveMissionSchemaAndQueryResult() throws Exception {
         FutureTask<Void> check = new FutureTask<>(() -> {
             GameEngine engine = GameEngine.getInstance();
