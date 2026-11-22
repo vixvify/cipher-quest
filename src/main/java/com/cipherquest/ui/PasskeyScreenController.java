@@ -20,17 +20,13 @@ public class PasskeyScreenController extends BaseMissionController {
     @FXML private Button authenticateButton;
     @FXML private Button evidenceButton;
     @FXML private Label feedbackLabel;
-    @FXML private Label hintLabel;
     @FXML private Label evidenceCaption;
     @FXML private Label evidenceText;
 
     @FXML
     private void initialize() {
         initializeMissionHeader();
-        ScreenNavigator.SESSION.passkeyBrief().ifPresent(brief -> {
-            hintLabel.setText(brief.hint());
-            ciphertext = brief.ciphertext();
-        });
+        ScreenNavigator.SESSION.passkeyBrief().ifPresent(brief -> ciphertext = brief.ciphertext());
         evidenceButton.setDisable(ciphertext == null);
     }
 

@@ -24,6 +24,8 @@ public class SqlWorkbenchController extends BaseMissionController {
     @FXML private VBox schemaTables;
     @FXML private Button runButton;
     @FXML private Button clearButton;
+    @FXML private Button knowledgeButton;
+    @FXML private Button cluesButton;
     @FXML private Label feedbackLabel;
     @FXML private Label rowCountLabel;
     @FXML private Label statusLabel;
@@ -33,6 +35,8 @@ public class SqlWorkbenchController extends BaseMissionController {
     @FXML
     private void initialize() {
         runButton.setTooltip(new Tooltip("Ctrl + Enter"));
+        queryArea.textProperty().addListener((property, before, text) ->
+                ThaiTypography.useThaiFontWhenNeeded(queryArea, text));
         queryArea.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER && event.isControlDown()) {
                 runButton.fire();
@@ -40,14 +44,30 @@ public class SqlWorkbenchController extends BaseMissionController {
             }
         });
         initializeMissionHeader();
+        updateClueCount();
+        knowledgeButton.setDisable(ScreenNavigator.SESSION.currentSqlTopics().isEmpty());
         ScreenNavigator.SESSION.sqlBrief().ifPresent(brief -> {
-            taskLabel.setText(brief.task());
+            taskLabel.setText(ThaiTypography.withWordBreaks(brief.task()));
             for (String table : brief.tables()) {
                 Label name = new Label(table);
                 name.getStyleClass().add("sql-table-item");
                 schemaTables.getChildren().add(name);
             }
         });
+    }
+
+    @FXML
+    private void onOpenKnowledge() {
+        MissionSupportDialog.showKnowledge(knowledgeButton, ScreenNavigator.SESSION.currentSqlTopics());
+    }
+
+    @FXML
+    private void onOpenClues() {
+        MissionSupportDialog.showClues(cluesButton, ScreenNavigator.SESSION.discoveredClues());
+    }
+
+    private void updateClueCount() {
+        cluesButton.setText("เบาะแส " + ScreenNavigator.SESSION.discoveredClues().size());
     }
 
     @FXML
@@ -80,6 +100,9 @@ public class SqlWorkbenchController extends BaseMissionController {
             queryArea.setEditable(false);
             runButton.setDisable(true);
             clearButton.setDisable(true);
+            knowledgeButton.setDisable(true);
+            updateClueCount();
+            cluesButton.setDisable(true);
             proceedAfterFeedback(queryArea, answer, Duration.seconds(2));
         }
     }

@@ -4,12 +4,13 @@ import com.cipherquest.core.GameEngine;
 import com.cipherquest.player.Player;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TitledPane;
 
 public class VictoryScreenController {
 
     @FXML private Label endingDescription;
+    @FXML private TitledPane endingPanel;
     @FXML private Label scoreLabel;
-    @FXML private Label hintsUsedLabel;
     @FXML private Label cluesFoundLabel;
     @FXML private Label checkpointsLabel;
 
@@ -20,13 +21,15 @@ public class VictoryScreenController {
 
         if (player != null) {
             scoreLabel.setText(String.valueOf(player.getScore()));
-            hintsUsedLabel.setText(String.valueOf(player.getHintsUsed()));
             cluesFoundLabel.setText(String.valueOf(player.getDiscoveredMainClues().size()));
             checkpointsLabel.setText(player.getCompletedCheckpoints().size() + " / " + engine.getTotalCheckpoints());
         }
 
-        if (engine.getCurrentLevel() != null) {
-            endingDescription.setText(engine.getCurrentLevel().getEndingMessage());
+        boolean hasEnding = engine.isMainEndingUnlocked() && engine.getCurrentLevel() != null;
+        endingPanel.setVisible(hasEnding);
+        endingPanel.setManaged(hasEnding);
+        if (hasEnding) {
+            endingDescription.setText(ThaiTypography.withWordBreaks(engine.getCurrentLevel().getEndingMessage()));
         }
     }
 

@@ -45,6 +45,7 @@
   -fx-highlight-fill: #624788;
 }
 .sql-editor .content { -fx-background-color: #121021; }
+.sql-editor:thai-text { -fx-font-family: "Sarabun"; }
 .sql-result-table {
   -fx-background-color: #121021;
   -fx-background-insets: 0;

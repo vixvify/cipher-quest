@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<StackPane fx:id="missionRoot" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.cipherquest.ui.PasskeyScreenController" styleClass="mission-root, passkey-root">
     <Region mouseTransparent="true" styleClass="passkey-ambient-art" />
     <VBox spacing="20" maxWidth="1090" maxHeight="-Infinity" styleClass="mission-shell">
@@ -12,6 +12,7 @@
             <Region styleClass="signal-mark" />
             <Label text="CIPHERQUEST  /  DECRYPTION" styleClass="mission-channel" />
             <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="hintButton" text="คำใบ้" onAction="#onOpenHints" styleClass="support-button" />
             <Label fx:id="checkpointLabel" styleClass="checkpoint-tag" />
         </HBox>
 
@@ -33,10 +34,6 @@
                     <Region mouseTransparent="true" maxWidth="55" maxHeight="14" translateX="61" translateY="-5"
                             StackPane.alignment="TOP_LEFT" styleClass="evidence-tape" />
                 </StackPane>
-                <VBox spacing="6" styleClass="hint-panel">
-                    <Label text="คำใบ้" styleClass="panel-title" />
-                    <Label fx:id="hintLabel" wrapText="true" styleClass="hint-text" />
-                </VBox>
             </VBox>
 
             <VBox alignment="CENTER_LEFT" spacing="13" minWidth="0" prefWidth="440" HBox.hgrow="ALWAYS" styleClass="passkey-panel">

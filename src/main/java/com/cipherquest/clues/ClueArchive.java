@@ -59,6 +59,11 @@ public class ClueArchive {
         return getDiscoveredCluesByType(ClueType.MAIN);
     }
 
+    public Optional<Clue> findDiscoveredMainClue(int checkpointId) {
+        String id = checkpointToMainClueId.get(checkpointId);
+        return hasDiscoveredClue(id) ? Optional.ofNullable(catalog.get(id)) : Optional.empty();
+    }
+
     public List<Clue> getAllDiscoveredClues() {
         return getDiscoveredCluesByType(null);
     }

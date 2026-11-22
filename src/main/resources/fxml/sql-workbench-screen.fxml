@@ -4,13 +4,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<StackPane fx:id="missionRoot" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.cipherquest.ui.SqlWorkbenchController" styleClass="mission-root, sql-root">
     <VBox spacing="16" maxWidth="1380" styleClass="mission-shell">
         <HBox alignment="CENTER_LEFT" spacing="12" styleClass="mission-bar">
             <Region styleClass="signal-mark" />
             <Label text="CIPHERQUEST  /  SQL WORKBENCH" styleClass="mission-channel" />
             <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="knowledgeButton" text="ความรู้ SQL" onAction="#onOpenKnowledge" styleClass="support-button" />
+            <Button fx:id="cluesButton" text="เบาะแส" onAction="#onOpenClues" styleClass="support-button" />
+            <Button fx:id="hintButton" text="คำใบ้" onAction="#onOpenHints" styleClass="support-button" />
             <Label fx:id="checkpointLabel" styleClass="checkpoint-tag" />
         </HBox>
         <HBox spacing="16" VBox.vgrow="ALWAYS">
@@ -34,7 +37,7 @@
                             <Button fx:id="clearButton" text="Clear" onAction="#onClearQuery" styleClass="secondary-button" />
                             <Button fx:id="runButton" text="Run Query  →" onAction="#onRunQuery" styleClass="primary-button" />
                         </HBox>
-                        <TextArea fx:id="queryArea" accessibleText="SQL query" promptText="-- เขียน SELECT ที่นี่"
+                        <TextArea fx:id="queryArea" accessibleText="SQL query" promptText="-- Write SQL here"
                                   styleClass="sql-editor" VBox.vgrow="ALWAYS" minHeight="50" />
                     </VBox>
                     <VBox minHeight="100" styleClass="sql-panel">

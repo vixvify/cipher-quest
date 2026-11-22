@@ -1,202 +1,42 @@
 # CipherQuest — Class Diagram
 
-## 1. ภาพรวมระบบ (Package Overview)
+แผนภาพแสดงคลาสและเมธอดหลักที่เกี่ยวกับการเปิดหน้าด่าน การเล่น และการบันทึกความคืบหน้า กดที่ภาพเพื่อเปิดขนาดเต็ม หรือเปิด [ต้นฉบับ Mermaid](class-diagram-source.md) เพื่อแก้ไขแผนภาพ
 
-```mermaid
-graph TD
-    Main["Main\nEntry Point"]
+## 1. ภาพรวมแพ็กเกจ
 
-    subgraph UI["ui"]
-        SN["ScreenNavigator"]
-        MM["MainMenuController"]
-        PK["PasskeyScreenController"]
-        TM["TerminalScreenController"]
-        SQL["SqlWorkbenchController"]
-    end
+[![ภาพรวมแพ็กเกจของ CipherQuest](diagrams/class-diagram-1.svg)](diagrams/class-diagram-1.svg)
 
-    subgraph Core["core"]
-        GS["GameSession"]
-        GE["GameEngine\nSingleton"]
-        SC["ScoreCalculator"]
-        PS["ProgressSaveManager"]
-    end
+## 2. หน้าด่าน คำใบ้ และความรู้ SQL
 
-    subgraph Levels["levels"]
-        LM["LevelManager"]
-        CD["ChallengeDefinition"]
-        CL["CaesarLevel\ncheckpoint 1"]
-        LL["LinuxLevel\ncheckpoint 2"]
-        DL["DatabaseLevel\ncheckpoint 3-7"]
-    end
+[![คลาสหน้าด่านและระบบช่วยผู้เล่น](diagrams/class-diagram-2.svg)](diagrams/class-diagram-2.svg)
 
-    Choices["Checkpoint .properties"]
+ผู้เล่นเปิดคำใบ้ได้ทีละขั้นจากหน้าด่าน `GameSession.revealHint()` เรียก `GameEngine.requestHint()` เมื่อยังเปิดเพิ่มได้ การเปิดคลังความรู้หรือคลังเบาะแสใช้ข้อมูลแบบอ่านอย่างเดียว ความรู้ SQL จะแสดงตามหัวข้อของด่าน ส่วนคลังเบาะแสแสดงรายการที่ผู้เล่นค้นพบแล้ว เมื่อผ่านด่าน `BaseMissionController` แสดงคะแนนและเบาะแสก่อนส่งให้ `ScreenNavigator` ไปหน้าถัดไป
 
-    subgraph PlayerPkg["player + clues"]
-        P["Player"]
-        CA["ClueArchive"]
-    end
+## 3. โครงสร้างด่านและการโหลดข้อมูล
 
-    Main --> SN
-    MM --> SN
-    PK --> SN
-    TM --> SN
-    SQL --> SN
-    SN --> GS
-    GS --> GE
+[![ลำดับชั้นของด่านและการโหลดข้อมูล](diagrams/class-diagram-3.svg)](diagrams/class-diagram-3.svg)
 
-    GE --> LM
-    GE --> SC
-    GE --> PS
-    GE --> P
+`LevelManager` สร้าง `CaesarLevel` สำหรับด่าน 1, `LinuxLevel` สำหรับด่าน 2 และ `DatabaseLevel` สำหรับด่าน 3–7 แต่ละด่านตรวจคำตอบผ่านสัญญา `Level` และใช้สถานะร่วมจาก `BaseLevel` ส่วน `SqlKnowledgeCenter` กับ `ClueArchive` ใช้ `ResourceLoader` อ่านไฟล์ `.properties` ด้วย UTF-8 เช่นเดียวกับข้อมูลโจทย์
 
-    LM --> CL
-    LM --> LL
-    LM --> DL
-    CL --> CD
-    LL --> CD
-    DL --> CD
-    CD --> Choices
+## 4. Linux Terminal
 
-    P --> CA
-```
+`VirtualTerminal` เริ่ม Node.js worker เมื่อได้รับคำสั่งแรก และปิด worker เมื่อออกจากด่านหรือรีเซ็ต ระหว่างเล่น just-bash รันคำสั่งบนระบบไฟล์เสมือนและส่งผลกลับให้ `LinuxLevel` ตรวจความสำเร็จของภารกิจ
 
----
+[![เส้นทางคำสั่งของ Linux Terminal](diagrams/class-diagram-4.svg)](diagrams/class-diagram-4.svg)
 
-## 2. Level Hierarchy — Template Method Pattern
+## 5. Game Engine และความคืบหน้า
 
-```mermaid
-classDiagram
-    class Level {
-        <<interface>>
-        +loadChallenge()
-        +checkAnswer(input) bool
-        +getHint() String
-        +getScreenType() ScreenType
-    }
+[![คลาส Game Engine และความคืบหน้า](diagrams/class-diagram-5.svg)](diagrams/class-diagram-5.svg)
 
-    class BaseLevel {
-        <<abstract>>
-        -checkpointId int
-        -attempts int
-        -hintUsed bool
-        -completed bool
-        #recordAttempt()
-        #resetProgressState()
-    }
+หลังตรวจคำตอบถูก `GameEngine` คำนวณคะแนน ปลดล็อกด่านถัดไปและเบาะแสตามภารกิจ แล้วบันทึกความคืบหน้า เมื่อสถานะเปลี่ยนเป็น `VICTORY` ในด่านสุดท้าย `ScreenNavigator` เปิดหน้าสรุปผลที่ `VictoryScreenController` อ่านสถิติจาก `GameEngine`
 
-    class CaesarLevel {
-        -ciphertext String
-        -expectedPlaintext String
-        -shift int
-        +getCiphertext() String
-    }
+## 6. รูปแบบที่ใช้ในโค้ด
 
-    class LinuxLevel {
-        -terminal VirtualTerminal
-        +getTerminal() VirtualTerminal
-    }
-
-    class DatabaseLevel {
-        -dbEnv SqlDatabaseEnvironment
-        -task String
-        -expectedQuery String
-        -lastQueryResult QueryResult
-        +getTask() String
-    }
-
-    Level <|.. BaseLevel
-    BaseLevel <|-- CaesarLevel : checkpoint 1
-    BaseLevel <|-- LinuxLevel : checkpoint 2
-    BaseLevel <|-- DatabaseLevel : checkpoint 3-7
-```
-
----
-
-## 3. Linux Terminal
-
-`LinuxLevel` ใช้ `VirtualTerminal` จัดการ Node.js worker หนึ่งตัวต่อด่าน คำสั่งและไฟล์ของผู้เล่นอยู่ใน session ของ just-bash ส่วน Java ใช้ผลการรันโปรแกรมภารกิจเพื่อประเมินว่าผ่านด่านหรือยัง
-
-```mermaid
-flowchart LR
-    LL["LinuxLevel"] --> VT["VirtualTerminal"]
-    VT <-->|"stdin / stdout"| Worker["Node.js worker"]
-    Worker --> Bash["just-bash"]
-    Bash --> FS["InMemoryFs"]
-```
-
----
-
-## 4. Game Engine — Singleton + Observer + State Machine
-
-```mermaid
-classDiagram
-    class GameEngine {
-        <<Singleton>>
-        -instance$ GameEngine
-        -gameState GameState
-        -currentCheckpoint int
-        -currentLevel Level
-        +getInstance()$ GameEngine
-        +startNewGame()
-        +submitAnswer(input) AnswerResult
-        +advanceToNextCheckpoint()
-        +requestHint() String
-    }
-
-    class GameState {
-        <<enumeration>>
-        NOT_STARTED
-        PLAYING
-        CHECKPOINT_CLEARED
-        VICTORY
-    }
-
-    class GameEventListener {
-        <<interface>>
-        +onGameStateChanged()
-        +onLevelLoaded()
-        +onAnswerEvaluated()
-        +onScoreChanged()
-        +onClueDiscovered()
-    }
-
-    class ScoreCalculator {
-        <<interface>>
-        +calculateScore() int
-    }
-
-    class DefaultScoreCalculator {
-        +calculateScore() int
-    }
-
-    class AnswerResult {
-        -correct bool
-        -status Status
-        -message String
-        -pointsAwarded int
-        +correct()$ AnswerResult
-        +wrong()$ AnswerResult
-        +gameCleared()$ AnswerResult
-    }
-
-    GameEngine --> GameState
-    GameEngine o-- GameEventListener : notifies
-    GameEngine --> ScoreCalculator
-    ScoreCalculator <|.. DefaultScoreCalculator
-    GameEngine ..> AnswerResult : returns
-```
-
----
-
-## 5. Design Patterns สรุป
-
-| Pattern | Classes | สั้นๆ |
+| รูปแบบ | คลาส | หน้าที่ |
 |---|---|---|
-| **Singleton** | `GameEngine` | มี instance เดียวตลอด |
-| **Template Method** | `BaseLevel` → 3 subclasses | base กำหนด skeleton, subclass override เฉพาะส่วนต่าง |
-| **Adapter** | `VirtualTerminal` | เชื่อม Java กับ shell session ของ just-bash |
-| **Strategy** | `ScoreCalculator` | สลับ algorithm คะแนนได้ไม่แตะ Engine |
-| **Observer** | `GameEventListener` | Engine ยิง event ไปทุก listener เมื่อ state เปลี่ยน |
-| **Factory Method** | `LevelManager.createLevel()` | สร้าง Level subclass ถูกตัวตาม checkpoint id |
-| **Facade** | `ScreenNavigator` | ซ่อน FXML/CSS boilerplate ทั้งหมด |
-| **Value Object** | `AnswerResult`, `QueryResult`, `Clue` | Immutable + named factory methods |
+| Singleton | `GameEngine` | ให้ส่วนต่าง ๆ ของแอปใช้สถานะเกมชุดเดียวกัน |
+| Factory | `LevelFactory` และ `LevelManager` | สร้างด่านตามหมายเลข checkpoint |
+| Strategy | `ScoreCalculator` | กำหนดวิธีคิดคะแนน โดยค่าเริ่มต้นใช้ `DefaultScoreCalculator` |
+| Observer | `GameEventListener` | รับการแจ้งเตือนเมื่อสถานะเกมหรือผลการเล่นเปลี่ยน |
+| Adapter | `VirtualTerminal` | รับส่งคำสั่งและผลลัพธ์ระหว่าง Java กับ Node.js worker |
+| Facade | `GameSession` | ให้หน้าจอเรียกคำสั่งเกมและอ่านข้อมูลสำหรับแสดงผลผ่าน API เดียว |

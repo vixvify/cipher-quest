@@ -37,3 +37,6 @@
   -fx-padding: 7px 9px;
 }
 .term-input-field:focused { -fx-border-color: #d2fb86; }
+.term-output:thai-text, .term-prompt:thai-text, .term-input-field:thai-text {
+  -fx-font-family: "Sarabun";
+}
