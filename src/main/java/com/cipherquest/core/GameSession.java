@@ -1,5 +1,8 @@
 package com.cipherquest.core;
 
+import com.cipherquest.clues.Clue;
+import com.cipherquest.knowledge.SqlKnowledgeCenter;
+import com.cipherquest.knowledge.SqlTopic;
 import com.cipherquest.levels.Level;
 import com.cipherquest.levels.caesar.CaesarLevel;
 import com.cipherquest.levels.database.DatabaseLevel;
@@ -12,6 +15,7 @@ import java.util.Optional;
 
 public final class GameSession {
     private final GameEngine engine;
+    private final SqlKnowledgeCenter knowledgeCenter = new SqlKnowledgeCenter();
 
     public GameSession(GameEngine engine) {
         this.engine = engine;
@@ -29,7 +33,7 @@ public final class GameSession {
 
     public Optional<PasskeyBrief> passkeyBrief() {
         if (engine.getCurrentLevel() instanceof CaesarLevel level) {
-            return Optional.of(new PasskeyBrief(level.getCiphertext(), level.getHint()));
+            return Optional.of(new PasskeyBrief(level.getCiphertext()));
         }
         return Optional.empty();
     }
@@ -75,9 +79,47 @@ public final class GameSession {
         return engine.advanceToNextCheckpoint();
     }
 
+    public HintProgress hintProgress() {
+        Level level = engine.getCurrentLevel();
+        if (level == null) {
+            return new HintProgress(List.of(), 0, false);
+        }
+        List<String> hints = level.getHints();
+        int shown = Math.min(level.getHintLevel(), hints.size());
+        boolean canReveal = engine.getGameState() == GameState.PLAYING && shown < hints.size();
+        return new HintProgress(List.copyOf(hints.subList(0, shown)), hints.size(), canReveal);
+    }
+
+    public HintProgress revealHint() {
+        if (hintProgress().canReveal()) {
+            engine.requestHint();
+        }
+        return hintProgress();
+    }
+
+    public List<SqlTopic> currentSqlTopics() {
+        return knowledgeCenter.findTopicsForLevel(engine.getCurrentLevel());
+    }
+
+    public List<Clue> discoveredClues() {
+        if (engine.getPlayer() == null) {
+            return List.of();
+        }
+        return engine.getPlayer().getClueArchive().getAllDiscoveredClues();
+    }
+
+    public Optional<Clue> currentMissionClue() {
+        if (engine.getPlayer() == null) {
+            return Optional.empty();
+        }
+        return engine.getPlayer().getClueArchive().findDiscoveredMainClue(engine.getCurrentCheckpoint());
+    }
+
     public record Mission(int checkpoint, int total, String title, String description, Level.ScreenType screenType) {}
 
-    public record PasskeyBrief(String ciphertext, String hint) {}
+    public record PasskeyBrief(String ciphertext) {}
+
+    public record HintProgress(List<String> revealed, int total, boolean canReveal) {}
 
     public record SqlBrief(String task, List<String> tables) {}
 

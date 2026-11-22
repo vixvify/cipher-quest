@@ -32,6 +32,8 @@ public class TerminalScreenController extends BaseMissionController {
     @FXML
     private void initialize() {
         initializeMissionHeader();
+        commandField.textProperty().addListener((property, before, text) ->
+                ThaiTypography.useThaiFontWhenNeeded(commandField, text));
         commandField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
                 showHistory(event.getCode() == KeyCode.UP ? -1 : 1);
@@ -94,6 +96,7 @@ public class TerminalScreenController extends BaseMissionController {
     }
 
     private void setCommandPending(boolean pending) {
+        setHintsBusy(pending);
         commandField.setEditable(!pending);
         executeButton.setDisable(pending);
         Feedback.show(statusLabel, pending ? "RUNNING" : "READY", false, false);
@@ -123,6 +126,7 @@ public class TerminalScreenController extends BaseMissionController {
     private void appendTerminalLine(String text, String styleClass) {
         Label label = new Label(text);
         label.getStyleClass().add(styleClass);
+        ThaiTypography.useThaiFontWhenNeeded(label, text);
         label.setWrapText(true);
         outputBox.getChildren().add(label);
         if (outputBox.getChildren().size() > 250) {

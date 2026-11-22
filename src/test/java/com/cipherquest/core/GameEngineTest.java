@@ -1,12 +1,14 @@
 package com.cipherquest.core;
 
 import com.cipherquest.levels.Level;
+import com.cipherquest.knowledge.SqlTopic;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -101,6 +103,30 @@ class GameEngineTest {
         assertTrue(execResult.isCorrect());
         assertEquals(GameState.CHECKPOINT_CLEARED, engine.getGameState());
         assertTrue(execResult.getMessage().contains("ACCESS GRANTED"));
+    }
+
+    @Test
+    void missionSupportShowsRelevantKnowledgeAndOnlyRevealedHintsAndClues() {
+        GameSession session = new GameSession(engine);
+        assertTrue(session.currentSqlTopics().isEmpty());
+        assertTrue(session.hintProgress().revealed().isEmpty());
+        assertTrue(session.discoveredClues().isEmpty());
+
+        engine.getPlayer().unlockCheckpoint(3);
+        assertTrue(engine.selectCheckpoint(3));
+        assertEquals(List.of("KC01", "KC02"), session.currentSqlTopics().stream().map(SqlTopic::getId).toList());
+        assertEquals(0, engine.getPlayer().getHintsUsed());
+        assertEquals(3, session.hintProgress().total());
+        assertEquals(1, session.revealHint().revealed().size());
+        assertEquals(2, session.revealHint().revealed().size());
+        assertEquals(1, engine.getPlayer().getHintsUsed());
+        assertTrue(session.currentMissionClue().isEmpty());
+
+        assertTrue(session.runQuery("SELECT explorer_id, explorer_name, status, clue FROM explorers WHERE explorer_name = 'Arin'").answer().isCorrect());
+        assertEquals("MC01", session.currentMissionClue().orElseThrow().getId());
+        assertEquals(1, session.discoveredClues().size());
+        assertFalse(session.revealHint().canReveal());
+        assertEquals(2, session.hintProgress().revealed().size());
     }
 
     @Test

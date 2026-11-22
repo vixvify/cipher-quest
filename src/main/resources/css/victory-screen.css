@@ -1,57 +1,84 @@
 .victory-root {
-  -fx-background-color: radial-gradient(center 50% 30%, radius 80%, #201a3c, #0c091d 85%);
+  -fx-background-color: radial-gradient(center 50% 26%, radius 86%, #30224a, #0e0b22 78%);
 }
 
-.victory-shell {
-  -fx-padding: 30;
-}
-
-.victory-content {
-  -fx-padding: 24 16;
-}
-
-.victory-eyebrow {
-  -fx-text-fill: #dbff87;
-  -fx-font-size: 14px;
+.victory-card {
+  -fx-padding: 28px 36px;
+  -fx-background-color: linear-gradient(to bottom, #231d39, #18142b);
+  -fx-background-radius: 16px;
+  -fx-border-color: #574470;
+  -fx-border-radius: 16px;
+  -fx-effect: dropshadow(gaussian, rgba(8, 4, 20, 0.46), 24, 0.15, 0, 6);
 }
 
 .victory-title {
-  -fx-font-size: 26px;
-  -fx-text-fill: #ffffff;
+  -fx-font-size: 28px;
+  -fx-text-fill: #fff8ff;
 }
 
-.victory-description {
-  -fx-font-size: 14px;
-  -fx-text-fill: #d8cde9;
-  -fx-max-width: 720;
+.victory-score {
+  -fx-padding: 0 0 8px;
 }
 
-.victory-stats-row {
-  -fx-padding: 16 0;
-}
-
-.stat-card {
-  -fx-background-color: #1f1a35;
-  -fx-border-color: #493963;
-  -fx-border-width: 1;
-  -fx-border-radius: 8;
-  -fx-background-radius: 8;
-  -fx-padding: 14 20;
-  -fx-min-width: 140;
-}
-
-.stat-caption {
-  -fx-font-size: 11px;
-  -fx-text-fill: #a595bd;
-}
-
-.stat-value {
-  -fx-font-size: 22px;
-  -fx-text-fill: #dbff87;
+.victory-score-value {
+  -fx-font-size: 70px;
   -fx-font-weight: bold;
+  -fx-text-fill: #dbff87;
+  -fx-effect: dropshadow(gaussian, rgba(186, 247, 91, 0.28), 20, 0.13, 0, 1);
+}
+
+.victory-score-caption {
+  -fx-font-size: 15px;
+  -fx-text-fill: #ded2ed;
+}
+
+.victory-stats {
+  -fx-padding: 9px 0;
+  -fx-border-color: #463653 transparent #463653 transparent;
+  -fx-border-width: 1px 0;
+}
+
+.victory-stat {
+  -fx-min-width: 100px;
+}
+
+.victory-stat-value {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #f3eaff;
+}
+
+.victory-stat-caption {
+  -fx-font-size: 13px;
+  -fx-text-fill: #cbbadd;
+}
+
+.victory-epilogue {
+  -fx-text-fill: #decff0;
+}
+
+.victory-epilogue > .title {
+  -fx-background-color: #312541;
+  -fx-background-radius: 6px;
+  -fx-padding: 5px 10px;
+}
+
+.victory-epilogue > .title > .arrow-button > .arrow {
+  -fx-background-color: #bfa9d8;
+}
+
+.victory-epilogue > .content {
+  -fx-background-color: #211a33;
+  -fx-border-color: #413251;
+  -fx-padding: 8px 10px;
+}
+
+.victory-epilogue-copy {
+  -fx-font-size: 13px;
+  -fx-text-fill: #d7cbe7;
 }
 
 .victory-button {
-  -fx-padding: 12 32;
+  -fx-padding: 9px 25px;
   -fx-font-size: 15px;
 }

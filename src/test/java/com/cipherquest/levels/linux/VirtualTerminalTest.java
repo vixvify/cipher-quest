@@ -26,6 +26,7 @@ class VirtualTerminalTest {
             assertTrue(t.execute("ls -la /opt/security").contains("breach.bin"));
             String memo = t.execute("cat readme.txt");
             assertTrue(memo.contains("SECURITY MEMO"));
+            assertTrue(memo.contains("สำเนาบันทึกภารกิจอยู่ที่"));
             assertTrue(memo.contains("~/documents/mission.txt"));
             assertFalse(memo.contains("cat "));
             assertTrue(t.execute("cat /home/agent/documents/mission.txt").contains("breach.bin"));
