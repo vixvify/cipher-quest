@@ -12,6 +12,7 @@ import com.cipherquest.levels.linux.VirtualTerminal;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 public final class GameSession {
     private final GameEngine engine;
@@ -23,6 +24,33 @@ public final class GameSession {
 
     public void start() {
         engine.startNewGame();
+    }
+
+    public CampaignProgress campaignProgress() {
+        int score = engine.getPlayer() == null ? 0 : engine.getPlayer().getScore();
+        List<CheckpointStatus> checkpoints = IntStream.rangeClosed(1, engine.getTotalCheckpoints())
+                .mapToObj(this::checkpointStatus)
+                .toList();
+        return new CampaignProgress(score, checkpoints);
+    }
+
+    public boolean enterCheckpoint(int checkpoint) {
+        if (checkpointStatus(checkpoint) != CheckpointStatus.AVAILABLE) {
+            return false;
+        }
+        if (engine.getCurrentCheckpoint() == checkpoint && engine.getGameState() == GameState.PLAYING) {
+            return true;
+        }
+        return engine.selectCheckpoint(checkpoint);
+    }
+
+    private CheckpointStatus checkpointStatus(int checkpoint) {
+        if (!engine.isCheckpointUnlocked(checkpoint)) {
+            return CheckpointStatus.LOCKED;
+        }
+        return engine.getPlayer().hasCompletedCheckpoint(checkpoint)
+                ? CheckpointStatus.COMPLETED
+                : CheckpointStatus.AVAILABLE;
     }
 
     public Optional<Mission> currentMission() {
@@ -116,6 +144,16 @@ public final class GameSession {
     }
 
     public record Mission(int checkpoint, int total, String title, String description, Level.ScreenType screenType) {}
+
+    public enum CheckpointStatus { LOCKED, AVAILABLE, COMPLETED }
+
+    public record CampaignProgress(int score, List<CheckpointStatus> checkpoints) {
+        public CheckpointStatus status(int checkpoint) {
+            return checkpoint >= 1 && checkpoint <= checkpoints.size()
+                    ? checkpoints.get(checkpoint - 1)
+                    : CheckpointStatus.LOCKED;
+        }
+    }
 
     public record PasskeyBrief(String ciphertext) {}
 

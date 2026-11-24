@@ -21,7 +21,9 @@ public class VictoryScreenController {
 
         if (player != null) {
             scoreLabel.setText(String.valueOf(player.getScore()));
-            cluesFoundLabel.setText(String.valueOf(player.getDiscoveredMainClues().size()));
+            var walk = ScreenNavigator.archiveWalk();
+            int evidenceCount = walk == null ? player.getDiscoveredMainClues().size() : walk.collectedEvidenceCount();
+            cluesFoundLabel.setText(String.valueOf(evidenceCount));
             checkpointsLabel.setText(player.getCompletedCheckpoints().size() + " / " + engine.getTotalCheckpoints());
         }
 

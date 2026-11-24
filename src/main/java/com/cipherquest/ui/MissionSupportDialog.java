@@ -1,7 +1,7 @@
 package com.cipherquest.ui;
 
-import com.cipherquest.clues.Clue;
 import com.cipherquest.core.GameSession;
+import com.cipherquest.exploration.FieldNote;
 import com.cipherquest.knowledge.SqlTopic;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -19,6 +19,15 @@ import java.util.function.Function;
 
 final class MissionSupportDialog {
     private MissionSupportDialog() {}
+
+    static void showControls(Node owner) {
+        Dialog<Void> dialog = createDialog(owner, "วิธีเล่น", "สำรวจโถงเพื่อหาเบาะแสและเปิดภารกิจ");
+        dialog.getDialogPane().setContent(new VBox(12,
+                section("WASD หรือปุ่มลูกศร", "เดินไปที่สถานีสีเขียว หรือสำรวจจุดสีทองเพื่อหาเบาะแสของด่านนี้", "support-copy"),
+                section("E", "เก็บหลักฐานหรือเปิดสถานีเมื่อเดินเข้าใกล้", "support-copy"),
+                section("Esc", "กลับโถงจากหน้าภารกิจ", "support-copy")));
+        dialog.show();
+    }
 
     static void showHints(Node owner, GameSession session) {
         Dialog<Void> dialog = createDialog(owner, "คำใบ้ภารกิจ",
@@ -51,12 +60,16 @@ final class MissionSupportDialog {
         dialog.show();
     }
 
-    static void showClues(Node owner, List<Clue> clues) {
-        Dialog<Void> dialog = createDialog(owner, "คลังเบาะแส",
-                "ย้อนดูรหัส ชื่อสถานที่ และข้อมูลจากด่านก่อนหน้าเพื่อนำไปใช้ใน Query");
-        chooseEntry(dialog, clues, clues.size() - 1, Clue::getTitle, clue -> new VBox(10,
-                paragraph(clue.getSummary()),
-                section("ข้อมูลที่ค้นพบ", String.join("\n", clue.getDetails()), "support-copy")));
+    static void showFieldNotes(Node owner, List<FieldNote> notes) {
+        Dialog<Void> dialog = createDialog(owner, "หลักฐานของด่านนี้",
+                "กด Esc กลับไปสำรวจจุดสีทองรอบสถานีได้ การเก็บหลักฐานไม่มีผลต่อคะแนน");
+        if (!notes.isEmpty()) {
+            VBox entries = new VBox(12);
+            for (FieldNote note : notes) {
+                entries.getChildren().add(section(note.title(), note.text(), "support-copy"));
+            }
+            dialog.getDialogPane().setContent(scrollable(entries));
+        }
         dialog.show();
     }
 
@@ -97,7 +110,7 @@ final class MissionSupportDialog {
         dialog.getDialogPane().setContent(new VBox(12, picker, scroll));
     }
 
-    private static Dialog<Void> createDialog(Node owner, String title, String instructions) {
+    static Dialog<Void> createDialog(Node owner, String title, String instructions) {
         Dialog<Void> dialog = new Dialog<>();
         dialog.initOwner(owner.getScene().getWindow());
         dialog.setTitle(title);
@@ -123,7 +136,7 @@ final class MissionSupportDialog {
         return new VBox(3, label(title, "support-section-title"), label(body, style));
     }
 
-    private static Label paragraph(String text) {
+    static Label paragraph(String text) {
         return label(text, "support-copy");
     }
 

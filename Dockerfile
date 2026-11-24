@@ -20,11 +20,11 @@ RUN --mount=type=cache,target=/root/.m2 \
             *) cp "$jar" /out/lib/ ;; \
         esac; \
     done \
-    && java --module-path /out/javafx --add-modules javafx.controls,javafx.fxml -version
+    && java --module-path /out/javafx --add-modules javafx.controls,javafx.fxml,javafx.media -version
 
 FROM eclipse-temurin:25-jre-noble
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends fonts-noto-core libgl1 libgl1-mesa-dri libgtk-3-0t64 \
+    && apt-get install -y --no-install-recommends fonts-noto-core libasound2t64 libgl1 libgl1-mesa-dri libgtk-3-0t64 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 10001 cipherquest \
     && install -d -o cipherquest -g cipherquest /home/cipherquest/.cipherquest
@@ -33,5 +33,5 @@ COPY --from=build /out/ ./
 COPY --from=terminal /usr/local/bin/node /usr/local/bin/node
 COPY --from=terminal /app/terminal/ ./terminal/
 USER cipherquest
-CMD ["java", "--module-path", "/app/javafx", "--add-modules", "javafx.controls,javafx.fxml", \
-     "--enable-native-access=javafx.graphics,ALL-UNNAMED", "-cp", "/app/cipherquest.jar:/app/lib/*", "com.cipherquest.Main"]
+CMD ["java", "--module-path", "/app/javafx", "--add-modules", "javafx.controls,javafx.fxml,javafx.media", \
+     "--enable-native-access=javafx.graphics,javafx.media,ALL-UNNAMED", "-cp", "/app/cipherquest.jar:/app/lib/*", "com.cipherquest.Main"]

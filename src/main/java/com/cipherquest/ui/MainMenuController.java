@@ -8,6 +8,8 @@ import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -18,9 +20,13 @@ public class MainMenuController {
     @FXML private StackPane rootPane;
     @FXML private Canvas rainCanvas;
     @FXML private VBox heroCopy;
+    @FXML private Region signalSweep;
+    @FXML private Button controlsButton;
+    @FXML private Button soundButton;
 
     @FXML
     private void initialize() {
+        GameAudio.updateButton(soundButton);
         rootPane.widthProperty().addListener((property, before, width) ->
                 rootPane.pseudoClassStateChanged(COMPACT, width.doubleValue() < 960));
 
@@ -28,15 +34,22 @@ public class MainMenuController {
         rainCanvas.heightProperty().bind(rootPane.heightProperty());
         MenuRain rain = new MenuRain(rainCanvas);
         ParallelTransition intro = createIntro();
+        TranslateTransition signal = new TranslateTransition(Duration.seconds(2.6), signalSweep);
+        signal.setFromX(0);
+        signal.setToX(156);
+        signal.setAutoReverse(true);
+        signal.setCycleCount(TranslateTransition.INDEFINITE);
         rootPane.sceneProperty().addListener((property, before, scene) -> {
             if (scene == null) {
                 rain.stop();
                 intro.stop();
+                signal.stop();
                 return;
             }
             rain.start();
             if (!Platform.getPreferences().isReducedMotion()) {
                 intro.playFromStart();
+                signal.playFromStart();
             }
         });
     }
@@ -55,7 +68,17 @@ public class MainMenuController {
 
     @FXML
     private void onStartGame() {
-        ScreenNavigator.SESSION.start();
-        ScreenNavigator.navigateToCurrentLevel();
+        GameAudio.play(GameAudio.Effect.CONNECT);
+        ScreenNavigator.startExploration();
+    }
+
+    @FXML
+    private void onToggleSound() {
+        GameAudio.toggle(soundButton);
+    }
+
+    @FXML
+    private void onShowControls() {
+        MissionSupportDialog.showControls(controlsButton);
     }
 }

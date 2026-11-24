@@ -10,16 +10,27 @@
     <Region styleClass="hero-art" />
     <Canvas fx:id="rainCanvas" managed="false" mouseTransparent="true" />
     <Region styleClass="hero-shade" mouseTransparent="true" />
+    <Button fx:id="soundButton" onAction="#onToggleSound" styleClass="hero-sound" StackPane.alignment="TOP_RIGHT" />
 
     <HBox alignment="CENTER_RIGHT" fillHeight="false" pickOnBounds="false" styleClass="hero-layout">
-        <VBox fx:id="heroCopy" alignment="CENTER_LEFT" spacing="24" minWidth="0" maxWidth="580" styleClass="hero-copy">
+        <VBox fx:id="heroCopy" alignment="CENTER_LEFT" spacing="16" minWidth="0" maxWidth="580" styleClass="hero-copy">
             <VBox spacing="4" accessibleText="CipherQuest">
                 <Text text="CIPHER" boundsType="VISUAL" styleClass="hero-title" />
                 <Text text="QUEST" boundsType="VISUAL" styleClass="hero-title, hero-title-accent" />
             </VBox>
-            <Label text="แกะรอยข้อความลับ ฝ่าเทอร์มินัล และค้นหาความทรงจำที่หายไปในคลังข้อมูลโบราณ"
-                   wrapText="true" maxWidth="365" styleClass="hero-description" />
-            <Button text="เริ่มภารกิจ  →" onAction="#onStartGame" defaultButton="true" styleClass="hero-button" />
+            <StackPane alignment="CENTER_LEFT" minHeight="3" prefHeight="3" maxHeight="3" maxWidth="220"
+                       mouseTransparent="true" styleClass="hero-signal-track">
+                <Region fx:id="signalSweep" minHeight="3" maxHeight="3" prefWidth="54" maxWidth="54"
+                        styleClass="hero-signal-sweep" />
+            </StackPane>
+            <VBox spacing="14" maxWidth="418" styleClass="hero-actions">
+                <Label text="ประตูคลังถูกปิดตาย ตามรอยหลักฐานเพื่อเปิดระบบขึ้นมาอีกครั้ง"
+                       wrapText="true" styleClass="hero-description" />
+                <HBox spacing="9" alignment="CENTER_LEFT">
+                    <Button text="เข้าสู่โถง  →" onAction="#onStartGame" defaultButton="true" styleClass="hero-button" />
+                    <Button fx:id="controlsButton" text="วิธีเล่น" onAction="#onShowControls" styleClass="hero-secondary" />
+                </HBox>
+            </VBox>
         </VBox>
     </HBox>
 </StackPane>

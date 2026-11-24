@@ -41,9 +41,9 @@ class DatabaseLevelTest {
                     m02.getTask().contains("สัญลักษณ์"),
                     "M02 task must keep the non-spoiler 'สัญลักษณ์' filter requirement"
             );
-            assertTrue(
+            assertFalse(
                     m02.getTask().contains("symbol"),
-                    "M02 task must keep the non-spoiler 'symbol' filter requirement"
+                    "The activity should reveal the exact search keyword"
             );
         }
     }

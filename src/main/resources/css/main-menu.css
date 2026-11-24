@@ -3,13 +3,13 @@
   -fx-font-family: "Sarabun";
 }
 .hero-art {
-  -fx-background-image: url("../images/background.png");
+  -fx-background-image: url("../images/archive-home.png");
   -fx-background-size: cover;
   -fx-background-repeat: no-repeat;
   -fx-background-position: left center;
 }
 .hero-shade {
-  -fx-background-color: linear-gradient(to right, rgba(12, 9, 27, 0.06) 0%, rgba(12, 9, 27, 0.15) 29%, rgba(14, 10, 32, 0.92) 62%, #100b26 100%);
+  -fx-background-color: linear-gradient(to right, rgba(10, 9, 24, 0.02) 0%, rgba(10, 9, 24, 0.14) 35%, rgba(13, 11, 29, 0.62) 66%, rgba(16, 11, 31, 0.83) 100%);
 }
 .hero-layout {
   -fx-padding: 36px 60px 36px 34px;
@@ -25,7 +25,7 @@
   -fx-effect: dropshadow(gaussian, rgba(7, 4, 24, 0.85), 22, 0.45, 0, 5);
 }
 .hero-title-accent {
-  -fx-fill: #dbff87;
+  -fx-fill: linear-gradient(to bottom, #f0ffb7, #bfef67 80%);
   -fx-effect: dropshadow(gaussian, rgba(186, 247, 91, 0.30), 24, 0.16, 0, 1);
 }
 .hero-description {
@@ -33,8 +33,22 @@
   -fx-text-fill: #dcd4eb;
   -fx-line-spacing: 3px;
 }
+.hero-signal-track {
+  -fx-background-color: linear-gradient(to right, #9572cd, #53506c 72%, transparent);
+  -fx-background-radius: 2px;
+}
+.hero-signal-sweep {
+  -fx-background-color: linear-gradient(to right, transparent, #e3ff9e 66%, transparent);
+  -fx-effect: dropshadow(gaussian, rgba(201, 255, 120, 0.58), 10, 0.20, 0, 0);
+}
+.hero-actions {
+  -fx-padding: 13px 15px 15px;
+  -fx-background-color: linear-gradient(to right, rgba(26, 20, 44, 0.92), rgba(28, 22, 45, 0.4));
+  -fx-border-color: transparent transparent transparent #9cce9a;
+  -fx-border-width: 0 0 0 2px;
+}
 .hero-button {
-  -fx-background-color: #d2fb86;
+  -fx-background-color: linear-gradient(to bottom, #e0ffa2, #c0ef69);
   -fx-background-radius: 8px;
   -fx-border-color: transparent;
   -fx-border-radius: 8px;
@@ -49,6 +63,35 @@
 }
 .hero-button:focused {
   -fx-border-color: #fff7ff;
+}
+.hero-secondary {
+  -fx-background-color: #332846;
+  -fx-background-radius: 8px;
+  -fx-border-color: #645477;
+  -fx-border-radius: 8px;
+  -fx-padding: 11px 14px;
+  -fx-text-fill: #eee2fb;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-cursor: hand;
+}
+.hero-secondary:hover, .hero-secondary:focused {
+  -fx-background-color: #514164;
+  -fx-border-color: #d6a9ff;
+}
+.hero-sound {
+  -fx-translate-x: -20px;
+  -fx-translate-y: 18px;
+  -fx-background-color: #171427;
+  -fx-background-radius: 5px;
+  -fx-border-color: #6a5c84;
+  -fx-border-radius: 5px;
+  -fx-padding: 7px 13px;
+  -fx-text-fill: #e6def3;
+  -fx-cursor: hand;
+}
+.hero-sound:hover, .hero-sound:focused {
+  -fx-border-color: #c8f682;
 }
 .main-root:compact .hero-layout {
   -fx-padding: 26px 27px 26px 24px;

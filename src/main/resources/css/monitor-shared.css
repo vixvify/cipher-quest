@@ -6,6 +6,55 @@
 .mission-shell {
   -fx-fill-width: true;
 }
+.mission-support .progress-bar > .bar {
+  -fx-background-color: #c7f88a;
+  -fx-background-insets: 2px;
+  -fx-background-radius: 3px;
+}
+.mission-support .progress-bar > .track {
+  -fx-background-color: #39314b;
+  -fx-background-radius: 5px;
+}
+.mission-support .circuit-light {
+  -fx-background-color: #2e263f;
+  -fx-background-radius: 6px;
+  -fx-border-color: #655571;
+  -fx-border-radius: 6px;
+  -fx-text-fill: #ded1e7;
+  -fx-font-weight: bold;
+  -fx-cursor: hand;
+}
+.mission-support .circuit-light:lit {
+  -fx-background-color: #c7f88a;
+  -fx-border-color: #edffb0;
+  -fx-text-fill: #242920;
+}
+.mission-support .circuit-light:focused {
+  -fx-border-color: #ffffff;
+  -fx-border-width: 2px;
+}
+.workstation-root {
+  -fx-background-color: #211925;
+  -fx-background-image: url("../images/workstation-wall.png");
+  -fx-background-size: cover;
+  -fx-background-position: center;
+  -fx-background-repeat: no-repeat;
+  -fx-padding: 42px 24px 50px;
+}
+.workstation-root .mission-shell {
+  -fx-padding: 11px 11px 18px;
+  -fx-background-color: linear-gradient(to bottom, #67616a, #2b2731 19%, #17151c 90%, #403841), #0e0d16;
+  -fx-background-insets: 0, 7px 7px 13px;
+  -fx-background-radius: 13px, 8px;
+  -fx-border-color: #8a7a86 #403742 #64515d #4f434f;
+  -fx-border-radius: 13px;
+  -fx-border-width: 1px 2px 3px 2px;
+  -fx-effect: dropshadow(gaussian, rgba(4, 3, 10, 0.77), 30, 0.20, 0, 15);
+}
+.workstation-root .mission-bar {
+  -fx-background-color: linear-gradient(to bottom, #2c2734, #1b1828);
+  -fx-border-color: #535060 #373140 #393244 #373140;
+}
 .mission-bar {
   -fx-background-color: #1f1c35;
   -fx-border-color: #413656;

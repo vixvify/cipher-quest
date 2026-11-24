@@ -16,6 +16,12 @@ public class Main extends Application {
         ScreenNavigator.setPrimaryStage(stage);
         ScreenNavigator.navigateToMainMenu();
         stage.show();
+        ScreenNavigator.startAudio();
+    }
+
+    @Override
+    public void stop() {
+        ScreenNavigator.stopAudio();
     }
 
     public static void main(String[] args) {

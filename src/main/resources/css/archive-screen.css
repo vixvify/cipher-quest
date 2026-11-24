@@ -1,0 +1,74 @@
+.archive-root {
+  -fx-background-color: radial-gradient(center 42% 12%, radius 80%, #231c39, #100e21 84%);
+}
+
+.archive-title {
+  -fx-font-weight: bold;
+  -fx-font-size: 20px;
+  -fx-text-fill: #f7eeff;
+}
+
+.archive-score {
+  -fx-font-weight: bold;
+  -fx-font-size: 15px;
+  -fx-text-fill: #d2fb86;
+  -fx-padding: 0 0 0 8px;
+}
+
+.archive-card-badge {
+  -fx-padding: 3px 8px;
+  -fx-background-color: #453647;
+  -fx-background-radius: 4px;
+  -fx-border-color: #9d7658;
+  -fx-border-radius: 4px;
+  -fx-text-fill: #ffe3a1;
+  -fx-font-weight: bold;
+  -fx-font-size: 14px;
+}
+
+.archive-marker {
+  -fx-font-family: "Consolas";
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-alignment: center;
+  -fx-min-width: 22px;
+  -fx-min-height: 22px;
+  -fx-background-radius: 4px;
+  -fx-background-color: #302643;
+  -fx-text-fill: #ad9bbf;
+}
+
+.archive-marker.available {
+  -fx-background-color: #d2fb86;
+  -fx-text-fill: #24271d;
+}
+
+.archive-marker.completed {
+  -fx-background-color: #294358;
+  -fx-text-fill: #a5e2f1;
+}
+
+.archive-viewport {
+  -fx-background-color: #0d1020;
+  -fx-border-color: #51416a;
+  -fx-border-width: 1px;
+}
+
+.archive-footer {
+  -fx-padding: 9px 12px;
+  -fx-background-color: #201a33;
+  -fx-background-radius: 8px;
+  -fx-border-color: #493961;
+  -fx-border-radius: 8px;
+}
+
+.archive-prompt-title {
+  -fx-font-weight: bold;
+  -fx-font-size: 15px;
+  -fx-text-fill: #f1e8ff;
+}
+
+.archive-prompt-detail {
+  -fx-font-size: 13px;
+  -fx-text-fill: #c8b9dd;
+}

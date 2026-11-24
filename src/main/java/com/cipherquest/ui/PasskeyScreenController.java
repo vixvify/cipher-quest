@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 public class PasskeyScreenController extends BaseMissionController {
@@ -22,12 +24,28 @@ public class PasskeyScreenController extends BaseMissionController {
     @FXML private Label feedbackLabel;
     @FXML private Label evidenceCaption;
     @FXML private Label evidenceText;
+    @FXML private StackPane localEvidence;
+    @FXML private VBox carriedEvidence;
+    @FXML private Label carriedCiphertext;
+    @FXML private Label missingEvidence;
 
     @FXML
     private void initialize() {
         initializeMissionHeader();
         ScreenNavigator.SESSION.passkeyBrief().ifPresent(brief -> ciphertext = brief.ciphertext());
         evidenceButton.setDisable(ciphertext == null);
+        var walk = ScreenNavigator.archiveWalk();
+        boolean inExploration = walk != null;
+        localEvidence.setVisible(!inExploration);
+        localEvidence.setManaged(!inExploration);
+        boolean hasCarriedEvidence = inExploration && walk.hasCipherCard() && ciphertext != null;
+        carriedEvidence.setVisible(hasCarriedEvidence);
+        carriedEvidence.setManaged(hasCarriedEvidence);
+        missingEvidence.setVisible(inExploration && !hasCarriedEvidence);
+        missingEvidence.setManaged(inExploration && !hasCarriedEvidence);
+        if (hasCarriedEvidence) {
+            carriedCiphertext.setText(ciphertext);
+        }
     }
 
     @FXML
@@ -76,6 +94,7 @@ public class PasskeyScreenController extends BaseMissionController {
             authenticateButton.setDisable(true);
             proceedAfterFeedback(passkeyField, result, Duration.seconds(1.2));
         } else {
+            GameAudio.play(GameAudio.Effect.DENIED);
             passkeyField.clear();
             passkeyField.requestFocus();
         }
