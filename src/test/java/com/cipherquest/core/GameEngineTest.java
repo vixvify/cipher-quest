@@ -130,6 +130,25 @@ class GameEngineTest {
     }
 
     @Test
+    void enteringFromArchiveKeepsActiveMissionAndRespectsUnlocks() {
+        var session = new GameSession(engine);
+        assertEquals(GameSession.CheckpointStatus.AVAILABLE, session.campaignProgress().status(1));
+        assertFalse(session.enterCheckpoint(2));
+        assertTrue(session.enterCheckpoint(1));
+        assertFalse(session.submit("wrong").isCorrect());
+        assertTrue(session.enterCheckpoint(1));
+        assertEquals(1, engine.getCurrentLevel().getAttempts());
+
+        assertTrue(session.submit("QUEST").isCorrect());
+        assertEquals(GameSession.CheckpointStatus.COMPLETED, session.campaignProgress().status(1));
+        assertEquals(GameSession.CheckpointStatus.AVAILABLE, session.campaignProgress().status(2));
+        assertFalse(session.enterCheckpoint(1));
+        assertTrue(session.advance());
+        assertTrue(session.enterCheckpoint(2));
+        assertEquals(2, engine.getCurrentCheckpoint());
+    }
+
+    @Test
     void testRequestHint() {
         assertEquals(0, engine.getPlayer().getHintsUsed());
         assertFalse(engine.getCurrentLevel().hasUsedHint());

@@ -23,7 +23,7 @@
             <Separator orientation="VERTICAL" />
             <VBox alignment="CENTER" spacing="3" styleClass="victory-stat">
                 <Label fx:id="cluesFoundLabel" styleClass="victory-stat-value" />
-                <Label text="เบาะแส" styleClass="victory-stat-caption" />
+                <Label text="หลักฐานที่เก็บ" styleClass="victory-stat-caption" />
             </VBox>
         </HBox>
 

@@ -1,13 +1,13 @@
-.passkey-ambient-art {
-  -fx-background-image: url("../images/background.png");
-  -fx-background-size: cover;
-  -fx-background-position: center;
-  -fx-background-repeat: no-repeat;
-  -fx-opacity: 0.13;
-}
 .passkey-root .brief-panel {
   -fx-padding: 28px;
   -fx-background-color: linear-gradient(to bottom right, #302247, #201a36);
+}
+.missing-evidence {
+  -fx-padding: 6px 9px;
+  -fx-background-color: #312838;
+  -fx-text-fill: #f3da9a;
+  -fx-border-color: transparent transparent transparent #d8ac65;
+  -fx-border-width: 0 0 0 2px;
 }
 .hint-panel {
   -fx-padding: 12px 14px;
@@ -73,6 +73,23 @@
   -fx-font-family: "Consolas";
   -fx-font-size: 28px;
   -fx-text-fill: #30244c;
+}
+.carried-evidence {
+  -fx-background-color: #352b40;
+  -fx-background-radius: 5px;
+  -fx-border-color: transparent transparent transparent #ffda8d;
+  -fx-border-width: 0 0 0 2px;
+  -fx-padding: 8px 13px;
+}
+.carried-evidence-caption {
+  -fx-font-size: 13px;
+  -fx-text-fill: #e0c7ae;
+}
+.carried-ciphertext {
+  -fx-font-family: "Consolas";
+  -fx-font-size: 23px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #ffe3a1;
 }
 .text-entry {
   -fx-background-color: #121021;

@@ -3,6 +3,8 @@ package com.cipherquest.ui;
 import com.cipherquest.core.GameEngine;
 import com.cipherquest.core.AnswerResult;
 import com.cipherquest.core.GameSession;
+import com.cipherquest.exploration.ArchiveMap;
+import com.cipherquest.exploration.ArchiveWalk;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -17,9 +19,18 @@ public class ScreenNavigator {
 
     static final GameSession SESSION = new GameSession(GameEngine.getInstance());
     private static Stage primaryStage;
+    private static ArchiveWalk archiveWalk;
 
     public static void setPrimaryStage(Stage stage) {
         primaryStage = stage;
+    }
+
+    public static void startAudio() {
+        GameAudio.start();
+    }
+
+    public static void stopAudio() {
+        GameAudio.shutdown();
     }
 
     public static Stage getPrimaryStage() {
@@ -27,7 +38,27 @@ public class ScreenNavigator {
     }
 
     public static void navigateToMainMenu() {
+        archiveWalk = null;
         loadScene("/fxml/main-menu.fxml", "/css/main-menu.css", "CipherQuest - Main Menu");
+    }
+
+    static void startExploration() {
+        SESSION.start();
+        archiveWalk = new ArchiveWalk(ArchiveMap.load());
+        navigateToArchive();
+    }
+
+    static ArchiveWalk archiveWalk() {
+        return archiveWalk;
+    }
+
+    static void navigateToArchive() {
+        if (archiveWalk == null) {
+            navigateToMainMenu();
+            return;
+        }
+        loadScene("/fxml/archive-screen.fxml", new String[]{"/css/monitor-shared.css", "/css/archive-screen.css"},
+                "CipherQuest — Archive");
     }
 
     public static void navigateToCurrentLevel() {
@@ -76,7 +107,11 @@ public class ScreenNavigator {
             if (answer.getStatus() == AnswerResult.Status.GAME_CLEARED) {
                 navigateToVictoryScreen();
             } else if (SESSION.advance()) {
-                navigateToCurrentLevel();
+                if (archiveWalk == null) {
+                    navigateToCurrentLevel();
+                } else {
+                    navigateToArchive();
+                }
             }
         });
         pause.play();
@@ -112,7 +147,8 @@ public class ScreenNavigator {
             }
 
             primaryStage.setTitle(title);
-        } catch (IOException ignored) {
+        } catch (IOException error) {
+            throw new IllegalStateException("Could not open screen " + fxmlPath, error);
         }
     }
 }

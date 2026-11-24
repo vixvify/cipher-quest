@@ -5,13 +5,14 @@
 <?import javafx.scene.layout.*?>
 
 <StackPane fx:id="missionRoot" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.cipherquest.ui.PasskeyScreenController" styleClass="mission-root, passkey-root">
-    <Region mouseTransparent="true" styleClass="passkey-ambient-art" />
+           fx:controller="com.cipherquest.ui.PasskeyScreenController" styleClass="mission-root, workstation-root, passkey-root">
     <VBox spacing="20" maxWidth="1090" maxHeight="-Infinity" styleClass="mission-shell">
         <HBox alignment="CENTER_LEFT" spacing="12" styleClass="mission-bar">
             <Region styleClass="signal-mark" />
             <Label text="CIPHERQUEST  /  DECRYPTION" styleClass="mission-channel" />
             <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="backToArchiveButton" text="สำรวจ" accessibleText="กลับโถงสำรวจ"
+                    onAction="#onReturnToArchive" styleClass="support-button" />
             <Button fx:id="hintButton" text="คำใบ้" onAction="#onOpenHints" styleClass="support-button" />
             <Label fx:id="checkpointLabel" styleClass="checkpoint-tag" />
         </HBox>
@@ -21,7 +22,7 @@
                 <Label text="MISSION BRIEF" styleClass="eyebrow" />
                 <Label fx:id="missionTitle" wrapText="true" styleClass="mission-title" />
                 <Label fx:id="missionLabel" wrapText="true" styleClass="mission-description" />
-                <StackPane alignment="CENTER_LEFT" styleClass="evidence-mount">
+                <StackPane fx:id="localEvidence" alignment="CENTER_LEFT" styleClass="evidence-mount">
                     <Button fx:id="evidenceButton" onAction="#onFlipEvidence" styleClass="evidence-card"
                             accessibleText="พลิกบัตรหลักฐาน" contentDisplay="GRAPHIC_ONLY">
                         <graphic>
@@ -34,6 +35,13 @@
                     <Region mouseTransparent="true" maxWidth="55" maxHeight="14" translateX="61" translateY="-5"
                             StackPane.alignment="TOP_LEFT" styleClass="evidence-tape" />
                 </StackPane>
+                <VBox fx:id="carriedEvidence" spacing="3" maxWidth="240" styleClass="carried-evidence"
+                      managed="false" visible="false">
+                    <Label text="ข้อความบนบัตรที่เก็บมา" styleClass="carried-evidence-caption" />
+                    <Label fx:id="carriedCiphertext" styleClass="carried-ciphertext" />
+                </VBox>
+                <Label fx:id="missingEvidence" text="บัตรอยู่ในโถง · กด Esc เพื่อกลับไปหา"
+                       wrapText="true" minHeight="-Infinity" visible="false" managed="false" styleClass="missing-evidence" />
             </VBox>
 
             <VBox alignment="CENTER_LEFT" spacing="13" minWidth="0" prefWidth="440" HBox.hgrow="ALWAYS" styleClass="passkey-panel">

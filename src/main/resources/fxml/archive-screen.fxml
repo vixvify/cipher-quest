@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane fx:id="archiveRoot" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.cipherquest.ui.ArchiveController" styleClass="mission-root, archive-root"
+           focusTraversable="true" accessibleText="โถงสำรวจ CipherQuest">
+    <VBox spacing="13" fillWidth="true" maxWidth="1290">
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="mission-bar">
+            <Region styleClass="signal-mark" />
+            <Label text="โถงสำรวจ" styleClass="archive-title" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="cipherCardBadge" styleClass="archive-card-badge" visible="false" managed="false" />
+            <HBox fx:id="progressTrack" alignment="CENTER" spacing="4" />
+            <Label fx:id="scoreLabel" styleClass="archive-score" />
+            <Button fx:id="soundButton" onAction="#onToggleSound" styleClass="support-button" />
+        </HBox>
+
+        <StackPane fx:id="mapPane" minHeight="220" VBox.vgrow="ALWAYS" styleClass="archive-viewport">
+            <Canvas fx:id="mapCanvas" managed="false" mouseTransparent="true" />
+        </StackPane>
+
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="archive-footer">
+            <VBox spacing="2" minWidth="0" HBox.hgrow="ALWAYS">
+                <Label fx:id="promptTitle" styleClass="archive-prompt-title" maxWidth="Infinity" />
+                <Label fx:id="promptDetail" styleClass="archive-prompt-detail" wrapText="true" minHeight="-Infinity" />
+            </VBox>
+            <Button fx:id="interactButton" text="เปิดสถานี · E" onAction="#onInteract" styleClass="primary-button"
+                    disable="true" minWidth="-Infinity" />
+        </HBox>
+    </VBox>
+</StackPane>

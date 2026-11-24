@@ -39,6 +39,11 @@
             <artifactId>javafx-fxml</artifactId>
             <version>25.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>25.0.1</version>
+        </dependency>
 
     </dependencies>
 
@@ -57,7 +62,7 @@
                 <configuration>
                     <mainClass>com.cipherquest.Main</mainClass>
                     <options>
-                        <option>--enable-native-access=javafx.graphics</option>
+                        <option>--enable-native-access=javafx.graphics,javafx.media</option>
                     </options>
                 </configuration>
             </plugin>

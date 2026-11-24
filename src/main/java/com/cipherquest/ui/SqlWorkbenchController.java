@@ -25,7 +25,6 @@ public class SqlWorkbenchController extends BaseMissionController {
     @FXML private Button runButton;
     @FXML private Button clearButton;
     @FXML private Button knowledgeButton;
-    @FXML private Button cluesButton;
     @FXML private Label feedbackLabel;
     @FXML private Label rowCountLabel;
     @FXML private Label statusLabel;
@@ -44,7 +43,6 @@ public class SqlWorkbenchController extends BaseMissionController {
             }
         });
         initializeMissionHeader();
-        updateClueCount();
         knowledgeButton.setDisable(ScreenNavigator.SESSION.currentSqlTopics().isEmpty());
         ScreenNavigator.SESSION.sqlBrief().ifPresent(brief -> {
             taskLabel.setText(ThaiTypography.withWordBreaks(brief.task()));
@@ -59,15 +57,6 @@ public class SqlWorkbenchController extends BaseMissionController {
     @FXML
     private void onOpenKnowledge() {
         MissionSupportDialog.showKnowledge(knowledgeButton, ScreenNavigator.SESSION.currentSqlTopics());
-    }
-
-    @FXML
-    private void onOpenClues() {
-        MissionSupportDialog.showClues(cluesButton, ScreenNavigator.SESSION.discoveredClues());
-    }
-
-    private void updateClueCount() {
-        cluesButton.setText("เบาะแส " + ScreenNavigator.SESSION.discoveredClues().size());
     }
 
     @FXML
@@ -101,8 +90,6 @@ public class SqlWorkbenchController extends BaseMissionController {
             runButton.setDisable(true);
             clearButton.setDisable(true);
             knowledgeButton.setDisable(true);
-            updateClueCount();
-            cluesButton.setDisable(true);
             proceedAfterFeedback(queryArea, answer, Duration.seconds(2));
         }
     }

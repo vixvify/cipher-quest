@@ -38,6 +38,12 @@ public class ScreenFxmlLoadTest {
     }
 
     @Test
+    void testLoadArchiveScreenFxml() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/archive-screen.fxml"));
+        assertNotNull(loader.load());
+    }
+
+    @Test
     void testLoadPasskeyScreenFxml() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/passkey-screen.fxml"));
         Object root = loader.load();
