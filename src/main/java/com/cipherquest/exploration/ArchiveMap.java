@@ -5,13 +5,11 @@ import com.cipherquest.util.ResourceLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.IntPredicate;
 
 public final class ArchiveMap {
     private final List<String> rows;
     private final Position spawn;
-    private final Position cipherCard;
     private final List<Station> stations;
     private final List<FieldNote> fieldNotes;
 
@@ -31,7 +29,6 @@ public final class ArchiveMap {
         }
         List<Station> found = new ArrayList<>();
         Position start = null;
-        Position card = null;
         for (int row = 0; row < height(); row++) {
             for (int column = 0; column < width(); column++) {
                 char tile = tileAt(column, row);
@@ -40,18 +37,12 @@ public final class ArchiveMap {
                         throw new IllegalArgumentException("Archive map has more than one starting tile");
                     }
                     start = new Position(column + 0.5, row + 0.5);
-                } else if (tile == '!') {
-                    if (card != null) {
-                        throw new IllegalArgumentException("Archive map has more than one cipher card");
-                    }
-                    card = new Position(column + 0.5, row + 0.5);
                 } else if (tile >= '1' && tile <= '9') {
                     found.add(new Station(tile - '0', column, row));
                 }
             }
         }
         spawn = Objects.requireNonNull(start, "Archive map has no starting tile");
-        cipherCard = card;
         stations = List.copyOf(found);
         for (FieldNote note : fieldNotes) {
             Position position = note.position();
@@ -79,10 +70,6 @@ public final class ArchiveMap {
         return stations;
     }
 
-    public Optional<Position> cipherCard() {
-        return Optional.ofNullable(cipherCard);
-    }
-
     List<FieldNote> fieldNotes() {
         return fieldNotes;
     }
@@ -105,7 +92,7 @@ public final class ArchiveMap {
     boolean isWalkable(int column, int row, IntPredicate isUnlocked) {
         char tile = tileAt(column, row);
         return switch (tile) {
-            case '.', ':', '@', '!' -> true;
+            case '.', ':', '@' -> true;
             case 'A', 'G' -> isUnlocked.test(gateCheckpoint(tile));
             default -> false;
         };

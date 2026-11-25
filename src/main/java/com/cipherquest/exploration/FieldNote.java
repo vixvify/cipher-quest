@@ -4,8 +4,11 @@ import com.cipherquest.util.ResourceLoader;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 public record FieldNote(String id, int checkpoint, ArchiveMap.Position position, String title, String text, FieldActivity activity) {
     static List<FieldNote> load() {
@@ -25,20 +28,33 @@ public record FieldNote(String id, int checkpoint, ArchiveMap.Position position,
     }
 
     private static FieldActivity loadActivity(Properties properties, String id) {
-        return switch (properties.getProperty(id + ".activity", "pickup")) {
-            case "pickup" -> new FieldActivity.Pickup();
-            case "radio" -> new FieldActivity.Radio(Integer.parseInt(properties.getProperty(id + ".frequency")));
-            case "sequence" -> new FieldActivity.Sequence(List.of(properties.getProperty(id + ".pieces").split("\\|")),
-                    readIndices(properties, id + ".order"));
-            case "match" -> new FieldActivity.Match(properties.getProperty(id + ".prompt"),
-                    List.of(properties.getProperty(id + ".options").split("\\|")),
-                    Integer.parseInt(properties.getProperty(id + ".answer")));
-            case "circuit" -> new FieldActivity.Circuit(readIndices(properties, id + ".lit"));
+        return switch (properties.getProperty(id + ".activity", "source")) {
+            case "source" -> new FieldActivity.Source();
+            case "desk" -> new FieldActivity.RecordDesk(properties.getProperty(id + ".task"),
+                    split(properties, id + ".rows"),
+                    Arrays.stream(properties.getProperty(id + ".target").split(",")).map(Integer::parseInt).toList(),
+                    Boolean.parseBoolean(properties.getProperty(id + ".ordered")));
+            case "route" -> new FieldActivity.SurveyRoute(properties.getProperty(id + ".task"),
+                    split(properties, id + ".grid"), names(properties, id + ".names"),
+                    markers(properties, id + ".stops"), Set.copyOf(markers(properties, id + ".restricted")),
+                    Integer.parseInt(properties.getProperty(id + ".limit")));
             default -> throw new IllegalArgumentException("Unknown field activity: " + id);
         };
     }
 
-    private static List<Integer> readIndices(Properties properties, String key) {
-        return Arrays.stream(properties.getProperty(key).split(",")).map(Integer::parseInt).toList();
+    private static List<String> split(Properties properties, String key) {
+        return List.of(properties.getProperty(key).split("\\|"));
+    }
+
+    private static Map<Character, String> names(Properties properties, String key) {
+        Map<Character, String> names = new HashMap<>();
+        for (String entry : split(properties, key)) {
+            names.put(entry.charAt(0), entry.substring(2));
+        }
+        return names;
+    }
+
+    private static List<Character> markers(Properties properties, String key) {
+        return properties.getProperty(key).chars().mapToObj(marker -> (char) marker).toList();
     }
 }

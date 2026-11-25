@@ -57,9 +57,6 @@ final class ArchiveRenderer {
             drawStation(station, status, nearby.filter(station::equals).isPresent(),
                     animationTime);
         }
-        if (!walk.hasCipherCard() && progress.status(1) == CheckpointStatus.AVAILABLE) {
-            map.cipherCard().ifPresent(card -> drawCipherCard(card, animationTime));
-        }
         for (var note : walk.uncollectedNotes(activeCheckpoint)) {
             drawActivity(note, animationTime);
         }
@@ -198,55 +195,23 @@ final class ArchiveRenderer {
         }
     }
 
-    private void drawCipherCard(ArchiveMap.Position card, double seconds) {
-        double x = card.x() * TILE;
-        double y = card.y() * TILE;
-        double pulse = 0.24 + 0.10 * Math.sin(seconds * 4);
-        rectangle(Color.web("#ffcd83", pulse), x - 10, y - 8, 20, 16);
-        rectangle(Color.web("#5a4562"), x - 7, y - 3, 15, 8);
-        rectangle(Color.web("#ffe6a4"), x - 8, y - 5, 15, 8);
-        rectangle(Color.web("#a67753"), x - 5, y - 2, 8, 1);
-        rectangle(Color.web("#a67753"), x - 5, y, 5, 1);
-        rectangle(Color.web("#ffdf98"), x - 1, y - 11 - Math.sin(seconds * 4), 3, 2);
-    }
-
     private void drawActivity(FieldNote note, double seconds) {
-        if (note.activity() instanceof FieldActivity.Pickup) {
-            drawCipherCard(note.position(), seconds);
-            return;
-        }
         double x = note.position().x() * TILE;
         double y = note.position().y() * TILE;
-        Color gold = Color.web("#ffdf98");
-        rectangle(Color.web("#ffcd83", 0.24 + 0.10 * Math.sin(seconds * 4)), x - 11, y - 9, 22, 18);
-        rectangle(Color.web("#5a4562"), x - 8, y - 6, 16, 12);
-        switch (note.activity()) {
-            case FieldActivity.Radio ignored -> {
-                rectangle(gold, x - 7, y - 4, 14, 9);
-                rectangle(gold, x + 3, y - 8, 2, 6);
-                rectangle(Color.web("#745540"), x - 5, y - 2, 6, 3);
-                rectangle(Color.web("#745540"), x + 3, y - 1, 2, 2);
-            }
-            case FieldActivity.Sequence ignored -> {
-                rectangle(gold, x - 7, y - 4, 6, 4);
-                rectangle(gold, x + 1, y - 2, 6, 4);
-                rectangle(gold, x - 4, y + 2, 6, 4);
-            }
-            case FieldActivity.Match ignored -> {
-                rectangle(gold, x - 6, y - 5, 12, 10);
-                rectangle(Color.web("#745540"), x - 3, y - 2, 3, 4);
-                rectangle(Color.web("#745540"), x + 2, y - 2, 1, 4);
-            }
-            case FieldActivity.Circuit ignored -> {
-                for (int row = 0; row < 3; row++) {
-                    for (int column = 0; column < 3; column++) {
-                        rectangle(gold, x - 6 + column * 4, y - 5 + row * 4, 2, 2);
-                    }
-                }
-            }
-            case FieldActivity.Pickup ignored -> {}
+        boolean source = note.activity() instanceof FieldActivity.Source;
+        Color accent = source ? Color.web("#ffdf98") : CYAN;
+        double glow = 0.24 + 0.10 * Math.sin(seconds * 4);
+        rectangle(accent.deriveColor(0, 1, 1, glow), x - 11, y - 9, 22, 18);
+        rectangle(Color.web("#47405d"), x - 8, y - 5, 16, 11);
+        rectangle(accent, x - 7, y - 6, 14, 9);
+        if (source) {
+            rectangle(Color.web("#a67753"), x - 5, y - 4, 9, 1);
+            rectangle(Color.web("#a67753"), x - 5, y - 1, 6, 1);
+        } else {
+            rectangle(Color.web("#203a50"), x - 4, y - 4, 8, 5);
+            rectangle(accent, x - 2, y + 4, 4, 2);
         }
-        rectangle(gold, x - 1, y - 12 - Math.sin(seconds * 4), 3, 2);
+        rectangle(accent, x - 1, y - 12 - Math.sin(seconds * 4), 3, 2);
     }
 
     private void drawPlayer(ArchiveWalk walk, boolean reduceMotion) {

@@ -33,7 +33,7 @@ public class ArchiveController {
     @FXML private Canvas mapCanvas;
     @FXML private HBox progressTrack;
     @FXML private Label scoreLabel;
-    @FXML private Label cipherCardBadge;
+    @FXML private Button journalButton;
     @FXML private Label promptTitle;
     @FXML private Label promptDetail;
     @FXML private Button interactButton;
@@ -46,7 +46,6 @@ public class ArchiveController {
     private Optional<ArchiveMap.Station> nearby = Optional.empty();
     private Optional<FieldNote> nearbyNote = Optional.empty();
     private int activeCheckpoint;
-    private boolean nearCard;
     private long lastFrame;
     private boolean interactPressed;
 
@@ -60,7 +59,6 @@ public class ArchiveController {
         activeCheckpoint = progress.checkpoints().indexOf(CheckpointStatus.AVAILABLE) + 1;
         nearby = walk.nearbyStation();
         nearbyNote = walk.nearbyNote(activeCheckpoint);
-        nearCard = canCollectCard();
         showProgress();
         showEvidenceCount();
         showPrompt();
@@ -109,11 +107,9 @@ public class ArchiveController {
         walk.move(horizontal, vertical, step, checkpoint -> progress.status(checkpoint) != CheckpointStatus.LOCKED);
         Optional<ArchiveMap.Station> current = walk.nearbyStation();
         Optional<FieldNote> nextNote = walk.nearbyNote(activeCheckpoint);
-        boolean nextNearCard = canCollectCard();
-        if (!current.equals(nearby) || !nextNote.equals(nearbyNote) || nextNearCard != nearCard) {
+        if (!current.equals(nearby) || !nextNote.equals(nearbyNote)) {
             nearby = current;
             nearbyNote = nextNote;
-            nearCard = nextNearCard;
             showPrompt();
         }
         renderer.draw(walk, progress, activeCheckpoint, nearby, now / 1_000_000_000.0,
@@ -154,19 +150,17 @@ public class ArchiveController {
 
     @FXML
     private void onInteract() {
-        if (canCollectCard() && walk.collectCipherCard()) {
-            nearCard = false;
-            showPickup("บัตรเข้ารหัส", "เปิดสถานีแรกเพื่ออ่านข้อความบนบัตร");
-            return;
-        }
         Optional<FieldNote> note = walk.nearbyNote(activeCheckpoint);
         if (note.isPresent()) {
             FieldNote target = note.orElseThrow();
-            if (target.activity() instanceof FieldActivity.Pickup) {
-                completeNote(target, new FieldActivity.Attempt.Collect());
+            clearKeys();
+            if (target.activity() instanceof FieldActivity.Source) {
+                if (completeNote(target, new FieldActivity.Attempt.Read())) {
+                    FieldActivityDialog.showSource(interactButton, target, archiveRoot::requestFocus);
+                }
             } else {
-                clearKeys();
-                FieldActivityDialog.show(interactButton, target, attempt -> completeNote(target, attempt),
+                FieldActivityDialog.show(interactButton, target, walk.collectedNotes(activeCheckpoint),
+                        attempt -> completeNote(target, attempt),
                         archiveRoot::requestFocus);
             }
             return;
@@ -192,7 +186,7 @@ public class ArchiveController {
         GameAudio.play(GameAudio.Effect.PICKUP);
         showEvidenceCount();
         showPrompt();
-        promptTitle.setText("เก็บแล้ว · " + title);
+        promptTitle.setText("บันทึกแล้ว · " + title);
         promptDetail.setText(ThaiTypography.withWordBreaks(detail));
         archiveRoot.requestFocus();
     }
@@ -203,16 +197,18 @@ public class ArchiveController {
         archiveRoot.requestFocus();
     }
 
-    private boolean canCollectCard() {
-        return progress.status(1) == CheckpointStatus.AVAILABLE && walk.isNearCipherCard();
+    @FXML
+    private void onOpenJournal() {
+        clearKeys();
+        MissionSupportDialog.showFieldNotes(journalButton, walk.collectedNotes(activeCheckpoint));
     }
 
     private void showEvidenceCount() {
-        int found = activeCheckpoint == 1 ? (walk.hasCipherCard() ? 1 : 0) : walk.collectedNotes(activeCheckpoint).size();
-        int total = activeCheckpoint == 1 ? 1 : found + walk.uncollectedNotes(activeCheckpoint).size();
-        cipherCardBadge.setVisible(total > 0);
-        cipherCardBadge.setManaged(total > 0);
-        cipherCardBadge.setText("หลักฐาน " + found + "/" + total);
+        int found = walk.collectedNotes(activeCheckpoint).size();
+        int total = found + walk.uncollectedNotes(activeCheckpoint).size();
+        journalButton.setVisible(total > 0);
+        journalButton.setManaged(total > 0);
+        journalButton.setText("สมุด " + found + "/" + total);
     }
 
     private void showProgress() {
@@ -231,23 +227,15 @@ public class ArchiveController {
     }
 
     private void showPrompt() {
-        if (nearCard) {
-            promptTitle.setText("บัตรเข้ารหัส");
-            promptDetail.setText("กด E เพื่อเก็บบัตรไปใช้ที่โต๊ะถอดรหัส");
-            interactButton.setText("เก็บบัตร · E");
-            interactButton.setDisable(false);
-            return;
-        }
         if (nearbyNote.isPresent()) {
             FieldNote note = nearbyNote.orElseThrow();
             promptTitle.setText(note.title());
-            promptDetail.setText("กด E เพื่อหาเบาะแสของสถานีนี้");
+            promptDetail.setText(note.activity() instanceof FieldActivity.Source
+                    ? "เปิดอ่านและเก็บข้อมูลลงสมุดภาคสนาม" : "ใช้ข้อมูลภาคสนามประกอบกันเพื่อกู้เบาะแส");
             interactButton.setText(switch (note.activity()) {
-                case FieldActivity.Pickup ignored -> "เก็บหลักฐาน · E";
-                case FieldActivity.Radio ignored -> "ปรับคลื่น · E";
-                case FieldActivity.Sequence ignored -> "ประกอบชิ้นส่วน · E";
-                case FieldActivity.Match ignored -> "เทียบตรา · E";
-                case FieldActivity.Circuit ignored -> "เปิดแผงไฟ · E";
+                case FieldActivity.Source ignored -> "อ่านเอกสาร · E";
+                case FieldActivity.RecordDesk ignored -> "เปิดโต๊ะตรวจ · E";
+                case FieldActivity.SurveyRoute ignored -> "วางเส้นทาง · E";
             });
             interactButton.setDisable(false);
             return;
@@ -265,11 +253,10 @@ public class ArchiveController {
             interactButton.setDisable(status != CheckpointStatus.AVAILABLE);
             return;
         }
-        boolean cluesRemain = (activeCheckpoint == 1 && !walk.hasCipherCard())
-                || !walk.uncollectedNotes(activeCheckpoint).isEmpty();
+        boolean cluesRemain = !walk.hasRecoveredClue(activeCheckpoint);
         promptTitle.setText("ไปที่ " + nextStationName());
         promptDetail.setText(cluesRemain
-                ? "สถานีสีเขียวเปิดแล้ว · มองหาจุดสีทองเพื่อเก็บหลักฐาน"
+                ? "เอกสารสีทองให้ข้อมูล · โต๊ะสีฟ้าใช้กู้เบาะแส · สถานีสีเขียวเปิดภารกิจ"
                 : "เดินด้วย WASD หรือปุ่มลูกศร");
         interactButton.setDisable(true);
     }

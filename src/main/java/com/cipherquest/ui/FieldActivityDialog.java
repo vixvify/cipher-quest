@@ -2,12 +2,15 @@ package com.cipherquest.ui;
 
 import com.cipherquest.exploration.FieldActivity;
 import com.cipherquest.exploration.FieldNote;
+import javafx.css.PseudoClass;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Slider;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,156 +20,168 @@ import java.util.List;
 import java.util.function.Predicate;
 
 final class FieldActivityDialog {
+    private static final PseudoClass MARKED = PseudoClass.getPseudoClass("marked");
+
     private FieldActivityDialog() {}
 
-    static void show(Node owner, FieldNote note, Predicate<FieldActivity.Attempt> submit, Runnable onClose) {
-        Dialog<Void> dialog = MissionSupportDialog.createDialog(owner, note.title(), instructions(note.activity()));
-        VBox content = switch (note.activity()) {
-            case FieldActivity.Radio radio -> radioPanel(radio, dialog, submit);
-            case FieldActivity.Sequence sequence -> sequencePanel(sequence, dialog, submit);
-            case FieldActivity.Match match -> matchPanel(match, dialog, submit);
-            case FieldActivity.Circuit circuit -> circuitPanel(circuit, dialog, submit);
-            case FieldActivity.Pickup ignored -> throw new IllegalArgumentException("Pickup opens directly");
-        };
-        dialog.getDialogPane().setContent(content);
+    static void showSource(Node owner, FieldNote note, Runnable onClose) {
+        Dialog<Void> dialog = MissionSupportDialog.createDialog(owner, note.title(), "");
+        Label evidence = MissionSupportDialog.paragraph(note.text());
+        Label saved = new Label("✓  เพิ่มข้อมูลลงในสมุดภาคสนามแล้ว");
+        saved.getStyleClass().add("field-saved-status");
+        saved.setWrapText(true);
+        dialog.getDialogPane().setContent(new VBox(12, evidence, new Separator(), saved));
         dialog.setOnHidden(event -> onClose.run());
         dialog.show();
     }
 
-    private static String instructions(FieldActivity activity) {
-        return switch (activity) {
-            case FieldActivity.Radio ignored -> "เลื่อนหน้าปัดจนแถบสัญญาณเต็ม แล้วกดยืนยันคลื่น";
-            case FieldActivity.Sequence ignored -> "เลือกเศษกระดาษจากซ้ายไปขวา ให้รอยขอบด้านขวาต่อกับรอยด้านซ้ายของชิ้นถัดไป";
-            case FieldActivity.Match match -> match.prompt();
-            case FieldActivity.Circuit ignored -> "เปิดไฟให้ครบ 9 ช่อง แต่ละสวิตช์จะสลับไฟช่องของตัวเองและช่องที่ติดกันด้านบน ล่าง ซ้าย ขวา";
-            case FieldActivity.Pickup ignored -> "";
+    static void show(Node owner, FieldNote note, List<FieldNote> journal,
+                     Predicate<FieldActivity.Attempt> submit, Runnable onClose) {
+        String task = switch (note.activity()) {
+            case FieldActivity.RecordDesk desk -> desk.task();
+            case FieldActivity.SurveyRoute route -> route.task();
+            case FieldActivity.Source ignored -> throw new IllegalArgumentException("Display sources directly");
         };
+        Dialog<Void> dialog = MissionSupportDialog.createDialog(owner, note.title(), "");
+        dialog.getDialogPane().setPrefWidth(605);
+        VBox controls = switch (note.activity()) {
+            case FieldActivity.RecordDesk desk -> deskPanel(desk, dialog, submit);
+            case FieldActivity.SurveyRoute route -> routePanel(route, dialog, submit);
+            case FieldActivity.Source ignored -> throw new IllegalArgumentException("Display sources directly");
+        };
+        VBox content = new VBox(12, MissionSupportDialog.paragraph(task), journalPane(journal), controls);
+        content.setPadding(new Insets(0, 7, 6, 0));
+        ScrollPane scroll = new ScrollPane(content);
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setPrefViewportHeight(380);
+        dialog.getDialogPane().setContent(scroll);
+        dialog.setOnHidden(event -> onClose.run());
+        dialog.show();
     }
 
-    private static VBox radioPanel(FieldActivity.Radio radio, Dialog<Void> dialog,
+    private static TitledPane journalPane(List<FieldNote> journal) {
+        VBox entries = new VBox(8);
+        for (FieldNote note : journal) {
+            Label heading = new Label(ThaiTypography.withWordBreaks(note.title()));
+            heading.getStyleClass().add("support-section-title");
+            heading.setWrapText(true);
+            entries.getChildren().add(new VBox(2, heading, MissionSupportDialog.paragraph(note.text())));
+        }
+        if (journal.size() < 2) {
+            entries.getChildren().add(MissionSupportDialog.paragraph("สำรวจจุดเอกสารสีทองในโถงเพื่ออ่านข้อมูลที่ยังขาด"));
+        }
+        TitledPane pane = new TitledPane("สมุดภาคสนาม  " + journal.size() + "/2", entries);
+        pane.getStyleClass().add("field-journal");
+        pane.setAnimated(false);
+        pane.setExpanded(false);
+        return pane;
+    }
+
+    private static VBox deskPanel(FieldActivity.RecordDesk desk, Dialog<Void> dialog,
                                   Predicate<FieldActivity.Attempt> submit) {
-        Slider dial = new Slider(FieldActivity.Radio.MIN_FREQUENCY, FieldActivity.Radio.MAX_FREQUENCY,
-                FieldActivity.Radio.MIN_FREQUENCY);
-        dial.setId("radioDial");
-        dial.setAccessibleText("ความถี่วิทยุ");
-        dial.setBlockIncrement(1);
-        dial.setMajorTickUnit(5);
-        dial.setMinorTickCount(4);
-        dial.setSnapToTicks(true);
-        dial.setShowTickLabels(true);
-        dial.setShowTickMarks(true);
-        ProgressBar signal = new ProgressBar();
-        signal.setMaxWidth(Double.MAX_VALUE);
-        signal.setAccessibleText("ความแรงสัญญาณ");
-        Label reading = MissionSupportDialog.paragraph("");
-        dial.valueProperty().addListener((property, before, now) ->
-                showSignal(radio, channel(dial), signal, reading));
-        showSignal(radio, channel(dial), signal, reading);
-        Label status = MissionSupportDialog.paragraph("");
-        Button confirm = action("ยืนยันคลื่น", "confirmFrequency", "primary-button");
-        confirm.setOnAction(event -> verify(dialog, submit, new FieldActivity.Attempt.Tune(channel(dial)),
-                status, "สัญญาณยังไม่ตรง ลองปรับหน้าปัดอีกครั้ง"));
-        return new VBox(12, reading, dial, signal, confirm, status);
-    }
-
-    private static int channel(Slider dial) {
-        return (int) Math.round(dial.getValue());
-    }
-
-    private static void showSignal(FieldActivity.Radio radio, int channel, ProgressBar signal, Label reading) {
-        double strength = radio.signalStrength(channel);
-        signal.setProgress(strength);
-        reading.setText(channel + " MHz  ·  สัญญาณ " + Math.round(strength * 100) + "%");
-    }
-
-    private static VBox sequencePanel(FieldActivity.Sequence sequence, Dialog<Void> dialog,
-                                     Predicate<FieldActivity.Attempt> submit) {
         List<Integer> selected = new ArrayList<>();
-        VBox options = new VBox(6);
-        VBox arrangement = new VBox(6);
+        var buttons = new ArrayList<Button>();
+        VBox rows = new VBox(5);
+        int required = desk.target().size();
         Label status = MissionSupportDialog.paragraph("");
-        Button confirm = action("ตรวจลำดับ", "confirmSequence", "primary-button");
-        Button reset = action("เริ่มเรียงใหม่", "resetSequence", "secondary-button");
-        confirm.setDisable(true);
-        for (int i = 0; i < sequence.pieces().size(); i++) {
-            int index = i;
-            String piece = sequence.pieces().get(index);
-            Button choice = action(ThaiTypography.withWordBreaks(piece), "sequencePiece" + index, "support-button");
+        Label feedback = MissionSupportDialog.paragraph("");
+        Button confirm = action("ยืนยันรายการ", "confirmRecords", "primary-button");
+        for (int index = 0; index < desk.rows().size(); index++) {
+            int row = index;
+            Button choice = action("", "recordRow" + index, "field-record");
             choice.setMaxWidth(Double.MAX_VALUE);
+            choice.setWrapText(true);
             choice.setOnAction(event -> {
-                choice.setDisable(true);
-                selected.add(index);
-                arrangement.getChildren().add(MissionSupportDialog.paragraph(selected.size() + ".  " + piece));
-                status.setText("");
-                confirm.setDisable(selected.size() != sequence.pieces().size());
-            });
-            options.getChildren().add(choice);
-        }
-        reset.setOnAction(event -> {
-            selected.clear();
-            arrangement.getChildren().clear();
-            options.getChildren().forEach(option -> option.setDisable(false));
-            confirm.setDisable(true);
-            status.setText("");
-        });
-        confirm.setOnAction(event -> verify(dialog, submit, new FieldActivity.Attempt.Assemble(selected),
-                status, "รอยขอบยังต่อกันไม่ครบ ลองเรียงใหม่"));
-        return new VBox(9, options, arrangement, new HBox(8, confirm, reset), status);
-    }
-
-    private static VBox matchPanel(FieldActivity.Match match, Dialog<Void> dialog,
-                                   Predicate<FieldActivity.Attempt> submit) {
-        Label status = MissionSupportDialog.paragraph("");
-        VBox options = new VBox(8);
-        for (int i = 0; i < match.options().size(); i++) {
-            int index = i;
-            Button entry = action(match.options().get(i), "matchOption" + index, "support-button");
-            entry.setMaxWidth(Double.MAX_VALUE);
-            entry.setOnAction(event -> verify(dialog, submit, new FieldActivity.Attempt.MatchMark(index),
-                    status, "ตรายังไม่ตรง ลองเทียบรูปกับจำนวนรอยบากอีกครั้ง"));
-            options.getChildren().add(entry);
-        }
-        return new VBox(12, options, status);
-    }
-
-    private static VBox circuitPanel(FieldActivity.Circuit circuit, Dialog<Void> dialog,
-                                     Predicate<FieldActivity.Attempt> submit) {
-        List<Integer> pressed = new ArrayList<>();
-        List<Button> tiles = new ArrayList<>();
-        GridPane grid = new GridPane(7, 7);
-        Label status = MissionSupportDialog.paragraph("");
-        for (int tile = 0; tile < FieldActivity.Circuit.SIZE; tile++) {
-            int index = tile;
-            Button tileButton = action("", "circuitTile" + tile, "circuit-light");
-            tileButton.setMinSize(64, 43);
-            tileButton.setOnAction(event -> {
-                pressed.add(index);
-                showLights(circuit.lightsAfter(pressed), tiles, status);
-                if (submit.test(new FieldActivity.Attempt.Switches(pressed))) {
-                    dialog.close();
+                if (selected.contains(row)) {
+                    selected.remove(Integer.valueOf(row));
+                } else if (selected.size() < required) {
+                    selected.add(row);
                 }
+                feedback.setText("");
+                showDeskSelection(desk, selected, buttons, status, confirm);
             });
-            tiles.add(tileButton);
-            grid.add(tileButton, tile % FieldActivity.Circuit.SIDE, tile / FieldActivity.Circuit.SIDE);
+            buttons.add(choice);
+            rows.getChildren().add(choice);
         }
-        Button reset = action("รีเซ็ตแผง", "resetCircuit", "secondary-button");
-        reset.setOnAction(event -> {
-            pressed.clear();
-            showLights(circuit.lightsAfter(pressed), tiles, status);
-        });
-        showLights(circuit.lightsAfter(pressed), tiles, status);
-        return new VBox(12, status, grid, reset);
+        showDeskSelection(desk, selected, buttons, status, confirm);
+        confirm.setOnAction(event -> verify(dialog, submit, new FieldActivity.Attempt.Records(selected), feedback,
+                "รายการยังไม่ตรงกัน ลองเทียบข้อมูลจากเอกสารทั้งสองฉบับอีกครั้ง"));
+        return new VBox(9, status, rows, confirm, feedback);
     }
 
-    private static void showLights(int lights, List<Button> tiles, Label status) {
-        for (int index = 0; index < tiles.size(); index++) {
-            Button tile = tiles.get(index);
-            boolean lit = (lights & (1 << index)) != 0;
-            tile.pseudoClassStateChanged(javafx.css.PseudoClass.getPseudoClass("lit"), lit);
-            tile.setText(lit ? "เปิด" : "ปิด");
-            tile.setAccessibleText("ช่อง " + (index + 1) + " ไฟ" + (lit ? "เปิด" : "ปิด"));
+    private static void showDeskSelection(FieldActivity.RecordDesk desk, List<Integer> selected,
+                                          List<Button> buttons, Label status, Button confirm) {
+        for (int index = 0; index < buttons.size(); index++) {
+            Button button = buttons.get(index);
+            int position = selected.indexOf(index);
+            String mark = position < 0 ? "○" : desk.ordered() ? Integer.toString(position + 1) : "✓";
+            button.pseudoClassStateChanged(MARKED, position >= 0);
+            button.setText(ThaiTypography.withWordBreaks(mark + "   " + desk.rows().get(index)));
         }
-        status.setText("ไฟติด " + Integer.bitCount(lights) + " / " + tiles.size());
+        status.setText("เลือกแล้ว " + selected.size() + " / " + desk.target().size());
+        confirm.setDisable(selected.size() != desk.target().size());
+    }
+
+    private static VBox routePanel(FieldActivity.SurveyRoute route, Dialog<Void> dialog,
+                                   Predicate<FieldActivity.Attempt> submit) {
+        List<Integer> path = new ArrayList<>(List.of(route.start()));
+        List<Button> cells = new ArrayList<>();
+        GridPane map = new GridPane(5, 5);
+        Label status = MissionSupportDialog.paragraph("");
+        Label feedback = MissionSupportDialog.paragraph("");
+        Button undo = action("ย้อนหนึ่งช่อง", "undoRoute", "secondary-button");
+        Button reset = action("เริ่มทางใหม่", "resetRoute", "secondary-button");
+        Button confirm = action("ส่งเส้นทาง", "confirmRoute", "primary-button");
+        for (int index = 0; index < route.cellCount(); index++) {
+            int cell = index;
+            Button button = action("", "routeCell" + index, "field-cell");
+            button.setMinSize(52, 35);
+            button.setOnAction(event -> {
+                if (route.canStep(path, cell)) {
+                    path.add(cell);
+                }
+                showRoute(route, path, cells, status, undo, confirm);
+                feedback.setText("");
+            });
+            cells.add(button);
+            map.add(button, index % route.columns(), index / route.columns());
+        }
+        undo.setOnAction(event -> {
+            path.removeLast();
+            showRoute(route, path, cells, status, undo, confirm);
+            feedback.setText("");
+        });
+        reset.setOnAction(event -> {
+            path.clear();
+            path.add(route.start());
+            showRoute(route, path, cells, status, undo, confirm);
+            feedback.setText("");
+        });
+        confirm.setOnAction(event -> verify(dialog, submit, new FieldActivity.Attempt.Route(path), feedback,
+                "เส้นทางยังไม่ผ่านการตรวจ ลองดูจุดที่ต้องแวะ ลำดับ และทางปิดในสมุดภาคสนาม"));
+        showRoute(route, path, cells, status, undo, confirm);
+        Label legend = MissionSupportDialog.paragraph(route.names().entrySet().stream().sorted(java.util.Map.Entry.comparingByKey())
+                .map(entry -> entry.getKey() + "  " + entry.getValue()).collect(java.util.stream.Collectors.joining("   ·   ")));
+        return new VBox(10, status, map, legend, new HBox(7, confirm, undo, reset), feedback);
+    }
+
+    private static void showRoute(FieldActivity.SurveyRoute route, List<Integer> path, List<Button> cells,
+                                  Label status, Button undo, Button confirm) {
+        for (int index = 0; index < cells.size(); index++) {
+            Button button = cells.get(index);
+            char marker = route.markerAt(index);
+            int step = path.indexOf(index);
+            String name = route.names().getOrDefault(marker, marker == '#' ? "กำแพง" : "ทางเดิน");
+            String symbol = marker == '.' ? "·" : Character.toString(marker);
+            button.setText(step >= 0 ? (marker == '.' ? Integer.toString(step) : symbol + " " + step) : symbol);
+            button.setAccessibleText(name + (step >= 0 ? " ลำดับ " + step : ""));
+            button.pseudoClassStateChanged(MARKED, step >= 0);
+            button.setDisable(step < 0 && !route.canStep(path, index));
+        }
+        status.setText("ช่องที่เดิน " + (path.size() - 1) + " / " + route.stepLimit());
+        undo.setDisable(path.size() == 1);
+        confirm.setDisable(route.markerAt(path.getLast()) != 'E');
     }
 
     private static Button action(String title, String id, String style) {

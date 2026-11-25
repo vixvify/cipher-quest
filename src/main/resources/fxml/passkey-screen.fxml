@@ -13,6 +13,7 @@
             <Region HBox.hgrow="ALWAYS" />
             <Button fx:id="backToArchiveButton" text="สำรวจ" accessibleText="กลับโถงสำรวจ"
                     onAction="#onReturnToArchive" styleClass="support-button" />
+            <Button fx:id="fieldNotesButton" text="หลักฐาน" onAction="#onOpenFieldNotes" styleClass="support-button" />
             <Button fx:id="hintButton" text="คำใบ้" onAction="#onOpenHints" styleClass="support-button" />
             <Label fx:id="checkpointLabel" styleClass="checkpoint-tag" />
         </HBox>
@@ -40,7 +41,7 @@
                     <Label text="ข้อความบนบัตรที่เก็บมา" styleClass="carried-evidence-caption" />
                     <Label fx:id="carriedCiphertext" styleClass="carried-ciphertext" />
                 </VBox>
-                <Label fx:id="missingEvidence" text="บัตรอยู่ในโถง · กด Esc เพื่อกลับไปหา"
+                <Label fx:id="missingEvidence" text="บัตรอยู่ในลิ้นชักเก็บซอง · กด Esc เพื่อกลับไปสำรวจ"
                        wrapText="true" minHeight="-Infinity" visible="false" managed="false" styleClass="missing-evidence" />
             </VBox>
 

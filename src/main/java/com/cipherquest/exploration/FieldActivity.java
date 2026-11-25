@@ -1,101 +1,123 @@
 package com.cipherquest.exploration;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public sealed interface FieldActivity {
     boolean solvedBy(Attempt attempt);
 
-    record Pickup() implements FieldActivity {
+    record Source() implements FieldActivity {
         @Override
         public boolean solvedBy(Attempt attempt) {
-            return attempt instanceof Attempt.Collect;
+            return attempt instanceof Attempt.Read;
         }
     }
 
-    record Radio(int frequency) implements FieldActivity {
-        public static final int MIN_FREQUENCY = 88;
-        public static final int MAX_FREQUENCY = 108;
-
-        public double signalStrength(int channel) {
-            return Math.max(0.08, 1 - Math.abs(channel - frequency) / 12.0);
-        }
-
-        @Override
-        public boolean solvedBy(Attempt attempt) {
-            return attempt instanceof Attempt.Tune tune && tune.frequency() == frequency;
-        }
-    }
-
-    record Sequence(List<String> pieces, List<Integer> order) implements FieldActivity {
-        public Sequence {
-            pieces = List.copyOf(pieces);
-            order = List.copyOf(order);
-        }
-
-        @Override
-        public boolean solvedBy(Attempt attempt) {
-            return attempt instanceof Attempt.Assemble assemble && order.equals(assemble.order());
-        }
-    }
-
-    record Match(String prompt, List<String> options, int answerIndex) implements FieldActivity {
-        public Match {
-            options = List.copyOf(options);
-        }
-
-        @Override
-        public boolean solvedBy(Attempt attempt) {
-            return attempt instanceof Attempt.MatchMark match && answerIndex == match.index();
-        }
-    }
-
-    record Circuit(List<Integer> initiallyLit) implements FieldActivity {
-        public static final int SIDE = 3;
-        public static final int SIZE = SIDE * SIDE;
-        private static final int ALL_LIT = (1 << SIZE) - 1;
-
-        public Circuit {
-            initiallyLit = List.copyOf(initiallyLit);
-        }
-
-        public int lightsAfter(List<Integer> switches) {
-            int lights = 0;
-            for (int tile : initiallyLit) {
-                lights |= 1 << tile;
+    record RecordDesk(String task, List<String> rows, List<Integer> target, boolean ordered) implements FieldActivity {
+        public RecordDesk {
+            rows = List.copyOf(rows);
+            target = List.copyOf(target);
+            int rowCount = rows.size();
+            if (target.isEmpty() || new HashSet<>(target).size() != target.size()
+                    || target.stream().anyMatch(index -> index < 0 || index >= rowCount)) {
+                throw new IllegalArgumentException("Invalid record desk solution");
             }
-            for (int pressed : switches) {
-                int row = pressed / SIDE;
-                int column = pressed % SIDE;
-                for (int tile = 0; tile < SIZE; tile++) {
-                    int distance = Math.abs(row - tile / SIDE) + Math.abs(column - tile % SIDE);
-                    if (distance <= 1) {
-                        lights ^= 1 << tile;
-                    }
+        }
+
+        @Override
+        public boolean solvedBy(Attempt attempt) {
+            return attempt instanceof Attempt.Records records && (ordered
+                    ? target.equals(records.indices())
+                    : records.indices().size() == target.size() && target.containsAll(records.indices())
+                        && new HashSet<>(records.indices()).size() == target.size());
+        }
+    }
+
+    record SurveyRoute(String task, List<String> grid, Map<Character, String> names, List<Character> stops,
+                       Set<Character> restricted, int stepLimit) implements FieldActivity {
+        public SurveyRoute {
+            grid = List.copyOf(grid);
+            names = Map.copyOf(names);
+            stops = List.copyOf(stops);
+            restricted = Set.copyOf(restricted);
+            if (grid.isEmpty() || grid.getFirst().isEmpty() || stepLimit < 1) {
+                throw new IllegalArgumentException("Invalid survey map");
+            }
+            int width = grid.getFirst().length();
+            String cells = String.join("", grid);
+            if (grid.stream().anyMatch(row -> row.length() != width)
+                    || cells.chars().filter(ch -> ch == 'S').count() != 1
+                    || cells.chars().filter(ch -> ch == 'E').count() != 1
+                    || stops.stream().anyMatch(stop -> cells.indexOf(stop) < 0)
+                    || restricted.stream().anyMatch(tile -> cells.indexOf(tile) < 0)) {
+                throw new IllegalArgumentException("Invalid survey map markers");
+            }
+        }
+
+        public int columns() {
+            return grid.getFirst().length();
+        }
+
+        public int cellCount() {
+            return grid.size() * columns();
+        }
+
+        public char markerAt(int cell) {
+            return grid.get(cell / columns()).charAt(cell % columns());
+        }
+
+        public int start() {
+            for (int index = 0; index < cellCount(); index++) {
+                if (markerAt(index) == 'S') {
+                    return index;
                 }
             }
-            return lights;
+            throw new IllegalStateException("Survey route has no start");
+        }
+
+        public boolean canStep(List<Integer> path, int next) {
+            if (path.isEmpty() || next < 0 || next >= cellCount() || markerAt(next) == '#'
+                    || path.contains(next) || path.size() > stepLimit || markerAt(path.getLast()) == 'E') {
+                return false;
+            }
+            int from = path.getLast();
+            return Math.abs(from / columns() - next / columns()) + Math.abs(from % columns() - next % columns()) == 1;
         }
 
         @Override
         public boolean solvedBy(Attempt attempt) {
-            return attempt instanceof Attempt.Switches switches
-                    && switches.pressed().stream().allMatch(tile -> tile >= 0 && tile < SIZE)
-                    && lightsAfter(switches.pressed()) == ALL_LIT;
+            if (!(attempt instanceof Attempt.Route route) || route.cells().isEmpty() || route.cells().getFirst() != start()) {
+                return false;
+            }
+            List<Integer> path = new ArrayList<>(List.of(start()));
+            List<Character> visitedStops = new ArrayList<>();
+            for (int next : route.cells().subList(1, route.cells().size())) {
+                if (!canStep(path, next) || restricted.contains(markerAt(next))) {
+                    return false;
+                }
+                path.add(next);
+                char marker = markerAt(next);
+                if (stops.contains(marker)) {
+                    visitedStops.add(marker);
+                }
+            }
+            return markerAt(path.getLast()) == 'E' && visitedStops.equals(stops);
         }
     }
 
     sealed interface Attempt {
-        record Collect() implements Attempt {}
-        record Tune(int frequency) implements Attempt {}
-        record Assemble(List<Integer> order) implements Attempt {
-            public Assemble {
-                order = List.copyOf(order);
+        record Read() implements Attempt {}
+        record Records(List<Integer> indices) implements Attempt {
+            public Records {
+                indices = List.copyOf(indices);
             }
         }
-        record MatchMark(int index) implements Attempt {}
-        record Switches(List<Integer> pressed) implements Attempt {
-            public Switches {
-                pressed = List.copyOf(pressed);
+        record Route(List<Integer> cells) implements Attempt {
+            public Route {
+                cells = List.copyOf(cells);
             }
         }
     }

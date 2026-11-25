@@ -17,7 +17,6 @@ public final class ArchiveWalk {
     private double x;
     private double y;
     private double distance;
-    private boolean hasCipherCard;
     private Facing facing = Facing.SOUTH;
 
     public ArchiveWalk(ArchiveMap map) {
@@ -74,26 +73,12 @@ public final class ArchiveWalk {
         return Optional.ofNullable(closest);
     }
 
-    public boolean isNearCipherCard() {
-        return !hasCipherCard && map.cipherCard()
-                .filter(card -> distanceTo(card) < REACH)
-                .isPresent();
-    }
-
-    public boolean collectCipherCard() {
-        if (!isNearCipherCard()) {
-            return false;
-        }
-        hasCipherCard = true;
-        return true;
-    }
-
-    public boolean hasCipherCard() {
-        return hasCipherCard;
+    public boolean hasRecoveredClue(int checkpoint) {
+        return collectedNotes(checkpoint).stream().anyMatch(note -> !(note.activity() instanceof FieldActivity.Source));
     }
 
     public int collectedEvidenceCount() {
-        return collectedNotes.size() + (hasCipherCard ? 1 : 0);
+        return collectedNotes.size();
     }
 
     public List<FieldNote> uncollectedNotes(int checkpoint) {
