@@ -1,12 +1,15 @@
 .mission-root {
   -fx-background-color: radial-gradient(center 31% 12%, radius 85%, #252040, #111025 76%);
-  -fx-font-family: "Sarabun";
+  -fx-font-family: "Kanit";
   -fx-padding: 24px;
+}
+.tooltip, .context-menu {
+  -fx-font-family: "Kanit";
 }
 .mission-shell {
   -fx-fill-width: true;
 }
-.mission-support .field-record, .mission-support .field-cell {
+.mission-support .field-record {
   -fx-background-color: #2e263f;
   -fx-background-radius: 6px;
   -fx-border-color: #655571;
@@ -19,15 +22,12 @@
   -fx-alignment: center-left;
   -fx-padding: 6px 9px;
 }
-.mission-support .field-cell:disabled {
-  -fx-opacity: 0.42;
-}
-.mission-support .field-record:marked, .mission-support .field-cell:marked {
+.mission-support .field-record:marked {
   -fx-background-color: #21516a;
   -fx-border-color: #9cddf2;
   -fx-text-fill: #f5fcff;
 }
-.mission-support .field-record:focused, .mission-support .field-cell:focused {
+.mission-support .field-record:focused {
   -fx-border-color: #fff6d3;
 }
 .mission-support .field-journal {
@@ -36,6 +36,9 @@
 .mission-support .field-saved-status {
   -fx-font-size: 12px;
   -fx-text-fill: #b8a9cb;
+  -fx-background-color: #231f34;
+  -fx-background-radius: 4px;
+  -fx-padding: 4px 8px;
 }
 .mission-support .field-journal > .title {
   -fx-background-color: #372b40;
@@ -69,8 +72,8 @@
   -fx-effect: dropshadow(gaussian, rgba(4, 3, 10, 0.77), 30, 0.20, 0, 15);
 }
 .workstation-root .mission-bar {
-  -fx-background-color: linear-gradient(to bottom, #2c2734, #1b1828);
-  -fx-border-color: #535060 #373140 #393244 #373140;
+  -fx-background-color: linear-gradient(to right, #23303d, #1b1828 60%);
+  -fx-border-color: #667685 #373140 #393244 #373140;
 }
 .mission-bar {
   -fx-background-color: #1f1c35;
@@ -89,7 +92,7 @@
   -fx-rotate: 45;
 }
 .mission-channel, .checkpoint-tag, .eyebrow {
-  -fx-font-family: "Consolas";
+  -fx-font-family: "Kanit";
   -fx-font-weight: bold;
   -fx-font-size: 12px;
 }
@@ -154,7 +157,7 @@
 .passkey-feedback:success, .sql-feedback:success, .terminal-status:success { -fx-text-fill: #d2fb86; }
 .passkey-feedback:error, .sql-feedback:error, .terminal-status:error { -fx-text-fill: #ffb4c3; }
 .terminal-status {
-  -fx-font-family: "Consolas";
+  -fx-font-family: "Kanit";
   -fx-font-size: 12px;
   -fx-text-fill: #bfcaa8;
 }
@@ -171,7 +174,7 @@
 }
 .support-button:hover, .support-button:focused { -fx-border-color: #d2fb86; }
 .mission-support {
-  -fx-font-family: "Sarabun";
+  -fx-font-family: "Kanit";
   -fx-background-color: #211a34;
   -fx-padding: 18px;
 }
@@ -198,7 +201,7 @@
   -fx-border-radius: 5px;
 }
 .mission-support .combo-box .list-cell {
-  -fx-font-family: "Sarabun";
+  -fx-font-family: "Kanit";
   -fx-background-color: #342846;
   -fx-text-fill: #f5e8ff;
 }
@@ -208,7 +211,7 @@
 .support-copy { -fx-font-size: 14px; -fx-line-spacing: 2px; -fx-text-fill: #ded2ed; }
 .support-section-title { -fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #c8a7fc; }
 .support-code {
-  -fx-font-family: "Consolas";
+  -fx-font-family: "Kanit";
   -fx-font-size: 13px;
   -fx-text-fill: #d2fb86;
   -fx-background-color: #29223b;

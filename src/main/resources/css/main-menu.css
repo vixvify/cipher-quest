@@ -1,12 +1,18 @@
 .main-root {
   -fx-background-color: #100e24;
-  -fx-font-family: "Sarabun";
+  -fx-font-family: "Kanit";
+}
+.tooltip, .context-menu {
+  -fx-font-family: "Kanit";
 }
 .hero-art {
   -fx-background-image: url("../images/archive-home.png");
   -fx-background-size: cover;
   -fx-background-repeat: no-repeat;
   -fx-background-position: left center;
+}
+.hero-gate-light {
+  -fx-background-color: radial-gradient(center 28% 45%, radius 37%, rgba(114, 250, 229, 0.23), transparent 76%);
 }
 .hero-shade {
   -fx-background-color: linear-gradient(to right, rgba(10, 9, 24, 0.02) 0%, rgba(10, 9, 24, 0.14) 35%, rgba(13, 11, 29, 0.62) 66%, rgba(16, 11, 31, 0.83) 100%);
@@ -18,7 +24,7 @@
   -fx-padding: 20px 12px 20px 10px;
 }
 .hero-title {
-  -fx-font-family: "Arial Black";
+  -fx-font-family: "Kanit";
   -fx-font-size: 118px;
   -fx-font-weight: 900;
   -fx-fill: #fff9ff;
@@ -46,6 +52,23 @@
   -fx-background-color: linear-gradient(to right, rgba(26, 20, 44, 0.92), rgba(28, 22, 45, 0.4));
   -fx-border-color: transparent transparent transparent #9cce9a;
   -fx-border-width: 0 0 0 2px;
+}
+.hero-key, .hero-key-caption {
+  -fx-font-size: 12px;
+  -fx-text-fill: #c8c8de;
+}
+.hero-key {
+  -fx-font-family: "Kanit";
+  -fx-font-weight: bold;
+  -fx-padding: 3px 6px;
+  -fx-background-color: #211e33;
+  -fx-background-radius: 4px;
+  -fx-border-color: #596282;
+  -fx-border-radius: 4px;
+  -fx-text-fill: #d4f4ed;
+}
+.hero-key-caption {
+  -fx-padding: 0 10px 0 0;
 }
 .hero-button {
   -fx-background-color: linear-gradient(to bottom, #e0ffa2, #c0ef69);

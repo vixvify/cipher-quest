@@ -6,6 +6,7 @@ import com.cipherquest.exploration.ArchiveMap;
 import com.cipherquest.exploration.ArchiveWalk;
 import com.cipherquest.exploration.FieldNote;
 import com.cipherquest.exploration.FieldActivity;
+import com.cipherquest.exploration.RoomWorkshop;
 import com.cipherquest.util.ResourceLoader;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -13,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -48,6 +50,8 @@ public class ArchiveController {
     private int activeCheckpoint;
     private long lastFrame;
     private boolean interactPressed;
+    private boolean workshopPaused;
+    private ArchiveRenderer.Reveal reveal;
 
     @FXML
     private void initialize() {
@@ -107,12 +111,15 @@ public class ArchiveController {
         walk.move(horizontal, vertical, step, checkpoint -> progress.status(checkpoint) != CheckpointStatus.LOCKED);
         Optional<ArchiveMap.Station> current = walk.nearbyStation();
         Optional<FieldNote> nextNote = walk.nearbyNote(activeCheckpoint);
-        if (!current.equals(nearby) || !nextNote.equals(nearbyNote)) {
+        if (!current.equals(nearby) || !nextNote.equals(nearbyNote) || walk.workshop().isPresent()) {
             nearby = current;
             nearbyNote = nextNote;
             showPrompt();
         }
-        renderer.draw(walk, progress, activeCheckpoint, nearby, now / 1_000_000_000.0,
+        if (!workshopPaused) {
+            walk.updateWorkshop(step).ifPresent(this::showWorkshopReward);
+        }
+        renderer.draw(walk, progress, activeCheckpoint, nearby, nearbyNote, reveal, now / 1_000_000_000.0,
                 Platform.getPreferences().isReducedMotion());
     }
 
@@ -127,6 +134,16 @@ public class ArchiveController {
             event.consume();
         } else if (code == KeyCode.E) {
             interactPressed = true;
+            event.consume();
+        } else if (walk.workshop().isPresent() && code == KeyCode.R) {
+            walk.resetWorkshop();
+            clearKeys();
+            showPrompt();
+            event.consume();
+        } else if (walk.workshop().isPresent() && code == KeyCode.ESCAPE) {
+            walk.leaveWorkshop();
+            clearKeys();
+            showPrompt();
             event.consume();
         }
     }
@@ -150,14 +167,29 @@ public class ArchiveController {
 
     @FXML
     private void onInteract() {
+        Optional<RoomWorkshop.Marker> nearbySwitch = walk.workshop().flatMap(room -> room.nearbySwitch(walk.position()));
+        if (nearbySwitch.isPresent()) {
+            if (walk.useWorkshopSwitch()) {
+                GameAudio.play(GameAudio.Effect.CONNECT);
+            }
+            showPrompt();
+            walk.updateWorkshop(0).ifPresent(this::showWorkshopReward);
+            return;
+        }
         Optional<FieldNote> note = walk.nearbyNote(activeCheckpoint);
         if (note.isPresent()) {
             FieldNote target = note.orElseThrow();
             clearKeys();
             if (target.activity() instanceof FieldActivity.Source) {
                 if (completeNote(target, new FieldActivity.Attempt.Read())) {
-                    FieldActivityDialog.showSource(interactButton, target, archiveRoot::requestFocus);
+                    workshopPaused = true;
+                    FieldActivityDialog.showSource(interactButton, target, this::resumeWorkshop);
                 }
+            } else if (target.activity() instanceof FieldActivity.Workshop) {
+                if (walk.startWorkshop(activeCheckpoint, target)) {
+                    GameAudio.play(GameAudio.Effect.CONNECT);
+                }
+                showPrompt();
             } else {
                 FieldActivityDialog.show(interactButton, target, walk.collectedNotes(activeCheckpoint),
                         attempt -> completeNote(target, attempt),
@@ -167,6 +199,7 @@ public class ArchiveController {
         }
         walk.nearbyStation().ifPresent(station -> {
             if (ScreenNavigator.SESSION.enterCheckpoint(station.checkpoint())) {
+                walk.leaveWorkshop();
                 GameAudio.play(GameAudio.Effect.CONNECT);
                 ScreenNavigator.navigateToCurrentLevel();
             }
@@ -178,6 +211,7 @@ public class ArchiveController {
             return false;
         }
         nearbyNote = Optional.empty();
+        reveal = new ArchiveRenderer.Reveal(target.position(), System.nanoTime() / 1_000_000_000.0);
         showPickup(target.title(), target.text());
         return true;
     }
@@ -191,6 +225,17 @@ public class ArchiveController {
         archiveRoot.requestFocus();
     }
 
+    private void showWorkshopReward(FieldNote reward) {
+        nearbyNote = walk.nearbyNote(activeCheckpoint);
+        reveal = new ArchiveRenderer.Reveal(walk.position(), System.nanoTime() / 1_000_000_000.0);
+        showPickup(reward.title(), reward.text());
+    }
+
+    private void resumeWorkshop() {
+        workshopPaused = false;
+        archiveRoot.requestFocus();
+    }
+
     @FXML
     private void onToggleSound() {
         GameAudio.toggle(soundButton);
@@ -200,7 +245,8 @@ public class ArchiveController {
     @FXML
     private void onOpenJournal() {
         clearKeys();
-        MissionSupportDialog.showFieldNotes(journalButton, walk.collectedNotes(activeCheckpoint));
+        workshopPaused = true;
+        MissionSupportDialog.showFieldNotes(journalButton, walk.collectedNotes(activeCheckpoint), this::resumeWorkshop);
     }
 
     private void showEvidenceCount() {
@@ -217,6 +263,7 @@ public class ArchiveController {
             CheckpointStatus status = progress.checkpoints().get(index);
             Label step = new Label(Integer.toString(index + 1));
             step.getStyleClass().add("archive-marker");
+            Tooltip.install(step, new Tooltip(stationName(index + 1)));
             if (status == CheckpointStatus.AVAILABLE) {
                 step.getStyleClass().add("available");
             } else if (status == CheckpointStatus.COMPLETED) {
@@ -227,15 +274,25 @@ public class ArchiveController {
     }
 
     private void showPrompt() {
+        var workshop = walk.workshop();
+        var device = workshop.flatMap(room -> room.nearbySwitch(walk.position()));
+        if (device.isPresent()) {
+            showWorkshopPrompt(workshop.orElseThrow(), device);
+            return;
+        }
         if (nearbyNote.isPresent()) {
             FieldNote note = nearbyNote.orElseThrow();
+            if (note.activity() instanceof FieldActivity.Workshop && workshop.isPresent()) {
+                showWorkshopPrompt(workshop.orElseThrow(), Optional.empty());
+                return;
+            }
             promptTitle.setText(note.title());
             promptDetail.setText(note.activity() instanceof FieldActivity.Source
                     ? "เปิดอ่านและเก็บข้อมูลลงสมุดภาคสนาม" : "ใช้ข้อมูลภาคสนามประกอบกันเพื่อกู้เบาะแส");
             interactButton.setText(switch (note.activity()) {
                 case FieldActivity.Source ignored -> "อ่านเอกสาร · E";
                 case FieldActivity.RecordDesk ignored -> "เปิดโต๊ะตรวจ · E";
-                case FieldActivity.SurveyRoute ignored -> "วางเส้นทาง · E";
+                case FieldActivity.Workshop ignored -> "เริ่มกิจกรรม · E";
             });
             interactButton.setDisable(false);
             return;
@@ -253,12 +310,38 @@ public class ArchiveController {
             interactButton.setDisable(status != CheckpointStatus.AVAILABLE);
             return;
         }
+        if (workshop.isPresent()) {
+            showWorkshopPrompt(workshop.orElseThrow(), Optional.empty());
+            return;
+        }
         boolean cluesRemain = !walk.hasRecoveredClue(activeCheckpoint);
         promptTitle.setText("ไปที่ " + nextStationName());
         promptDetail.setText(cluesRemain
                 ? "เอกสารสีทองให้ข้อมูล · โต๊ะสีฟ้าใช้กู้เบาะแส · สถานีสีเขียวเปิดภารกิจ"
                 : "เดินด้วย WASD หรือปุ่มลูกศร");
         interactButton.setDisable(true);
+    }
+
+    private void showWorkshopPrompt(RoomWorkshop workshop, Optional<RoomWorkshop.Marker> device) {
+        String title = switch (workshop.kind()) {
+            case POWER -> "ระบบจ่ายไฟ";
+            case CARGO -> "ลานเข็นลัง";
+            case VAULT -> "จุดตรวจห้องนิรภัย";
+        };
+        promptTitle.setText(title + "  " + workshop.completed() + "/" + workshop.total());
+        String guidance = switch (workshop.signal()) {
+            case WRONG_ORDER -> "จุดนี้ยังรับสัญญาณไม่ได้ ลองดูขั้นตอนในสมุด";
+            case SCANNER_RESET -> "ลำแสงล้างจุดตรวจแล้ว ใช้ทางด้านข้างหลบแนวสแกน";
+            case BLOCKED -> "ลังติดสิ่งกีดขวาง ลองอ้อมไปเข็นอีกด้าน";
+            default -> switch (workshop.kind()) {
+                case POWER -> "เดินเข้าใกล้จุดแล้วกด E เพื่อต่อไฟ";
+                case CARGO -> "เดินชนลังตรง ๆ เพื่อเข็นเข้าช่อง";
+                case VAULT -> "หลบแนวสแกนแล้วกด E ที่จุดตรวจ";
+            };
+        };
+        promptDetail.setText(ThaiTypography.withWordBreaks(guidance + " · R เริ่มใหม่ · Esc ออก"));
+        interactButton.setText(device.map(marker -> "ใช้จุด " + marker.label() + " · E").orElse("สำรวจพื้นที่"));
+        interactButton.setDisable(device.isEmpty());
     }
 
     private String nextStationName() {

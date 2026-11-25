@@ -11,25 +11,36 @@ mvn javafx:run
 ```
 
 ### วิธีที่ 2: ใช้สคริปต์ (Windows)
-```bash
-# Command Prompt
-run-game.bat
+รันจากโฟลเดอร์โปรเจกต์ใน Command Prompt
 
-# PowerShell
-.\run-game.ps1
+```bat
+scripts\run-game.bat
+```
+
+หรือรันใน PowerShell
+
+```powershell
+.\scripts\run-game.ps1
 ```
 
 รันคำสั่ง Maven จากโฟลเดอร์หลักของโปรเจกต์ ใช้ `mvn test` หลังติดตั้งแพ็กเกจของ Terminal เพื่อทดสอบรวมทั้งด่าน Linux
 
 ### ใช้ Docker
 
+เปิด Docker Desktop หรือ Docker Engine แล้วรันจากโฟลเดอร์โปรเจกต์
+
 ```sh
-docker build -t cipherquest .
+docker compose up --build --wait
 ```
 
-เกมเปิดหน้าต่าง JavaFX ผ่าน X11 บน Linux ให้รันจากเซสชันที่มี `DISPLAY` และไฟล์ Xauthority ของผู้ใช้
+หลังคำสั่งเสร็จ ให้เปิด [หน้าต่าง CipherQuest](http://localhost:6080/vnc.html?autoconnect=1&resize=scale) แล้วคลิกหน้าจอเกมเพื่อส่งคีย์บอร์ดเข้าเกม ใช้ `docker compose logs -f game` เพื่อดูสถานะ หรือ `docker compose down` เพื่อหยุดเกม
+
+Compose เปิดพอร์ตเฉพาะบนเครื่องที่รัน Docker เปลี่ยนพอร์ตได้ด้วย `CIPHERQUEST_PORT` และเซฟอยู่ใน Docker volume `saves` หน้าต่างผ่าน noVNC ส่งภาพ คีย์บอร์ด และเมาส์ เสียงเกมใช้ได้เมื่อเปิดเกมแบบเดสก์ท็อปบนเครื่องที่มีอุปกรณ์เสียง
+
+ถ้าต้องการใช้จอ X11 ของเครื่องโดยตรง ให้ build เป้าหมาย `desktop` แล้วรันจากเซสชัน Linux ที่มี `DISPLAY` และไฟล์ Xauthority ของผู้ใช้
 
 ```sh
+docker build --target desktop -t cipherquest .
 mkdir -p "$HOME/.cipherquest"
 docker run --rm --user "$(id -u):$(id -g)" --hostname "$(hostname)" \
   -e DISPLAY -e XAUTHORITY=/tmp/cipherquest.Xauthority \
@@ -105,6 +116,7 @@ cipherquest/
 ## คุณสมบัติของเกม
 
 - **โถงสำรวจ 2D** เดินด้วย WASD หรือปุ่มลูกศร กด E ที่เอกสารสีทองเพื่อเก็บข้อมูลลงสมุดภาคสนาม แล้วใช้ข้อมูลที่โต๊ะสีฟ้าเพื่อกู้เบาะแส สถานีสีเขียวใช้เข้าภารกิจตามลำดับ กด Esc เพื่อกลับมาสำรวจระหว่างเล่น
+- **กิจกรรมบนแผนที่** กด E ที่กล่องจ่ายไฟ ลานสินค้า หรือแผงนิรภัยเพื่อเริ่ม ต่อไฟและใช้จุดตรวจด้วย E เข็นลังด้วยการเดินชนจากด้านที่ต้องการ กด R เพื่อเริ่มกิจกรรมใหม่ หรือ Esc เพื่อออกจากกิจกรรม
 - **เสียง** เพลง Lobby เล่นต่อเนื่องระหว่างเปลี่ยนหน้าจอ สลับเปิดเพลงและเสียงเอฟเฟกต์ได้จาก Home และโถงสำรวจ
 - 🔐 **Caesar Cipher Level** - เรียนรู้การเข้ารหัสแบบ Caesar
 - 💻 **Linux Terminal Level** - ใช้คำสั่ง Bash, pipe และ redirection ในระบบไฟล์เสมือนของ just-bash

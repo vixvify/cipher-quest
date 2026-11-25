@@ -1,20 +1,12 @@
 package com.cipherquest.ui;
 
-import javafx.css.PseudoClass;
-import javafx.scene.Node;
-
 import java.text.BreakIterator;
 import java.util.Locale;
 
 final class ThaiTypography {
     private static final Locale THAI = Locale.forLanguageTag("th");
-    private static final PseudoClass THAI_TEXT = PseudoClass.getPseudoClass("thai-text");
 
     private ThaiTypography() {}
-
-    static void useThaiFontWhenNeeded(Node node, String text) {
-        node.pseudoClassStateChanged(THAI_TEXT, text.codePoints().anyMatch(ThaiTypography::isThai));
-    }
 
     static String withWordBreaks(String text) {
         if (!text.codePoints().anyMatch(ThaiTypography::isThai)) {

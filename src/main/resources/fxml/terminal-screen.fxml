@@ -28,6 +28,8 @@
                     <Label text="~/ ❯" styleClass="terminal-icon" />
                     <Label text="Bash" styleClass="panel-title" />
                     <Region HBox.hgrow="ALWAYS" />
+                    <ProgressIndicator fx:id="commandActivity" styleClass="terminal-activity"
+                                       visible="false" managed="false" accessibleText="กำลังรันคำสั่ง" />
                     <Label fx:id="statusLabel" text="READY" styleClass="terminal-status" />
                 </HBox>
                 <ScrollPane fx:id="outputScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true"

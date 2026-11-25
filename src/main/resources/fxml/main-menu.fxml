@@ -7,7 +7,8 @@
 
 <StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.cipherquest.ui.MainMenuController" styleClass="main-root">
-    <Region styleClass="hero-art" />
+    <Region fx:id="heroArtwork" styleClass="hero-art" scaleX="1.025" scaleY="1.025" />
+    <Region fx:id="gateLight" styleClass="hero-gate-light" mouseTransparent="true" />
     <Canvas fx:id="rainCanvas" managed="false" mouseTransparent="true" />
     <Region styleClass="hero-shade" mouseTransparent="true" />
     <Button fx:id="soundButton" onAction="#onToggleSound" styleClass="hero-sound" StackPane.alignment="TOP_RIGHT" />
@@ -29,6 +30,12 @@
                 <HBox spacing="9" alignment="CENTER_LEFT">
                     <Button text="เข้าสู่โถง  →" onAction="#onStartGame" defaultButton="true" styleClass="hero-button" />
                     <Button fx:id="controlsButton" text="วิธีเล่น" onAction="#onShowControls" styleClass="hero-secondary" />
+                </HBox>
+                <HBox spacing="7" alignment="CENTER_LEFT">
+                    <Label text="WASD" styleClass="hero-key" />
+                    <Label text="เดิน" styleClass="hero-key-caption" />
+                    <Label text="E" styleClass="hero-key" />
+                    <Label text="สำรวจ" styleClass="hero-key-caption" />
                 </HBox>
             </VBox>
         </VBox>

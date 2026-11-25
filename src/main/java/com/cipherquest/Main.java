@@ -9,8 +9,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        Font.loadFont(Main.class.getResource("/fonts/Sarabun-Regular.ttf").toExternalForm(), 14);
-        Font.loadFont(Main.class.getResource("/fonts/Sarabun-Bold.ttf").toExternalForm(), 14);
+        for (String weight : new String[]{"Regular", "Bold", "Black"}) {
+            Font.loadFont(Main.class.getResource("/fonts/Kanit-" + weight + ".ttf").toExternalForm(), 14);
+        }
         stage.setMinWidth(700);
         stage.setMinHeight(560);
         ScreenNavigator.setPrimaryStage(stage);

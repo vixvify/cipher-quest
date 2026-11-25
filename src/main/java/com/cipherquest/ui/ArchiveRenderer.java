@@ -6,6 +6,7 @@ import com.cipherquest.exploration.ArchiveMap;
 import com.cipherquest.exploration.ArchiveWalk;
 import com.cipherquest.exploration.FieldActivity;
 import com.cipherquest.exploration.FieldNote;
+import com.cipherquest.exploration.RoomWorkshop;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -20,7 +21,7 @@ final class ArchiveRenderer {
     private static final Color LIME = Color.web("#c9fb82");
     private static final Color CYAN = Color.web("#78cbe5");
     private static final Color LOCKED = Color.web("#5e6487");
-    private static final Font STATION_FONT = Font.font("Consolas", FontWeight.BOLD, 10);
+    private static final Font STATION_FONT = Font.font("Kanit", FontWeight.BOLD, 11);
 
     private final Canvas canvas;
     private final GraphicsContext graphics;
@@ -32,7 +33,7 @@ final class ArchiveRenderer {
     }
 
     void draw(ArchiveWalk walk, CampaignProgress progress, int activeCheckpoint, Optional<ArchiveMap.Station> nearby,
-              double seconds, boolean reduceMotion) {
+              Optional<FieldNote> nearbyNote, Reveal reveal, double seconds, boolean reduceMotion) {
         var map = walk.map();
         double width = canvas.getWidth();
         double height = canvas.getHeight();
@@ -58,7 +59,11 @@ final class ArchiveRenderer {
                     animationTime);
         }
         for (var note : walk.uncollectedNotes(activeCheckpoint)) {
-            drawActivity(note, animationTime);
+            drawActivity(note, nearbyNote.filter(note::equals).isPresent(), animationTime);
+        }
+        walk.workshop().ifPresent(room -> drawWorkshop(room, walk.position()));
+        if (!reduceMotion && reveal != null) {
+            drawReveal(reveal, seconds);
         }
         drawPlayer(walk, reduceMotion);
         graphics.restore();
@@ -193,9 +198,12 @@ final class ArchiveRenderer {
         if (state == CheckpointStatus.AVAILABLE) {
             rectangle(LIME, x + 10, y - 5 - Math.sin(seconds * 4), 4, 2);
         }
+        if (nearby) {
+            reticle(x + TILE / 2.0, y + TILE / 2.0, status);
+        }
     }
 
-    private void drawActivity(FieldNote note, double seconds) {
+    private void drawActivity(FieldNote note, boolean nearby, double seconds) {
         double x = note.position().x() * TILE;
         double y = note.position().y() * TILE;
         boolean source = note.activity() instanceof FieldActivity.Source;
@@ -212,6 +220,76 @@ final class ArchiveRenderer {
             rectangle(accent, x - 2, y + 4, 4, 2);
         }
         rectangle(accent, x - 1, y - 12 - Math.sin(seconds * 4), 3, 2);
+        if (nearby) {
+            reticle(x, y, accent);
+        }
+    }
+
+    private void reticle(double x, double y, Color color) {
+        for (int horizontal : new int[]{-1, 1}) {
+            for (int vertical : new int[]{-1, 1}) {
+                double edgeX = x + horizontal * 12;
+                double edgeY = y + vertical * 11;
+                rectangle(color, Math.min(edgeX, edgeX - horizontal * 5), edgeY, 5, 1);
+                rectangle(color, edgeX, Math.min(edgeY, edgeY - vertical * 5), 1, 5);
+            }
+        }
+    }
+
+    private void drawReveal(Reveal reveal, double seconds) {
+        double age = seconds - reveal.startedAt();
+        if (age < 0 || age > 0.7) {
+            return;
+        }
+        double x = reveal.position().x() * TILE;
+        double y = reveal.position().y() * TILE;
+        double radius = 5 + age * 32;
+        Color color = CYAN.deriveColor(0, 1, 1, 1 - age / 0.7);
+        for (int spark = 0; spark < 8; spark++) {
+            double direction = Math.PI / 4 * spark;
+            rectangle(color, x + Math.cos(direction) * radius, y + Math.sin(direction) * radius, 2, 2);
+        }
+    }
+
+    record Reveal(ArchiveMap.Position position, double startedAt) {}
+
+    private void drawWorkshop(RoomWorkshop room, ArchiveMap.Position player) {
+        room.beam().ifPresent(beam -> {
+            double x = beam.left() * TILE;
+            double y = beam.row() * TILE;
+            double width = (beam.right() - beam.left() + 1) * TILE;
+            rectangle(Color.web("#ff526d", 0.27), x, y, width, TILE);
+            rectangle(Color.web("#ff7990"), x, y + 11, width, 2);
+        });
+        var nearby = room.nearbySwitch(player);
+        var markers = room.markers();
+        for (var marker : markers) {
+            if (marker.type() == RoomWorkshop.MarkerType.DOCK) {
+                drawWorkshopMarker(marker, false);
+            }
+        }
+        for (var marker : markers) {
+            if (marker.type() != RoomWorkshop.MarkerType.DOCK) {
+                drawWorkshopMarker(marker, nearby.filter(marker::equals).isPresent());
+            }
+        }
+    }
+
+    private void drawWorkshopMarker(RoomWorkshop.Marker marker, boolean nearby) {
+        double x = (marker.tile().x() + 0.5) * TILE;
+        double y = (marker.tile().y() + 0.5) * TILE;
+        Color accent = marker.active() ? LIME : marker.type() == RoomWorkshop.MarkerType.CRATE
+                ? Color.web("#ffcb84") : CYAN;
+        rectangle(accent.deriveColor(0, 1, 1, 0.40), x - 10, y - 9, 20, 18);
+        rectangle(Color.web("#151c31"), x - 8, y - 7, 16, 14);
+        rectangle(accent, x - 8, y + 6, 16, 2);
+        graphics.setTextAlign(TextAlignment.CENTER);
+        graphics.setFont(STATION_FONT);
+        graphics.setFill(accent);
+        graphics.fillText(marker.label(), x, y + 3.5);
+        if (nearby) {
+            reticle(x, y, accent);
+        }
     }
 
     private void drawPlayer(ArchiveWalk walk, boolean reduceMotion) {

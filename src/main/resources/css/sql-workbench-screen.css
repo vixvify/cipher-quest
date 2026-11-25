@@ -4,6 +4,20 @@
   -fx-border-color: #493961;
   -fx-border-radius: 10px;
 }
+.sql-root .mission-bar, .sql-mission-panel {
+  -fx-background-color: linear-gradient(to right, #25384e, #211a33 72%);
+}
+.sql-root .signal-mark {
+  -fx-background-color: #8bdbfb;
+}
+.sql-shortcut {
+  -fx-font-family: "Kanit";
+  -fx-font-size: 11px;
+  -fx-text-fill: #c3dcf3;
+  -fx-background-color: #142435;
+  -fx-background-radius: 4px;
+  -fx-padding: 4px 5px;
+}
 .schema-panel { -fx-padding: 17px 13px; }
 .sql-mission-panel { -fx-padding: 10px 15px; }
 .sql-mission-title {
@@ -16,7 +30,7 @@
   -fx-text-fill: #c0b3d5;
 }
 .sql-table-item {
-  -fx-font-family: "Consolas";
+  -fx-font-family: "Kanit";
   -fx-font-size: 13px;
   -fx-text-fill: #ebdffd;
   -fx-background-color: #2b2240;
@@ -38,14 +52,13 @@
   -fx-background-color: #121021;
   -fx-background-insets: 0;
   -fx-control-inner-background: #121021;
-  -fx-font-family: "Consolas";
+  -fx-font-family: "Kanit";
   -fx-font-size: 15px;
   -fx-text-fill: #f8efff;
   -fx-prompt-text-fill: #b5a8ca;
   -fx-highlight-fill: #624788;
 }
 .sql-editor .content { -fx-background-color: #121021; }
-.sql-editor:thai-text { -fx-font-family: "Sarabun"; }
 .sql-result-table {
   -fx-background-color: #121021;
   -fx-background-insets: 0;

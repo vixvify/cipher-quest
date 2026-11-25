@@ -22,16 +22,35 @@ RUN --mount=type=cache,target=/root/.m2 \
     done \
     && java --module-path /out/javafx --add-modules javafx.controls,javafx.fxml,javafx.media -version
 
-FROM eclipse-temurin:25-jre-noble
+FROM scratch AS game-files
+COPY --from=build /out/ /app/
+COPY --from=terminal /usr/local/bin/node /usr/local/bin/node
+COPY --from=terminal /app/terminal/ /app/terminal/
+COPY docker/start-game.sh /app/
+
+FROM eclipse-temurin:25-jre-noble AS runtime
 RUN apt-get update \
     && apt-get install -y --no-install-recommends fonts-noto-core libasound2t64 libgl1 libgl1-mesa-dri libgtk-3-0t64 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 10001 cipherquest \
     && install -d -o cipherquest -g cipherquest /home/cipherquest/.cipherquest
 WORKDIR /app
-COPY --from=build /out/ ./
-COPY --from=terminal /usr/local/bin/node /usr/local/bin/node
-COPY --from=terminal /app/terminal/ ./terminal/
+
+FROM runtime AS browser
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends novnc openbox websockify x11-utils x11vnc xvfb \
+    && install -d -m 1777 /tmp/.X11-unix \
+    && rm -rf /var/lib/apt/lists/*
+COPY docker/start-browser.sh ./
+COPY --from=game-files / /
+RUN sed -i 's/\r$//' start-browser.sh start-game.sh
 USER cipherquest
-CMD ["java", "--module-path", "/app/javafx", "--add-modules", "javafx.controls,javafx.fxml,javafx.media", \
-     "--enable-native-access=javafx.graphics,javafx.media,ALL-UNNAMED", "-cp", "/app/cipherquest.jar:/app/lib/*", "com.cipherquest.Main"]
+ENV DISPLAY=:99
+EXPOSE 6080
+CMD ["/bin/bash", "/app/start-browser.sh"]
+
+FROM runtime AS desktop
+COPY --from=game-files / /
+RUN sed -i 's/\r$//' start-game.sh
+USER cipherquest
+CMD ["/bin/sh", "/app/start-game.sh"]

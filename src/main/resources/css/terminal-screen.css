@@ -1,6 +1,24 @@
 .terminal-brief .mission-title {
   -fx-font-size: 25px;
 }
+.terminal-root .mission-bar, .terminal-header {
+  -fx-background-color: linear-gradient(to right, #20413d, #171e28 65%);
+}
+.terminal-root .signal-mark {
+  -fx-background-color: #8effd7;
+}
+.terminal-activity {
+  -fx-pref-width: 17px;
+  -fx-pref-height: 17px;
+  -fx-max-width: 17px;
+  -fx-max-height: 17px;
+  -fx-progress-color: #8effd7;
+}
+.term-system {
+  -fx-text-fill: #9ddfca;
+  -fx-font-size: 13px;
+  -fx-padding: 0 0 4px 0;
+}
 .terminal-brief {
   -fx-padding: 17px;
 }
@@ -20,7 +38,7 @@
   -fx-border-color: #3c324d transparent transparent transparent;
 }
 .terminal-icon, .term-prompt, .term-output, .term-input-prompt, .term-input-field {
-  -fx-font-family: "Consolas";
+  -fx-font-family: "Kanit";
   -fx-font-size: 14px;
 }
 .terminal-icon, .term-input-prompt, .term-prompt { -fx-text-fill: #d2fb86; }
@@ -37,6 +55,3 @@
   -fx-padding: 7px 9px;
 }
 .term-input-field:focused { -fx-border-color: #d2fb86; }
-.term-output:thai-text, .term-prompt:thai-text, .term-input-field:thai-text {
-  -fx-font-family: "Sarabun";
-}

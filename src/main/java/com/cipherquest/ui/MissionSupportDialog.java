@@ -61,6 +61,10 @@ final class MissionSupportDialog {
     }
 
     static void showFieldNotes(Node owner, List<FieldNote> notes) {
+        showFieldNotes(owner, notes, () -> {});
+    }
+
+    static void showFieldNotes(Node owner, List<FieldNote> notes, Runnable onClose) {
         Dialog<Void> dialog = createDialog(owner, "สมุดภาคสนาม",
                 "เอกสารที่อ่านและเบาะแสที่กู้ได้ของสถานีนี้");
         if (!notes.isEmpty()) {
@@ -72,6 +76,7 @@ final class MissionSupportDialog {
         } else {
             dialog.getDialogPane().setContent(paragraph("ยังไม่มีข้อมูล · ลองเปิดเอกสารสีทองในโถง"));
         }
+        dialog.setOnHidden(event -> onClose.run());
         dialog.show();
     }
 

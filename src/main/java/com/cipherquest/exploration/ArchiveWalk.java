@@ -18,6 +18,8 @@ public final class ArchiveWalk {
     private double y;
     private double distance;
     private Facing facing = Facing.SOUTH;
+    private FieldNote workshopNote;
+    private RoomWorkshop workshop;
 
     public ArchiveWalk(ArchiveMap map) {
         this.map = map;
@@ -51,10 +53,10 @@ public final class ArchiveWalk {
         double step = SPEED * Math.min(seconds, 0.05) / directionLength;
         double beforeX = x;
         double beforeY = y;
-        if (clearAt(x + horizontal * step, y, isUnlocked)) {
+        if (horizontal != 0 && moveClear(x + horizontal * step, y, horizontal, 0, vertical == 0, isUnlocked)) {
             x += horizontal * step;
         }
-        if (clearAt(x, y + vertical * step, isUnlocked)) {
+        if (vertical != 0 && moveClear(x, y + vertical * step, 0, vertical, horizontal == 0, isUnlocked)) {
             y += vertical * step;
         }
         distance += Math.hypot(x - beforeX, y - beforeY);
@@ -103,6 +105,52 @@ public final class ArchiveWalk {
         return note;
     }
 
+    public Optional<RoomWorkshop> workshop() {
+        return Optional.ofNullable(workshop);
+    }
+
+    public boolean startWorkshop(int checkpoint, FieldNote target) {
+        if (workshop != null || !(target.activity() instanceof FieldActivity.Workshop activity)
+                || nearbyNote(checkpoint).filter(target::equals).isEmpty()) {
+            return false;
+        }
+        workshopNote = target;
+        workshop = activity.layout().begin();
+        return true;
+    }
+
+    public void resetWorkshop() {
+        if (workshopNote != null && workshopNote.activity() instanceof FieldActivity.Workshop activity) {
+            x = workshopNote.position().x();
+            y = workshopNote.position().y();
+            workshop = activity.layout().begin();
+        }
+    }
+
+    public void leaveWorkshop() {
+        workshop = null;
+        workshopNote = null;
+    }
+
+    public boolean useWorkshopSwitch() {
+        return workshop != null && workshop.nearbySwitch(position())
+                .map(marker -> workshop.use(marker.tile())).orElse(false);
+    }
+
+    public Optional<FieldNote> updateWorkshop(double seconds) {
+        if (workshop == null) {
+            return Optional.empty();
+        }
+        workshop.tick(seconds, RoomWorkshop.Tile.under(position()));
+        if (!workshop.solved()) {
+            return Optional.empty();
+        }
+        FieldNote reward = workshopNote;
+        collectedNotes.add(reward.id());
+        leaveWorkshop();
+        return Optional.of(reward);
+    }
+
     private List<FieldNote> notes(int checkpoint, boolean collected) {
         return map.fieldNotes().stream()
                 .filter(note -> note.checkpoint() == checkpoint && collectedNotes.contains(note.id()) == collected)
@@ -113,13 +161,33 @@ public final class ArchiveWalk {
         return Math.hypot(x - target.x(), y - target.y());
     }
 
-    private boolean clearAt(double nextX, double nextY, IntPredicate isUnlocked) {
+    private boolean moveClear(double nextX, double nextY, int horizontal, int vertical, boolean canPush,
+                              IntPredicate isUnlocked) {
         int left = (int) Math.floor(nextX - RADIUS);
         int right = (int) Math.floor(nextX + RADIUS);
         int top = (int) Math.floor(nextY - RADIUS);
         int bottom = (int) Math.floor(nextY + RADIUS);
-        return map.isWalkable(left, top, isUnlocked) && map.isWalkable(right, top, isUnlocked)
-                && map.isWalkable(left, bottom, isUnlocked) && map.isWalkable(right, bottom, isUnlocked);
+        if (!map.isWalkable(left, top, isUnlocked) || !map.isWalkable(right, top, isUnlocked)
+                || !map.isWalkable(left, bottom, isUnlocked) || !map.isWalkable(right, bottom, isUnlocked)) {
+            return false;
+        }
+        if (!(workshop instanceof RoomWorkshop.Cargo cargo)) {
+            return true;
+        }
+        RoomWorkshop.Tile obstruction = null;
+        for (int column = left; column <= right; column++) {
+            for (int row = top; row <= bottom; row++) {
+                RoomWorkshop.Tile tile = new RoomWorkshop.Tile(column, row);
+                if (cargo.blocks(tile)) {
+                    if (obstruction != null) {
+                        return false;
+                    }
+                    obstruction = tile;
+                }
+            }
+        }
+        return obstruction == null || (canPush && cargo.push(obstruction, horizontal, vertical,
+                tile -> map.isWalkable(tile.x(), tile.y(), isUnlocked)));
     }
 
     public enum Facing { NORTH, SOUTH, WEST, EAST }

@@ -21,6 +21,8 @@ public class MainMenuController {
     @FXML private Canvas rainCanvas;
     @FXML private VBox heroCopy;
     @FXML private Region signalSweep;
+    @FXML private Region heroArtwork;
+    @FXML private Region gateLight;
     @FXML private Button controlsButton;
     @FXML private Button soundButton;
 
@@ -29,6 +31,16 @@ public class MainMenuController {
         GameAudio.updateButton(soundButton);
         rootPane.widthProperty().addListener((property, before, width) ->
                 rootPane.pseudoClassStateChanged(COMPACT, width.doubleValue() < 960));
+        rootPane.setOnMouseMoved(event -> {
+            if (!Platform.getPreferences().isReducedMotion() && rootPane.getWidth() > 0 && rootPane.getHeight() > 0) {
+                heroArtwork.setTranslateX(10 * (0.5 - event.getSceneX() / rootPane.getWidth()));
+                heroArtwork.setTranslateY(8 * (0.5 - event.getSceneY() / rootPane.getHeight()));
+            }
+        });
+        rootPane.setOnMouseExited(event -> {
+            heroArtwork.setTranslateX(0);
+            heroArtwork.setTranslateY(0);
+        });
 
         rainCanvas.widthProperty().bind(rootPane.widthProperty());
         rainCanvas.heightProperty().bind(rootPane.heightProperty());
@@ -39,17 +51,24 @@ public class MainMenuController {
         signal.setToX(156);
         signal.setAutoReverse(true);
         signal.setCycleCount(TranslateTransition.INDEFINITE);
+        FadeTransition light = new FadeTransition(Duration.seconds(3.4), gateLight);
+        light.setFromValue(0.30);
+        light.setToValue(0.85);
+        light.setAutoReverse(true);
+        light.setCycleCount(FadeTransition.INDEFINITE);
         rootPane.sceneProperty().addListener((property, before, scene) -> {
             if (scene == null) {
                 rain.stop();
                 intro.stop();
                 signal.stop();
+                light.stop();
                 return;
             }
             rain.start();
             if (!Platform.getPreferences().isReducedMotion()) {
                 intro.playFromStart();
                 signal.playFromStart();
+                light.playFromStart();
             }
         });
     }

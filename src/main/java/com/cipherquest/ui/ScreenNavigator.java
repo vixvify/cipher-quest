@@ -147,6 +147,9 @@ public class ScreenNavigator {
             }
 
             primaryStage.setTitle(title);
+            if (!root.getStyleClass().contains("main-root")) {
+                ScreenMotion.reveal(root, 7, 0.65, 240);
+            }
         } catch (IOException error) {
             throw new IllegalStateException("Could not open screen " + fxmlPath, error);
         }

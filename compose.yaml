@@ -1,0 +1,21 @@
+services:
+  game:
+    build:
+      context: .
+      target: browser
+    init: true
+    ports:
+      - "127.0.0.1:${CIPHERQUEST_PORT:-6080}:6080"
+    volumes:
+      - saves:/home/cipherquest/.cipherquest
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - xwininfo -root -tree | grep -Fq CipherQuest && python3 -c "from urllib.request import urlopen; urlopen('http://127.0.0.1:6080/vnc.html', timeout=2).close()"
+      interval: 5s
+      timeout: 4s
+      start_period: 15s
+      retries: 5
+
+volumes:
+  saves:

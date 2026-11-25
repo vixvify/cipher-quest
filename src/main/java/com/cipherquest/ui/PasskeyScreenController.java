@@ -9,11 +9,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 public class PasskeyScreenController extends BaseMissionController {
     private static final PseudoClass REVEALED = PseudoClass.getPseudoClass("revealed");
+    private static final PseudoClass FILLED = PseudoClass.getPseudoClass("filled");
     private String ciphertext;
     private boolean evidenceRevealed;
     private boolean flipping;
@@ -28,11 +31,25 @@ public class PasskeyScreenController extends BaseMissionController {
     @FXML private VBox carriedEvidence;
     @FXML private Label carriedCiphertext;
     @FXML private Label missingEvidence;
+    @FXML private HBox keySlots;
 
     @FXML
     private void initialize() {
         initializeMissionHeader();
         ScreenNavigator.SESSION.passkeyBrief().ifPresent(brief -> ciphertext = brief.ciphertext());
+        if (ciphertext != null) {
+            for (int index = 0; index < ciphertext.length(); index++) {
+                Region slot = new Region();
+                slot.getStyleClass().add("passkey-slot");
+                keySlots.getChildren().add(slot);
+            }
+        }
+        passkeyField.textProperty().addListener((property, before, value) -> {
+            int entered = value.codePointCount(0, value.length());
+            for (int index = 0; index < keySlots.getChildren().size(); index++) {
+                keySlots.getChildren().get(index).pseudoClassStateChanged(FILLED, index < entered);
+            }
+        });
         evidenceButton.setDisable(ciphertext == null);
         var walk = ScreenNavigator.archiveWalk();
         boolean inExploration = walk != null;
