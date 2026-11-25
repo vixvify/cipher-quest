@@ -7,6 +7,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -28,12 +29,11 @@ public class TerminalScreenController extends BaseMissionController {
     @FXML private ScrollPane outputScrollPane;
     @FXML private Label statusLabel;
     @FXML private Label promptLabel;
+    @FXML private ProgressIndicator commandActivity;
 
     @FXML
     private void initialize() {
         initializeMissionHeader();
-        commandField.textProperty().addListener((property, before, text) ->
-                ThaiTypography.useThaiFontWhenNeeded(commandField, text));
         commandField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
                 showHistory(event.getCode() == KeyCode.UP ? -1 : 1);
@@ -42,6 +42,7 @@ public class TerminalScreenController extends BaseMissionController {
         });
         promptLabel.setTooltip(new Tooltip());
         updatePrompt();
+        appendTerminalLine("เชื่อมต่อเชลล์แล้ว", "term-system");
     }
 
     @FXML
@@ -98,6 +99,8 @@ public class TerminalScreenController extends BaseMissionController {
     private void setCommandPending(boolean pending) {
         setHintsBusy(pending);
         commandField.setEditable(!pending);
+        commandActivity.setVisible(pending);
+        commandActivity.setManaged(pending);
         executeButton.setDisable(pending);
         Feedback.show(statusLabel, pending ? "RUNNING" : "READY", false, false);
         if (!pending) {
@@ -126,9 +129,9 @@ public class TerminalScreenController extends BaseMissionController {
     private void appendTerminalLine(String text, String styleClass) {
         Label label = new Label(text);
         label.getStyleClass().add(styleClass);
-        ThaiTypography.useThaiFontWhenNeeded(label, text);
         label.setWrapText(true);
         outputBox.getChildren().add(label);
+        ScreenMotion.reveal(label, 3, 0.65, 150);
         if (outputBox.getChildren().size() > 250) {
             outputBox.getChildren().removeFirst();
         }

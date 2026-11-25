@@ -8,3 +8,6 @@
 !terminal/package.json
 !terminal/package-lock.json
 !terminal/worker.mjs
+!docker
+!docker/start-game.sh
+!docker/start-browser.sh

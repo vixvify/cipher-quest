@@ -36,6 +36,7 @@
                         <HBox alignment="CENTER_LEFT" spacing="8" styleClass="sql-panel-header">
                             <Label text="query.sql" styleClass="panel-title" />
                             <Region HBox.hgrow="ALWAYS" />
+                            <Label text="Ctrl + Enter" styleClass="sql-shortcut" />
                             <Button fx:id="clearButton" text="Clear" onAction="#onClearQuery" styleClass="secondary-button" />
                             <Button fx:id="runButton" text="Run Query  →" onAction="#onRunQuery" styleClass="primary-button" />
                         </HBox>
@@ -57,7 +58,7 @@
                 <HBox alignment="CENTER_LEFT" spacing="12" styleClass="sql-footer">
                     <Label fx:id="feedbackLabel" wrapText="true" minWidth="0" maxWidth="Infinity" minHeight="-Infinity"
                            HBox.hgrow="ALWAYS" styleClass="sql-feedback" />
-                    <Label fx:id="statusLabel" text="●  CONNECTED" styleClass="terminal-status" />
+                    <Label fx:id="statusLabel" text="●  CONNECTED" minWidth="-Infinity" styleClass="terminal-status" />
                 </HBox>
             </VBox>
         </HBox>

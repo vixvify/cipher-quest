@@ -4,11 +4,8 @@ import com.cipherquest.util.ResourceLoader;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 public record FieldNote(String id, int checkpoint, ArchiveMap.Position position, String title, String text, FieldActivity activity) {
     static List<FieldNote> load() {
@@ -34,10 +31,21 @@ public record FieldNote(String id, int checkpoint, ArchiveMap.Position position,
                     split(properties, id + ".rows"),
                     Arrays.stream(properties.getProperty(id + ".target").split(",")).map(Integer::parseInt).toList(),
                     Boolean.parseBoolean(properties.getProperty(id + ".ordered")));
-            case "route" -> new FieldActivity.SurveyRoute(properties.getProperty(id + ".task"),
-                    split(properties, id + ".grid"), names(properties, id + ".names"),
-                    markers(properties, id + ".stops"), Set.copyOf(markers(properties, id + ".restricted")),
-                    Integer.parseInt(properties.getProperty(id + ".limit")));
+            case "power", "vault" -> {
+                boolean vault = properties.getProperty(id + ".activity").equals("vault");
+                var kind = vault ? RoomWorkshop.Kind.VAULT : RoomWorkshop.Kind.POWER;
+                var sequence = split(properties, id + ".switches").stream().map(FieldNote::device).toList();
+                yield new FieldActivity.Workshop(new RoomWorkshop.Layout.Switches(kind, sequence,
+                        vault ? bounds(properties.getProperty(id + ".sweep")) : null));
+            }
+            case "cargo" -> {
+                var freight = split(properties, id + ".freight").stream().map(entry -> {
+                    String[] pair = entry.split(">");
+                    return new RoomWorkshop.Freight(device(pair[0]), device(pair[1]));
+                }).toList();
+                yield new FieldActivity.Workshop(new RoomWorkshop.Layout.LoadingDock(
+                        bounds(properties.getProperty(id + ".area")), freight));
+            }
             default -> throw new IllegalArgumentException("Unknown field activity: " + id);
         };
     }
@@ -46,15 +54,18 @@ public record FieldNote(String id, int checkpoint, ArchiveMap.Position position,
         return List.of(properties.getProperty(key).split("\\|"));
     }
 
-    private static Map<Character, String> names(Properties properties, String key) {
-        Map<Character, String> names = new HashMap<>();
-        for (String entry : split(properties, key)) {
-            names.put(entry.charAt(0), entry.substring(2));
-        }
-        return names;
+    private static RoomWorkshop.Device device(String value) {
+        String[] parts = value.split("@");
+        return new RoomWorkshop.Device(parts[0], tile(parts[1]));
     }
 
-    private static List<Character> markers(Properties properties, String key) {
-        return properties.getProperty(key).chars().mapToObj(marker -> (char) marker).toList();
+    private static RoomWorkshop.Tile tile(String value) {
+        String[] coords = value.split(",");
+        return new RoomWorkshop.Tile(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]));
+    }
+
+    private static RoomWorkshop.Bounds bounds(String value) {
+        String[] corners = value.split(":");
+        return new RoomWorkshop.Bounds(tile(corners[0]), tile(corners[1]));
     }
 }

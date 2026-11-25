@@ -16,7 +16,7 @@
 }
 
 .archive-marker {
-  -fx-font-family: "Consolas";
+  -fx-font-family: "Kanit";
   -fx-font-size: 12px;
   -fx-font-weight: bold;
   -fx-alignment: center;
@@ -39,16 +39,29 @@
 
 .archive-viewport {
   -fx-background-color: #0d1020;
-  -fx-border-color: #51416a;
-  -fx-border-width: 1px;
+  -fx-border-color: #567d88 #32314b #567d88 #32314b;
+  -fx-border-width: 1px 2px;
 }
 
 .archive-footer {
   -fx-padding: 9px 12px;
-  -fx-background-color: #201a33;
+  -fx-background-color: linear-gradient(to right, #193643, #201a33 50%);
   -fx-background-radius: 8px;
   -fx-border-color: #493961;
   -fx-border-radius: 8px;
+}
+.archive-key {
+  -fx-alignment: center;
+  -fx-min-width: 30px;
+  -fx-min-height: 30px;
+  -fx-font-family: "Kanit";
+  -fx-font-weight: bold;
+  -fx-font-size: 15px;
+  -fx-background-color: #122330;
+  -fx-background-radius: 5px;
+  -fx-border-color: #537888;
+  -fx-border-radius: 5px;
+  -fx-text-fill: #c7edf5;
 }
 
 .archive-prompt-title {

@@ -34,8 +34,6 @@ public class SqlWorkbenchController extends BaseMissionController {
     @FXML
     private void initialize() {
         runButton.setTooltip(new Tooltip("Ctrl + Enter"));
-        queryArea.textProperty().addListener((property, before, text) ->
-                ThaiTypography.useThaiFontWhenNeeded(queryArea, text));
         queryArea.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER && event.isControlDown()) {
                 runButton.fire();
@@ -81,6 +79,7 @@ public class SqlWorkbenchController extends BaseMissionController {
         }
 
         populateTable(result.getColumnNames(), result.getRows());
+        ScreenMotion.reveal(resultTable, 3, 0.68, 190);
         rowCountLabel.setText(result.getRowCount() + " rows");
         resultStatusLabel.setText(result.getExecutionTimeMs() + " ms");
         Feedback.show(feedbackLabel, answer.getMessage(), answer.isCorrect(), false);

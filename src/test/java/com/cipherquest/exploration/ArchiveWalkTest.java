@@ -36,22 +36,111 @@ class ArchiveWalkTest {
         assertRecordDesk(1, List.of(3), List.of(2));
         assertRecordDesk(3, List.of(4), List.of(0));
         assertRecordDesk(4, List.of(3, 5, 1), List.of(5, 3, 1));
-        assertRecordDesk(5, List.of(1, 4, 5), List.of(1, 4, 3));
         assertRecordDesk(6, List.of(6, 4), List.of(4, 3));
     }
 
     @Test
-    void surveyRoutesRequireSafeAdjacentStepsAndVisitStopsInOrder() {
-        var terminal = (FieldActivity.SurveyRoute) activityAt(2);
-        assertTrue(terminal.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 5, 10, 11, 12, 13, 14, 19, 24))));
-        assertFalse(terminal.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 5, 10, 15, 20, 21, 22, 23, 24))));
-        assertFalse(terminal.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 10, 14, 24))));
-        assertFalse(terminal.canStep(List.of(0, 5), 0));
+    void powerPanelStartsOnTheMapAndAwardsEvidenceOnlyWhenAllDevicesAreConnected() {
+        var walk = new ArchiveWalk(ArchiveMap.load());
+        FieldNote panel = panelAt(walk, 2);
+        assertFalse(walk.startWorkshop(2, panel));
+        walkTo(walk, 1, 0, 5);
+        walkTo(walk, 0, 1, 5);
+        assertTrue(walk.startWorkshop(2, panel));
+        walkTo(walk, 0, -1, 3);
+        assertFalse(walk.useWorkshopSwitch());
+        assertEquals(RoomWorkshop.Signal.WRONG_ORDER, walk.workshop().orElseThrow().signal());
+        assertTrue(walk.updateWorkshop(1).isEmpty());
+        walkTo(walk, 0, -1, 1);
+        walkTo(walk, -1, 0, 6);
+        assertTrue(walk.useWorkshopSwitch());
+        walkTo(walk, 1, 0, 6);
+        walkTo(walk, 0, 1, 1);
+        assertTrue(walk.useWorkshopSwitch());
+        walkTo(walk, 0, 1, 2);
+        walkTo(walk, -1, 0, 4);
+        walkTo(walk, 0, 1, 1);
+        assertTrue(walk.useWorkshopSwitch());
+        assertEquals(panel, walk.updateWorkshop(0).orElseThrow());
+        assertTrue(walk.workshop().isEmpty());
+        assertTrue(walk.hasRecoveredClue(2));
+    }
 
-        var vault = (FieldActivity.SurveyRoute) activityAt(7);
-        assertTrue(vault.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 5, 10, 11, 12, 13, 8, 9, 14, 19, 24))));
-        assertFalse(vault.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 1, 2, 3, 4, 9, 8, 13, 14, 19, 24))));
-        assertFalse(vault.canStep(List.of(0, 5, 10, 11, 12, 13, 8, 9, 14, 19, 24), 23));
+    @Test
+    void freightMovesWhenThePlayerPushesAndCanBeReset() {
+        var walk = new ArchiveWalk(ArchiveMap.load());
+        walkTo(walk, 1, 0, 8);
+        walkTo(walk, 0, 1, 5);
+        assertTrue(walk.startWorkshop(5, panelAt(walk, 5)));
+        walkTo(walk, 0, -1, 2);
+        walkTo(walk, 1, 0, 1);
+        walkTo(walk, 0, -1, 1);
+        walkTo(walk, 1, 0, 1);
+        var cargo = walk.workshop().orElseThrow();
+        assertTrue(cargo.markers().stream().anyMatch(marker -> marker.label().equals("B")
+                && marker.tile().equals(new RoomWorkshop.Tile(14, 9))));
+        assertFalse(cargo.push(new RoomWorkshop.Tile(14, 9), 1, 1, tile -> true));
+        assertFalse(cargo.push(new RoomWorkshop.Tile(14, 9), 1, 0, tile -> false));
+        walk.resetWorkshop();
+        assertEquals(new ArchiveMap.Position(11.5, 12.5), walk.position());
+        assertEquals(0, walk.workshop().orElseThrow().completed());
+        walk.leaveWorkshop();
+        assertFalse(walk.hasRecoveredClue(5));
+        FieldNote dock = panelAt(walk, 5);
+        assertTrue(walk.startWorkshop(5, dock));
+        walkTo(walk, 0, -1, 4);
+        walkTo(walk, 1, 0, 3);
+        walkTo(walk, 0, 1, 1);
+        walkTo(walk, -1, 0, 1);
+        walkTo(walk, 1, 0, 1);
+        walkTo(walk, 0, 1, 2);
+        walkTo(walk, -1, 0, 2);
+        walkTo(walk, 0, -1, 2);
+        assertEquals(1, walk.workshop().orElseThrow().completed());
+
+        walkTo(walk, 1, 0, 2);
+        walkTo(walk, 0, 1, 2);
+        walkTo(walk, 1, 0, 2);
+        walkTo(walk, 0, -1, 2);
+        assertEquals(2, walk.workshop().orElseThrow().completed());
+
+        walkTo(walk, 1, 0, 1);
+        walkTo(walk, 0, -1, 1);
+        walkTo(walk, 1, 0, 1);
+        walkTo(walk, 0, 1, 2);
+        walkTo(walk, 0, -1, 1);
+        walkTo(walk, -1, 0, 2);
+        walkTo(walk, 0, 1, 2);
+        walkTo(walk, 1, 0, 2);
+        assertEquals(dock, walk.updateWorkshop(0).orElseThrow());
+        assertTrue(walk.hasRecoveredClue(5));
+    }
+
+    @Test
+    void scannerOnlyClearsCheckpointSequenceWhenThePlayerEntersTheSweep() {
+        var workshop = ((FieldActivity.Workshop) activityAt(7)).layout().begin();
+        assertTrue(workshop.use(new RoomWorkshop.Tile(22, 6)));
+        workshop.tick(1.5, new RoomWorkshop.Tile(24, 6));
+        assertEquals(1, workshop.completed());
+        workshop.tick(0, new RoomWorkshop.Tile(22, 6));
+        assertEquals(RoomWorkshop.Signal.SCANNER_RESET, workshop.signal());
+        assertEquals(0, workshop.completed());
+        assertFalse(workshop.use(new RoomWorkshop.Tile(23, 9)));
+        assertTrue(workshop.use(new RoomWorkshop.Tile(22, 6)));
+        assertTrue(workshop.use(new RoomWorkshop.Tile(23, 9)));
+        assertTrue(workshop.use(new RoomWorkshop.Tile(24, 4)));
+        assertTrue(workshop.solved());
+    }
+
+    private static FieldNote panelAt(ArchiveWalk walk, int checkpoint) {
+        return walk.uncollectedNotes(checkpoint).stream()
+                .filter(note -> note.activity() instanceof FieldActivity.Workshop).findFirst().orElseThrow();
+    }
+
+    private static void walkTo(ArchiveWalk walk, int horizontal, int vertical, int tiles) {
+        for (int slices = 0; slices < tiles * 5; slices++) {
+            walk.move(horizontal, vertical, 1.0 / 22.0, gate -> true);
+        }
     }
 
     private static void assertRecordDesk(int checkpoint, List<Integer> correct, List<Integer> incorrect) {

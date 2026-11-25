@@ -50,6 +50,14 @@ public final class ArchiveMap {
                     || stations.stream().noneMatch(station -> station.checkpoint() == note.checkpoint())) {
                 throw new IllegalArgumentException("Invalid field note placement: " + note.id());
             }
+            if (note.activity() instanceof FieldActivity.Workshop workshop) {
+                var fixtures = workshop.layout().fixtures();
+                var unique = new java.util.HashSet<>(fixtures);
+                if (unique.size() != fixtures.size() || unique.contains(RoomWorkshop.Tile.under(position))
+                        || fixtures.stream().anyMatch(tile -> !isWalkable(tile.x(), tile.y(), gate -> false))) {
+                    throw new IllegalArgumentException("Invalid workshop placement: " + note.id());
+                }
+            }
         }
         this.fieldNotes = List.copyOf(fieldNotes);
     }

@@ -49,6 +49,7 @@
                 <Label text="WORKSTATION ACCESS" styleClass="eyebrow" />
                 <Label text="ปลดล็อกเครื่อง" styleClass="mission-title" />
                 <Label text="รหัสผ่านที่ถอดได้" styleClass="panel-title" />
+                <HBox fx:id="keySlots" spacing="6" mouseTransparent="true" />
                 <PasswordField fx:id="passkeyField" promptText="กรอก Passkey" accessibleText="รหัสผ่านที่ถอดได้"
                                styleClass="text-entry" onAction="#onSubmitPasskey" />
                 <Button fx:id="authenticateButton" text="ยืนยันรหัส  →" onAction="#onSubmitPasskey"

@@ -23,6 +23,7 @@
         </StackPane>
 
         <HBox alignment="CENTER_LEFT" spacing="10" styleClass="archive-footer">
+            <Label text="E" styleClass="archive-key" />
             <VBox spacing="2" minWidth="0" HBox.hgrow="ALWAYS">
                 <Label fx:id="promptTitle" styleClass="archive-prompt-title" maxWidth="Infinity" />
                 <Label fx:id="promptDetail" styleClass="archive-prompt-detail" wrapText="true" minHeight="-Infinity" />

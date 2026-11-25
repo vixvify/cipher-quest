@@ -1,12 +1,15 @@
 .victory-root {
-  -fx-background-color: radial-gradient(center 50% 26%, radius 86%, #30224a, #0e0b22 78%);
+  -fx-background-color: radial-gradient(center 50% 44%, radius 82%, #184051, #121022 63%);
+}
+.victory-signal {
+  -fx-background-color: radial-gradient(center 50% 50%, radius 64%, transparent 62%, rgba(137, 255, 233, 0.24) 63%, transparent 67%);
 }
 
 .victory-card {
   -fx-padding: 28px 36px;
-  -fx-background-color: linear-gradient(to bottom, #231d39, #18142b);
+  -fx-background-color: linear-gradient(to bottom right, #203344, #18142b 62%);
   -fx-background-radius: 16px;
-  -fx-border-color: #574470;
+  -fx-border-color: #6ba8a6 #42616f #42616f #42616f;
   -fx-border-radius: 16px;
   -fx-effect: dropshadow(gaussian, rgba(8, 4, 20, 0.46), 24, 0.15, 0, 6);
 }
