@@ -12,7 +12,7 @@
             <Region styleClass="signal-mark" />
             <Label text="โถงสำรวจ" styleClass="archive-title" />
             <Region HBox.hgrow="ALWAYS" />
-            <Label fx:id="cipherCardBadge" styleClass="archive-card-badge" visible="false" managed="false" />
+            <Button fx:id="journalButton" onAction="#onOpenJournal" styleClass="support-button" visible="false" managed="false" />
             <HBox fx:id="progressTrack" alignment="CENTER" spacing="4" />
             <Label fx:id="scoreLabel" styleClass="archive-score" />
             <Button fx:id="soundButton" onAction="#onToggleSound" styleClass="support-button" />

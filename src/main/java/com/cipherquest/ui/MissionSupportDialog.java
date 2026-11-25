@@ -23,8 +23,8 @@ final class MissionSupportDialog {
     static void showControls(Node owner) {
         Dialog<Void> dialog = createDialog(owner, "วิธีเล่น", "สำรวจโถงเพื่อหาเบาะแสและเปิดภารกิจ");
         dialog.getDialogPane().setContent(new VBox(12,
-                section("WASD หรือปุ่มลูกศร", "เดินไปที่สถานีสีเขียว หรือสำรวจจุดสีทองเพื่อหาเบาะแสของด่านนี้", "support-copy"),
-                section("E", "เก็บหลักฐานหรือเปิดสถานีเมื่อเดินเข้าใกล้", "support-copy"),
+                section("WASD หรือปุ่มลูกศร", "อ่านเอกสารสีทอง แล้วใช้ข้อมูลที่โต๊ะสีฟ้าเพื่อกู้เบาะแสประจำด่าน", "support-copy"),
+                section("E", "ใช้เอกสาร โต๊ะตรวจ หรือสถานีสีเขียวเมื่อเดินเข้าใกล้", "support-copy"),
                 section("Esc", "กลับโถงจากหน้าภารกิจ", "support-copy")));
         dialog.show();
     }
@@ -61,14 +61,16 @@ final class MissionSupportDialog {
     }
 
     static void showFieldNotes(Node owner, List<FieldNote> notes) {
-        Dialog<Void> dialog = createDialog(owner, "หลักฐานของด่านนี้",
-                "กด Esc กลับไปสำรวจจุดสีทองรอบสถานีได้ การเก็บหลักฐานไม่มีผลต่อคะแนน");
+        Dialog<Void> dialog = createDialog(owner, "สมุดภาคสนาม",
+                "เอกสารที่อ่านและเบาะแสที่กู้ได้ของสถานีนี้");
         if (!notes.isEmpty()) {
             VBox entries = new VBox(12);
             for (FieldNote note : notes) {
                 entries.getChildren().add(section(note.title(), note.text(), "support-copy"));
             }
             dialog.getDialogPane().setContent(scrollable(entries));
+        } else {
+            dialog.getDialogPane().setContent(paragraph("ยังไม่มีข้อมูล · ลองเปิดเอกสารสีทองในโถง"));
         }
         dialog.show();
     }
@@ -118,7 +120,11 @@ final class MissionSupportDialog {
         pane.getStyleClass().add("mission-support");
         pane.getStylesheets().add(MissionSupportDialog.class.getResource("/css/monitor-shared.css").toExternalForm());
         pane.setPrefWidth(520);
-        pane.setHeader(new VBox(6, label(title, "support-title"), paragraph(instructions)));
+        VBox header = new VBox(6, label(title, "support-title"));
+        if (!instructions.isBlank()) {
+            header.getChildren().add(paragraph(instructions));
+        }
+        pane.setHeader(header);
         pane.getButtonTypes().add(new ButtonType("ปิด", ButtonBar.ButtonData.CANCEL_CLOSE));
         return dialog;
     }

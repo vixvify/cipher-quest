@@ -38,7 +38,7 @@ public class PasskeyScreenController extends BaseMissionController {
         boolean inExploration = walk != null;
         localEvidence.setVisible(!inExploration);
         localEvidence.setManaged(!inExploration);
-        boolean hasCarriedEvidence = inExploration && walk.hasCipherCard() && ciphertext != null;
+        boolean hasCarriedEvidence = inExploration && walk.hasRecoveredClue(1) && ciphertext != null;
         carriedEvidence.setVisible(hasCarriedEvidence);
         carriedEvidence.setManaged(hasCarriedEvidence);
         missingEvidence.setVisible(inExploration && !hasCarriedEvidence);

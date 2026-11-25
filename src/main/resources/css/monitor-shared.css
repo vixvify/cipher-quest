@@ -6,32 +6,49 @@
 .mission-shell {
   -fx-fill-width: true;
 }
-.mission-support .progress-bar > .bar {
-  -fx-background-color: #c7f88a;
-  -fx-background-insets: 2px;
-  -fx-background-radius: 3px;
-}
-.mission-support .progress-bar > .track {
-  -fx-background-color: #39314b;
-  -fx-background-radius: 5px;
-}
-.mission-support .circuit-light {
+.mission-support .field-record, .mission-support .field-cell {
   -fx-background-color: #2e263f;
   -fx-background-radius: 6px;
   -fx-border-color: #655571;
   -fx-border-radius: 6px;
-  -fx-text-fill: #ded1e7;
+  -fx-text-fill: #e6dbed;
   -fx-font-weight: bold;
   -fx-cursor: hand;
 }
-.mission-support .circuit-light:lit {
-  -fx-background-color: #c7f88a;
-  -fx-border-color: #edffb0;
-  -fx-text-fill: #242920;
+.mission-support .field-record {
+  -fx-alignment: center-left;
+  -fx-padding: 6px 9px;
 }
-.mission-support .circuit-light:focused {
-  -fx-border-color: #ffffff;
-  -fx-border-width: 2px;
+.mission-support .field-cell:disabled {
+  -fx-opacity: 0.42;
+}
+.mission-support .field-record:marked, .mission-support .field-cell:marked {
+  -fx-background-color: #21516a;
+  -fx-border-color: #9cddf2;
+  -fx-text-fill: #f5fcff;
+}
+.mission-support .field-record:focused, .mission-support .field-cell:focused {
+  -fx-border-color: #fff6d3;
+}
+.mission-support .field-journal {
+  -fx-text-fill: #ffe0a8;
+}
+.mission-support .field-saved-status {
+  -fx-font-size: 12px;
+  -fx-text-fill: #b8a9cb;
+}
+.mission-support .field-journal > .title {
+  -fx-background-color: #372b40;
+  -fx-background-radius: 5px;
+  -fx-padding: 6px 9px;
+}
+.mission-support .field-journal > .title > .arrow-button > .arrow {
+  -fx-background-color: #ffe0a8;
+}
+.mission-support .field-journal > .content {
+  -fx-background-color: #221c31;
+  -fx-border-color: #493961;
+  -fx-padding: 8px 10px;
 }
 .workstation-root {
   -fx-background-color: #211925;

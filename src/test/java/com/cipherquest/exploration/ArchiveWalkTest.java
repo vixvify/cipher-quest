@@ -12,67 +12,59 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ArchiveWalkTest {
     @Test
-    void cipherCardCanOnlyBePickedUpWhileNearbyAndOnce() {
-        ArchiveMap map = new ArchiveMap(List.of(
-                "#######",
-                "#@.!1.#",
-                "#######"));
-        var walk = new ArchiveWalk(map);
-        assertFalse(walk.collectCipherCard());
-        for (int step = 0; step < 5; step++) {
-            walk.move(1, 0, 0.05, checkpoint -> false);
-        }
-        assertTrue(walk.isNearCipherCard());
-        assertTrue(walk.collectCipherCard());
-        assertTrue(walk.hasCipherCard());
-        assertFalse(walk.collectCipherCard());
-        assertFalse(new ArchiveWalk(map).hasCipherCard());
-    }
-
-    @Test
-    void notesCanOnlyBePickedUpAndReadForTheirCheckpoint() {
+    void evidenceRequiresProximityAndIsScopedToTheCurrentStation() {
         var walk = new ArchiveWalk(ArchiveMap.load());
-        FieldNote note = walk.uncollectedNotes(2).getFirst();
-        var correctSignal = new FieldActivity.Attempt.Tune(97);
-        assertTrue(walk.completeNote(2, note, correctSignal).isEmpty());
+        FieldNote note = walk.uncollectedNotes(2).stream()
+                .filter(item -> item.id().equals("02-procedure"))
+                .findFirst().orElseThrow();
+        var read = new FieldActivity.Attempt.Read();
+        assertTrue(walk.completeNote(2, note, read).isEmpty());
         for (int step = 0; step < 8; step++) {
             walk.move(0, 1, 0.05, checkpoint -> checkpoint <= 2);
         }
-        assertTrue(walk.completeNote(1, note, correctSignal).isEmpty());
-        assertTrue(walk.completeNote(2, note, new FieldActivity.Attempt.Collect()).isEmpty());
-        assertTrue(walk.completeNote(2, note, new FieldActivity.Attempt.Tune(94)).isEmpty());
-        assertTrue(walk.collectedNotes(2).isEmpty());
-        assertEquals(note, walk.completeNote(2, note, correctSignal).orElseThrow());
-        assertTrue(walk.uncollectedNotes(2).isEmpty());
-        assertTrue(walk.completeNote(2, note, correctSignal).isEmpty());
+        assertTrue(walk.completeNote(1, note, read).isEmpty());
+        assertTrue(walk.completeNote(2, note, new FieldActivity.Attempt.Records(List.of(0))).isEmpty());
+        assertEquals(note, walk.completeNote(2, note, read).orElseThrow());
+        assertTrue(walk.completeNote(2, note, read).isEmpty());
         assertEquals(List.of(note), walk.collectedNotes(2));
         assertTrue(walk.collectedNotes(3).isEmpty());
+        assertFalse(walk.hasRecoveredClue(2));
     }
 
     @Test
-    void assemblyAndMatchingRequireTheirOwnCorrectAnswer() {
-        var walk = new ArchiveWalk(ArchiveMap.load());
-        var sequence = (FieldActivity.Sequence) walk.uncollectedNotes(7).stream()
-                .filter(note -> note.activity() instanceof FieldActivity.Sequence).findFirst().orElseThrow().activity();
-        assertFalse(sequence.solvedBy(new FieldActivity.Attempt.Assemble(List.of(0, 1, 2))));
-        assertFalse(sequence.solvedBy(new FieldActivity.Attempt.Assemble(List.of(1, 0))));
-        assertTrue(sequence.solvedBy(new FieldActivity.Attempt.Assemble(List.of(1, 0, 2))));
-
-        var match = (FieldActivity.Match) walk.uncollectedNotes(6).stream()
-                .filter(note -> note.activity() instanceof FieldActivity.Match).findFirst().orElseThrow().activity();
-        assertFalse(match.solvedBy(new FieldActivity.Attempt.MatchMark(0)));
-        assertTrue(match.solvedBy(new FieldActivity.Attempt.MatchMark(2)));
+    void triangulationAndOrderedEvidenceRejectIncorrectSelections() {
+        assertRecordDesk(1, List.of(3), List.of(2));
+        assertRecordDesk(3, List.of(4), List.of(0));
+        assertRecordDesk(4, List.of(3, 5, 1), List.of(5, 3, 1));
+        assertRecordDesk(5, List.of(1, 4, 5), List.of(1, 4, 3));
+        assertRecordDesk(6, List.of(6, 4), List.of(4, 3));
     }
 
     @Test
-    void circuitRequiresEveryLightAndPressingOneSwitchTwiceRestoresTheBoard() {
-        var walk = new ArchiveWalk(ArchiveMap.load());
-        var circuit = (FieldActivity.Circuit) walk.uncollectedNotes(4).stream()
-                .filter(note -> note.activity() instanceof FieldActivity.Circuit).findFirst().orElseThrow().activity();
-        assertEquals(circuit.lightsAfter(List.of()), circuit.lightsAfter(List.of(4, 4)));
-        assertFalse(circuit.solvedBy(new FieldActivity.Attempt.Switches(List.of(4))));
-        assertFalse(circuit.solvedBy(new FieldActivity.Attempt.Switches(List.of(4, 8, 9))));
-        assertTrue(circuit.solvedBy(new FieldActivity.Attempt.Switches(List.of(4, 8))));
+    void surveyRoutesRequireSafeAdjacentStepsAndVisitStopsInOrder() {
+        var terminal = (FieldActivity.SurveyRoute) activityAt(2);
+        assertTrue(terminal.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 5, 10, 11, 12, 13, 14, 19, 24))));
+        assertFalse(terminal.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 5, 10, 15, 20, 21, 22, 23, 24))));
+        assertFalse(terminal.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 10, 14, 24))));
+        assertFalse(terminal.canStep(List.of(0, 5), 0));
+
+        var vault = (FieldActivity.SurveyRoute) activityAt(7);
+        assertTrue(vault.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 5, 10, 11, 12, 13, 8, 9, 14, 19, 24))));
+        assertFalse(vault.solvedBy(new FieldActivity.Attempt.Route(List.of(0, 1, 2, 3, 4, 9, 8, 13, 14, 19, 24))));
+        assertFalse(vault.canStep(List.of(0, 5, 10, 11, 12, 13, 8, 9, 14, 19, 24), 23));
+    }
+
+    private static void assertRecordDesk(int checkpoint, List<Integer> correct, List<Integer> incorrect) {
+        FieldActivity desk = activityAt(checkpoint);
+        assertTrue(desk.solvedBy(new FieldActivity.Attempt.Records(correct)));
+        assertFalse(desk.solvedBy(new FieldActivity.Attempt.Records(incorrect)));
+        assertFalse(desk.solvedBy(new FieldActivity.Attempt.Records(List.of())));
+    }
+
+    private static FieldActivity activityAt(int checkpoint) {
+        return ArchiveMap.load().fieldNotes().stream()
+                .filter(note -> note.checkpoint() == checkpoint && !(note.activity() instanceof FieldActivity.Source))
+                .findFirst().orElseThrow().activity();
     }
 
     @Test
@@ -115,21 +107,25 @@ class ArchiveWalkTest {
     @Test
     void authoredMapHasAReachableStationForEachUnlockedCheckpoint() {
         ArchiveMap map = ArchiveMap.load();
-        var card = map.cipherCard().orElseThrow();
-        assertTrue(reachableAt(map, 1).contains(new Cell((int) card.x(), (int) card.y())));
         assertEquals(IntStream.rangeClosed(1, 7).boxed().toList(),
                 map.stations().stream().map(ArchiveMap.Station::checkpoint).sorted().toList());
         for (var station : map.stations()) {
             Set<Cell> reachable = reachableAt(map, station.checkpoint());
             assertTrue(neighbors(new Cell(station.column(), station.row())).stream().anyMatch(reachable::contains),
                     "No reachable approach to checkpoint " + station.checkpoint());
-            for (FieldNote note : map.fieldNotes().stream()
-                    .filter(note -> note.checkpoint() == station.checkpoint()).toList()) {
+            List<FieldNote> notes = map.fieldNotes().stream()
+                    .filter(note -> note.checkpoint() == station.checkpoint()).toList();
+            assertEquals(3, notes.size());
+            assertEquals(2, notes.stream().filter(note -> note.activity() instanceof FieldActivity.Source).count());
+            for (FieldNote note : notes) {
                 assertTrue(reachable.contains(new Cell((int) note.position().x(), (int) note.position().y())),
                         "Cannot reach field note " + note.id());
                 assertTrue(map.stations().stream().allMatch(other ->
                         Math.hypot(other.column() + 0.5 - note.position().x(), other.row() + 0.5 - note.position().y()) > 2.24),
                         "Field note overlaps a station interaction: " + note.id());
+                assertTrue(notes.stream().filter(other -> other != note).allMatch(other ->
+                        Math.hypot(other.position().x() - note.position().x(), other.position().y() - note.position().y()) > 2.24),
+                        "Field note overlaps another field interaction: " + note.id());
             }
         }
     }

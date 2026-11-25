@@ -15,17 +15,6 @@
   -fx-padding: 0 0 0 8px;
 }
 
-.archive-card-badge {
-  -fx-padding: 3px 8px;
-  -fx-background-color: #453647;
-  -fx-background-radius: 4px;
-  -fx-border-color: #9d7658;
-  -fx-border-radius: 4px;
-  -fx-text-fill: #ffe3a1;
-  -fx-font-weight: bold;
-  -fx-font-size: 14px;
-}
-
 .archive-marker {
   -fx-font-family: "Consolas";
   -fx-font-size: 12px;
