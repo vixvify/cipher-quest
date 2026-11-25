@@ -47,7 +47,7 @@ final class FieldActivityDialog {
         ScrollPane scroll = new ScrollPane(content);
         scroll.setFitToWidth(true);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scroll.setPrefViewportHeight(380);
+        scroll.setPrefViewportHeight(460);
         dialog.getDialogPane().setContent(scroll);
         dialog.setOnHidden(event -> onClose.run());
         dialog.show();
@@ -67,7 +67,7 @@ final class FieldActivityDialog {
         TitledPane pane = new TitledPane("สมุดภาคสนาม  " + journal.size() + "/2", entries);
         pane.getStyleClass().add("field-journal");
         pane.setAnimated(false);
-        pane.setExpanded(false);
+        pane.setExpanded(!journal.isEmpty());
         return pane;
     }
 

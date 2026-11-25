@@ -41,7 +41,7 @@
                     <Label text="ข้อความบนบัตรที่เก็บมา" styleClass="carried-evidence-caption" />
                     <Label fx:id="carriedCiphertext" styleClass="carried-ciphertext" />
                 </VBox>
-                <Label fx:id="missingEvidence" text="บัตรอยู่ในลิ้นชักเก็บซอง · กด Esc เพื่อกลับไปสำรวจ"
+                <Label fx:id="missingEvidence" text="ยังไม่ได้เก็บบัตรรหัสผ่าน · กด Esc กลับไปเปิดจุดสีฟ้า (ลิ้นชัก) ในโถงสำรวจก่อน"
                        wrapText="true" minHeight="-Infinity" visible="false" managed="false" styleClass="missing-evidence" />
             </VBox>
 

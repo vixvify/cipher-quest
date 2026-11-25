@@ -21,11 +21,11 @@ final class MissionSupportDialog {
     private MissionSupportDialog() {}
 
     static void showControls(Node owner) {
-        Dialog<Void> dialog = createDialog(owner, "วิธีเล่น", "สำรวจโถงเพื่อหาเบาะแสและเปิดภารกิจ");
+        Dialog<Void> dialog = createDialog(owner, "วิธีเล่น", "สำรวจโถงเพื่อเก็บข้อมูลสำคัญก่อนเปิดภารกิจหลัก");
         dialog.getDialogPane().setContent(new VBox(12,
-                section("WASD หรือปุ่มลูกศร", "อ่านเอกสารสีทอง แล้วใช้ข้อมูลที่โต๊ะสีฟ้าเพื่อกู้เบาะแสประจำด่าน", "support-copy"),
-                section("E", "ใช้เอกสาร โต๊ะตรวจ หรือสถานีสีเขียวเมื่อเดินเข้าใกล้", "support-copy"),
-                section("Esc", "กลับโถงจากหน้าภารกิจ", "support-copy")));
+                section("WASD หรือปุ่มลูกศร", "1) อ่านเอกสารสีทองให้ครบ 2) ทำภารกิจที่จุดสีฟ้าเพื่อเก็บหลักฐาน 3) เปิดสถานีสีเขียวเพื่อทำภารกิจหลัก", "support-copy"),
+                section("E", "อ่านเอกสารสีทอง เปิดจุดสีฟ้า หรือเปิดสถานีสีเขียวเมื่อเดินเข้าใกล้", "support-copy"),
+                section("Esc", "กลับโถงสำรวจจากหน้าภารกิจหลัก", "support-copy")));
         dialog.show();
     }
 

@@ -280,6 +280,7 @@ public class ArchiveController {
             showWorkshopPrompt(workshop.orElseThrow(), device);
             return;
         }
+        boolean cluesRemain = !walk.hasRecoveredClue(activeCheckpoint);
         if (nearbyNote.isPresent()) {
             FieldNote note = nearbyNote.orElseThrow();
             if (note.activity() instanceof FieldActivity.Workshop && workshop.isPresent()) {
@@ -288,7 +289,8 @@ public class ArchiveController {
             }
             promptTitle.setText(note.title());
             promptDetail.setText(note.activity() instanceof FieldActivity.Source
-                    ? "เปิดอ่านและเก็บข้อมูลลงสมุดภาคสนาม" : "ใช้ข้อมูลภาคสนามประกอบกันเพื่อกู้เบาะแส");
+                    ? "กด E เพื่ออ่านเอกสารและบันทึกลงสมุด"
+                    : "กด E เพื่อทำภารกิจเก็บหลักฐานประจำด่าน");
             interactButton.setText(switch (note.activity()) {
                 case FieldActivity.Source ignored -> "อ่านเอกสาร · E";
                 case FieldActivity.RecordDesk ignored -> "เปิดโต๊ะตรวจ · E";
@@ -305,7 +307,9 @@ public class ArchiveController {
             promptDetail.setText(switch (status) {
                 case LOCKED -> "สถานีล็อกอยู่ ต้องผ่านสถานีก่อนหน้า";
                 case COMPLETED -> "ผ่านแล้ว · ไปต่อที่ " + nextStationName();
-                case AVAILABLE -> "กด E เพื่อเปิดภารกิจ";
+                case AVAILABLE -> cluesRemain
+                        ? "กด E เพื่อเปิดภารกิจ (แนะนำให้เก็บเอกสารสีทองและจุดสีฟ้าให้ครบก่อน)"
+                        : "กด E เพื่อเปิดภารกิจ (เก็บข้อมูลสำคัญครบแล้ว)";
             });
             interactButton.setDisable(status != CheckpointStatus.AVAILABLE);
             return;
@@ -314,29 +318,41 @@ public class ArchiveController {
             showWorkshopPrompt(workshop.orElseThrow(), Optional.empty());
             return;
         }
-        boolean cluesRemain = !walk.hasRecoveredClue(activeCheckpoint);
-        promptTitle.setText("ไปที่ " + nextStationName());
-        promptDetail.setText(cluesRemain
-                ? "เอกสารสีทองให้ข้อมูล · โต๊ะสีฟ้าใช้กู้เบาะแส · สถานีสีเขียวเปิดภารกิจ"
-                : "เดินด้วย WASD หรือปุ่มลูกศร");
+        if (cluesRemain) {
+            var remaining = walk.uncollectedNotes(activeCheckpoint);
+            long remainingSources = remaining.stream()
+                    .filter(item -> item.activity() instanceof FieldActivity.Source)
+                    .count();
+            if (remainingSources > 0) {
+                promptTitle.setText("ขั้นตอน 1: เก็บเอกสารสีทอง (" + remainingSources + " จุด)");
+                promptDetail.setText("อ่านเอกสารสีทองให้ครบเพื่อดูเงื่อนไข ก่อนไปทำภารกิจที่จุดสีฟ้า");
+            } else {
+                String blueTitle = remaining.stream().findFirst().map(FieldNote::title).orElse("จุดสีฟ้า");
+                promptTitle.setText("ขั้นตอน 2: ไปที่ \"" + blueTitle + "\" (จุดสีฟ้า)");
+                promptDetail.setText("ใช้ข้อมูลจากเอกสารสีทองเพื่อเก็บหลักฐาน (เปิดดูที่เก็บไว้ได้ในปุ่ม สมุด)");
+            }
+        } else {
+            promptTitle.setText("พร้อมแล้ว! ไปที่สถานีสีเขียว: " + nextStationName());
+            promptDetail.setText("เดินด้วย WASD หรือปุ่มลูกศร แล้วกด E ที่สถานีสีเขียวเพื่อทำภารกิจหลัก");
+        }
         interactButton.setDisable(true);
     }
 
     private void showWorkshopPrompt(RoomWorkshop workshop, Optional<RoomWorkshop.Marker> device) {
         String title = switch (workshop.kind()) {
             case POWER -> "ระบบจ่ายไฟ";
-            case CARGO -> "ลานเข็นลัง";
+            case CARGO -> "ลานจัดวางลัง";
             case VAULT -> "จุดตรวจห้องนิรภัย";
         };
         promptTitle.setText(title + "  " + workshop.completed() + "/" + workshop.total());
         String guidance = switch (workshop.signal()) {
-            case WRONG_ORDER -> "จุดนี้ยังรับสัญญาณไม่ได้ ลองดูขั้นตอนในสมุด";
-            case SCANNER_RESET -> "ลำแสงล้างจุดตรวจแล้ว ใช้ทางด้านข้างหลบแนวสแกน";
-            case BLOCKED -> "ลังติดสิ่งกีดขวาง ลองอ้อมไปเข็นอีกด้าน";
+            case WRONG_ORDER -> "ผิดลำดับ! ดูลำดับที่ถูกต้องได้ในปุ่ม สมุด ด้านบน";
+            case SCANNER_RESET -> "โดนลำแสงสแกน! ลำดับถูกรีเซ็ต ให้หลบด้านข้างก่อนข้าม";
+            case BLOCKED -> "ลังติดสิ่งกีดขวาง ลองอ้อมไปเข็นอีกด้าน (กด R เริ่มใหม่ได้)";
             default -> switch (workshop.kind()) {
-                case POWER -> "เดินเข้าใกล้จุดแล้วกด E เพื่อต่อไฟ";
-                case CARGO -> "เดินชนลังตรง ๆ เพื่อเข็นเข้าช่อง";
-                case VAULT -> "หลบแนวสแกนแล้วกด E ที่จุดตรวจ";
+                case POWER -> "กด E เปิดสวิตช์ตามลำดับที่ระบุในปุ่ม สมุด";
+                case CARGO -> "เดินชนลัง A, B, C เข้าช่องให้ตรงหมายเลข (ดูคู่ที่ถูกต้องในปุ่ม สมุด)";
+                case VAULT -> "หลบเส้นแสงสีแดง แล้วกด E เปิดจุดตรวจตามลำดับในปุ่ม สมุด";
             };
         };
         promptDetail.setText(ThaiTypography.withWordBreaks(guidance + " · R เริ่มใหม่ · Esc ออก"));
