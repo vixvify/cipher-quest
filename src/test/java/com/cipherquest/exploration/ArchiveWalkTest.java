@@ -12,6 +12,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ArchiveWalkTest {
     @Test
+    void vaultShortcutUsesTheSameUnlockAsTheVaultStation() {
+        ArchiveMap map = ArchiveMap.load();
+        assertEquals('H', map.tileAt(20, 10));
+        assertFalse(map.isWalkable(20, 10, checkpoint -> checkpoint <= 6));
+        assertTrue(map.isWalkable(20, 10, checkpoint -> checkpoint <= 7));
+        assertTrue(map.fieldNotes().stream().allMatch(note -> !note.usage().isBlank()));
+    }
+
+    @Test
     void evidenceRequiresProximityAndIsScopedToTheCurrentStation() {
         var walk = new ArchiveWalk(ArchiveMap.load());
         FieldNote note = walk.uncollectedNotes(2).stream()

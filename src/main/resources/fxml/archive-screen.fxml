@@ -20,6 +20,8 @@
 
         <StackPane fx:id="mapPane" minHeight="220" VBox.vgrow="ALWAYS" styleClass="archive-viewport">
             <Canvas fx:id="mapCanvas" managed="false" mouseTransparent="true" />
+            <Label fx:id="archiveUpdate" visible="false" mouseTransparent="true" wrapText="true"
+                   StackPane.alignment="TOP_CENTER" styleClass="archive-update" />
         </StackPane>
 
         <HBox alignment="CENTER_LEFT" spacing="10" styleClass="archive-footer">

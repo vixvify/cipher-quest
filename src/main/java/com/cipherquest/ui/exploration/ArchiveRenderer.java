@@ -25,9 +25,12 @@ final class ArchiveRenderer {
 
     private final Canvas canvas;
     private final GraphicsContext graphics;
+    private final boolean animatePowerOn;
+    private double powerOnStartedAt = Double.NaN;
 
-    ArchiveRenderer(Canvas canvas) {
+    ArchiveRenderer(Canvas canvas, boolean animatePowerOn) {
         this.canvas = canvas;
+        this.animatePowerOn = animatePowerOn;
         graphics = canvas.getGraphicsContext2D();
         graphics.setImageSmoothing(false);
     }
@@ -44,13 +47,14 @@ final class ArchiveRenderer {
         double mapHeight = map.height() * TILE;
         double scale = Math.min(width / mapWidth, height / mapHeight);
         double animationTime = reduceMotion ? 0 : seconds;
+        int litThrough = litThrough(progress, seconds, reduceMotion);
         rectangle(Color.web("#0d1020"), 0, 0, width, height);
         graphics.save();
         graphics.translate((width - mapWidth * scale) / 2, (height - mapHeight * scale) / 2);
         graphics.scale(scale, scale);
         for (int row = 0; row < map.height(); row++) {
             for (int column = 0; column < map.width(); column++) {
-                drawTile(map.tileAt(column, row), column, row, progress, animationTime);
+                drawTile(map.tileAt(column, row), column, row, progress, animationTime, litThrough);
             }
         }
         for (var station : map.stations()) {
@@ -69,17 +73,45 @@ final class ArchiveRenderer {
         graphics.restore();
     }
 
-    private void drawTile(char tile, int column, int row, CampaignProgress progress, double seconds) {
+    private int litThrough(CampaignProgress progress, double seconds, boolean reduceMotion) {
+        if (progress.status(2) != CheckpointStatus.COMPLETED) {
+            return 0;
+        }
+        int end = progress.status(7) == CheckpointStatus.LOCKED ? 19 : 24;
+        if (!animatePowerOn || reduceMotion) {
+            return end;
+        }
+        if (Double.isNaN(powerOnStartedAt)) {
+            powerOnStartedAt = seconds;
+        }
+        return Math.min(end, (int) ((seconds - powerOnStartedAt) * 19));
+    }
+
+    private void drawTile(char tile, int column, int row, CampaignProgress progress, double seconds, int litThrough) {
         int x = column * TILE;
         int y = row * TILE;
-        drawFloor(x, y, column, row, tile == ':' || tile == '@' || ArchiveMap.gateCheckpoint(tile) != 0);
+        boolean corridor = tile == ':' || tile == '@' || ArchiveMap.gateCheckpoint(tile) != 0;
+        drawFloor(x, y, column, row, corridor);
+        if (corridor && tile != 'H' && column <= litThrough) {
+            rectangle(Color.web("#427d83"), x, y + 3, TILE, 2);
+            rectangle(Color.web("#376772"), x, y + 19, TILE, 2);
+            rectangle(Color.web("#b0ffd5"), x + 8, y + 10, 8, 2);
+        }
         switch (tile) {
             case '#' -> drawWall(x, y);
             case 'W' -> drawWindow(x, y, seconds);
             case 'B' -> drawShelf(x, y);
             case 'R' -> drawRack(x, y);
             case 'P' -> drawPlant(x, y);
-            case 'A', 'G' -> drawGate(x, y, progress.status(ArchiveMap.gateCheckpoint(tile)) != CheckpointStatus.LOCKED);
+            case 'A', 'G', 'H' -> {
+                boolean open = progress.status(ArchiveMap.gateCheckpoint(tile)) != CheckpointStatus.LOCKED;
+                if (tile == 'H' && open) {
+                    rectangle(Color.web("#255458"), x, y, TILE, TILE);
+                    rectangle(CYAN, x, y + 7, TILE, 2);
+                    rectangle(CYAN, x, y + 16, TILE, 2);
+                }
+                drawGate(x, y, open);
+            }
             default -> {}
         }
     }

@@ -7,7 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
-public record FieldNote(String id, int checkpoint, ArchiveMap.Position position, String title, String text, FieldActivity activity) {
+public record FieldNote(String id, int checkpoint, ArchiveMap.Position position, String title, String text,
+                        String usage, FieldActivity activity) {
     static List<FieldNote> load() {
         Properties properties = ResourceLoader.loadProperties("/data/exploration/field-notes.properties");
         return properties.stringPropertyNames().stream()
@@ -18,6 +19,7 @@ public record FieldNote(String id, int checkpoint, ArchiveMap.Position position,
                     return new FieldNote(id, Integer.parseInt(properties.getProperty(id + ".checkpoint")),
                             new ArchiveMap.Position(Integer.parseInt(tile[0]) + 0.5, Integer.parseInt(tile[1]) + 0.5),
                             properties.getProperty(id + ".title"), properties.getProperty(id + ".text"),
+                            properties.getProperty(id + ".use", ""),
                             loadActivity(properties, id));
                 })
                 .sorted(Comparator.comparing(FieldNote::id))

@@ -80,10 +80,7 @@ final class FieldActivityDialog {
     private static TitledPane journalPane(List<FieldNote> journal) {
         VBox entries = new VBox(8);
         for (FieldNote note : journal) {
-            Label heading = new Label(ThaiTypography.withWordBreaks(note.title()));
-            heading.getStyleClass().add("support-section-title");
-            heading.setWrapText(true);
-            entries.getChildren().add(new VBox(2, heading, MissionSupportDialog.paragraph(note.text())));
+            entries.getChildren().add(MissionSupportDialog.fieldNoteEntry(note));
         }
         if (journal.size() < 2) {
             entries.getChildren().add(MissionSupportDialog.paragraph("สำรวจจุดเอกสารสีทองในโถงเพื่ออ่านข้อมูลที่ยังขาด"));

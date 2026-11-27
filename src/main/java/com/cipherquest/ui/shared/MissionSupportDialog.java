@@ -70,7 +70,7 @@ public final class MissionSupportDialog {
         if (!notes.isEmpty()) {
             VBox entries = new VBox(12);
             for (FieldNote note : notes) {
-                entries.getChildren().add(section(note.title(), note.text(), "support-copy"));
+                entries.getChildren().add(fieldNoteEntry(note));
             }
             dialog.getDialogPane().setContent(scrollable(entries));
         } else {
@@ -78,6 +78,14 @@ public final class MissionSupportDialog {
         }
         dialog.setOnHidden(event -> onClose.run());
         dialog.show();
+    }
+
+    public static Node fieldNoteEntry(FieldNote note) {
+        VBox entry = section(note.title(), note.text(), "support-copy");
+        if (!note.usage().isBlank()) {
+            entry.getChildren().add(label("ใช้กับ  " + note.usage(), "field-note-use"));
+        }
+        return entry;
     }
 
     private static void setHintProgress(VBox history, Button reveal, GameSession.HintProgress progress) {
@@ -143,7 +151,7 @@ public final class MissionSupportDialog {
         return scroll;
     }
 
-    private static Node section(String title, String body, String style) {
+    private static VBox section(String title, String body, String style) {
         return new VBox(3, label(title, "support-section-title"), label(body, style));
     }
 
