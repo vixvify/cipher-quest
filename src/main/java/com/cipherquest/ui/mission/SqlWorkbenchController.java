@@ -1,4 +1,10 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.mission;
+
+import com.cipherquest.ui.ScreenNavigator;
+import com.cipherquest.ui.shared.Feedback;
+import com.cipherquest.ui.shared.MissionSupportDialog;
+import com.cipherquest.ui.shared.ScreenMotion;
+import com.cipherquest.ui.shared.ThaiTypography;
 
 import com.cipherquest.core.AnswerResult;
 import com.cipherquest.core.GameSession;
@@ -41,8 +47,8 @@ public class SqlWorkbenchController extends BaseMissionController {
             }
         });
         initializeMissionHeader();
-        knowledgeButton.setDisable(ScreenNavigator.SESSION.currentSqlTopics().isEmpty());
-        ScreenNavigator.SESSION.sqlBrief().ifPresent(brief -> {
+        knowledgeButton.setDisable(ScreenNavigator.session().currentSqlTopics().isEmpty());
+        ScreenNavigator.session().sqlBrief().ifPresent(brief -> {
             taskLabel.setText(ThaiTypography.withWordBreaks(brief.task()));
             for (String table : brief.tables()) {
                 Label name = new Label(table);
@@ -54,7 +60,7 @@ public class SqlWorkbenchController extends BaseMissionController {
 
     @FXML
     private void onOpenKnowledge() {
-        MissionSupportDialog.showKnowledge(knowledgeButton, ScreenNavigator.SESSION.currentSqlTopics());
+        MissionSupportDialog.showKnowledge(knowledgeButton, ScreenNavigator.session().currentSqlTopics());
     }
 
     @FXML
@@ -65,7 +71,7 @@ public class SqlWorkbenchController extends BaseMissionController {
             return;
         }
 
-        GameSession.SqlSubmission submission = ScreenNavigator.SESSION.runQuery(query);
+        GameSession.SqlSubmission submission = ScreenNavigator.session().runQuery(query);
         AnswerResult answer = submission.answer();
         QueryResult result = submission.result();
         if (result == null) {

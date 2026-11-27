@@ -1,14 +1,14 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.shared;
 
 import java.text.BreakIterator;
 import java.util.Locale;
 
-final class ThaiTypography {
+public final class ThaiTypography {
     private static final Locale THAI = Locale.forLanguageTag("th");
 
     private ThaiTypography() {}
 
-    static String withWordBreaks(String text) {
+    public static String withWordBreaks(String text) {
         if (!text.codePoints().anyMatch(ThaiTypography::isThai)) {
             return text;
         }

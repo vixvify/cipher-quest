@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Text?>
 
 <StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.cipherquest.ui.MainMenuController" styleClass="main-root">
+           fx:controller="com.cipherquest.ui.menu.MainMenuController" styleClass="main-root">
     <Region fx:id="heroArtwork" styleClass="hero-art" scaleX="1.025" scaleY="1.025" />
     <Region fx:id="gateLight" styleClass="hero-gate-light" mouseTransparent="true" />
     <Canvas fx:id="rainCanvas" managed="false" mouseTransparent="true" />

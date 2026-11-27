@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 <StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.cipherquest.ui.VictoryScreenController"
+           fx:controller="com.cipherquest.ui.menu.VictoryScreenController"
            styleClass="mission-root, victory-root">
     <Region maxWidth="680" maxHeight="520" mouseTransparent="true" styleClass="victory-signal" />
     <VBox alignment="CENTER" spacing="18" maxWidth="560" maxHeight="-Infinity" styleClass="victory-card">

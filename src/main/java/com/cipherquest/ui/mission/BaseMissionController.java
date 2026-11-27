@@ -1,4 +1,9 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.mission;
+
+import com.cipherquest.ui.ScreenNavigator;
+import com.cipherquest.ui.shared.GameAudio;
+import com.cipherquest.ui.shared.MissionSupportDialog;
+import com.cipherquest.ui.shared.ThaiTypography;
 
 import com.cipherquest.core.AnswerResult;
 import com.cipherquest.exploration.FieldNote;
@@ -37,7 +42,7 @@ public abstract class BaseMissionController {
     @FXML protected Label missionLabel;
 
     protected void initializeMissionHeader() {
-        ScreenNavigator.SESSION.currentMission().ifPresent(mission -> {
+        ScreenNavigator.session().currentMission().ifPresent(mission -> {
             if (checkpointLabel != null) {
                 checkpointLabel.setText(ScreenNavigator.checkpointText(mission));
             }
@@ -68,7 +73,7 @@ public abstract class BaseMissionController {
 
     @FXML
     protected void onOpenHints() {
-        MissionSupportDialog.showHints(hintButton, ScreenNavigator.SESSION);
+        MissionSupportDialog.showHints(hintButton, ScreenNavigator.session());
     }
 
     @FXML
@@ -81,7 +86,7 @@ public abstract class BaseMissionController {
         if (walk == null) {
             return List.of();
         }
-        return ScreenNavigator.SESSION.currentMission()
+        return ScreenNavigator.session().currentMission()
                 .map(mission -> walk.collectedNotes(mission.checkpoint()))
                 .orElseGet(List::of);
     }
@@ -92,7 +97,7 @@ public abstract class BaseMissionController {
     }
 
     protected void setHintsBusy(boolean busy) {
-        hintButton.setDisable(busy || ScreenNavigator.SESSION.hintProgress().total() == 0);
+        hintButton.setDisable(busy || ScreenNavigator.session().hintProgress().total() == 0);
         backToArchiveButton.setDisable(busy);
         if (fieldNotesButton != null) {
             fieldNotesButton.setDisable(busy);
@@ -108,8 +113,8 @@ public abstract class BaseMissionController {
 
     private void showClearBanner(AnswerResult result) {
         Label title = bannerText("ผ่านด่านแล้ว", "clear-title");
-        boolean finalCheckpoint = ScreenNavigator.SESSION.currentMission()
-                .map(mission -> mission.checkpoint() == ScreenNavigator.SESSION.campaignProgress().checkpoints().size())
+        boolean finalCheckpoint = ScreenNavigator.session().currentMission()
+                .map(mission -> mission.checkpoint() == ScreenNavigator.session().campaignProgress().checkpoints().size())
                 .orElse(false);
         Label detail = bannerText(finalCheckpoint ? "ภารกิจเสร็จสิ้น" : "ปลดล็อกสถานีถัดไป", "clear-detail");
         VBox message = new VBox(2, title, detail);

@@ -1,4 +1,4 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.menu;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;

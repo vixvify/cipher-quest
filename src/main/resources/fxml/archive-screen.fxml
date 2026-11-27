@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <StackPane fx:id="archiveRoot" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.cipherquest.ui.ArchiveController" styleClass="mission-root, archive-root"
+           fx:controller="com.cipherquest.ui.exploration.ArchiveController" styleClass="mission-root, archive-root"
            focusTraversable="true" accessibleText="โถงสำรวจ CipherQuest">
     <VBox spacing="13" fillWidth="true" maxWidth="1290">
         <HBox alignment="CENTER_LEFT" spacing="12" styleClass="mission-bar">

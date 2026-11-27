@@ -1,4 +1,9 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.exploration;
+
+import com.cipherquest.ui.ScreenNavigator;
+import com.cipherquest.ui.shared.GameAudio;
+import com.cipherquest.ui.shared.MissionSupportDialog;
+import com.cipherquest.ui.shared.ThaiTypography;
 
 import com.cipherquest.core.GameSession.CampaignProgress;
 import com.cipherquest.core.GameSession.CheckpointStatus;
@@ -59,7 +64,7 @@ public class ArchiveController {
         if (walk == null) {
             walk = new ArchiveWalk(ArchiveMap.load());
         }
-        progress = ScreenNavigator.SESSION.campaignProgress();
+        progress = ScreenNavigator.session().campaignProgress();
         activeCheckpoint = progress.checkpoints().indexOf(CheckpointStatus.AVAILABLE) + 1;
         nearby = walk.nearbyStation();
         nearbyNote = walk.nearbyNote(activeCheckpoint);
@@ -198,7 +203,7 @@ public class ArchiveController {
             return;
         }
         walk.nearbyStation().ifPresent(station -> {
-            if (ScreenNavigator.SESSION.enterCheckpoint(station.checkpoint())) {
+            if (ScreenNavigator.session().enterCheckpoint(station.checkpoint())) {
                 walk.leaveWorkshop();
                 GameAudio.play(GameAudio.Effect.CONNECT);
                 ScreenNavigator.navigateToCurrentLevel();
@@ -294,6 +299,8 @@ public class ArchiveController {
             interactButton.setText(switch (note.activity()) {
                 case FieldActivity.Source ignored -> "อ่านเอกสาร · E";
                 case FieldActivity.RecordDesk ignored -> "เปิดโต๊ะตรวจ · E";
+                case FieldActivity.Signal ignored -> "เปิดเครื่องรับ · E";
+                case FieldActivity.Circuit ignored -> "เปิดแผงไฟ · E";
                 case FieldActivity.Workshop ignored -> "เริ่มกิจกรรม · E";
             });
             interactButton.setDisable(false);

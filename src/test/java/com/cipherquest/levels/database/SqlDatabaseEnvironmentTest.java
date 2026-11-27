@@ -111,6 +111,7 @@ class SqlDatabaseEnvironmentTest {
         assertEquals("Energy Amplification", result.getRows().get(0).get(1));
         assertEquals("Unknown", result.getRows().get(0).get(2));
         assertTrue(result.getRows().get(0).get(3).contains("L005"));
+        assertFalse(dbEnv.evaluateAnswer(expected.replace("e.clue", "a.clue"), expected));
 
         assertTrue(dbEnv.evaluateAnswer(
                 "SELECT artifacts.artifact_name, experiments.experiment_type, experiments.result, experiments.clue "

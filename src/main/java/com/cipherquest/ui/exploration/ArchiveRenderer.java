@@ -1,4 +1,4 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.exploration;
 
 import com.cipherquest.core.GameSession.CampaignProgress;
 import com.cipherquest.core.GameSession.CheckpointStatus;

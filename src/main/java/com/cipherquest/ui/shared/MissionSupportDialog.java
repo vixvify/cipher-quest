@@ -1,4 +1,4 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.shared;
 
 import com.cipherquest.core.GameSession;
 import com.cipherquest.exploration.FieldNote;
@@ -17,10 +17,10 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 import java.util.function.Function;
 
-final class MissionSupportDialog {
+public final class MissionSupportDialog {
     private MissionSupportDialog() {}
 
-    static void showControls(Node owner) {
+    public static void showControls(Node owner) {
         Dialog<Void> dialog = createDialog(owner, "วิธีเล่น", "สำรวจโถงเพื่อเก็บข้อมูลสำคัญก่อนเปิดภารกิจหลัก");
         dialog.getDialogPane().setContent(new VBox(12,
                 section("WASD หรือปุ่มลูกศร", "1) อ่านเอกสารสีทองให้ครบ 2) ทำภารกิจที่จุดสีฟ้าเพื่อเก็บหลักฐาน 3) เปิดสถานีสีเขียวเพื่อทำภารกิจหลัก", "support-copy"),
@@ -29,7 +29,7 @@ final class MissionSupportDialog {
         dialog.show();
     }
 
-    static void showHints(Node owner, GameSession session) {
+    public static void showHints(Node owner, GameSession session) {
         Dialog<Void> dialog = createDialog(owner, "คำใบ้ภารกิจ",
                 "เปิดทีละขั้นเมื่อคิดต่อไม่ออก การเปิดคำใบ้มีผลต่อคะแนนด่าน");
         VBox history = new VBox(10);
@@ -47,7 +47,7 @@ final class MissionSupportDialog {
         dialog.show();
     }
 
-    static void showKnowledge(Node owner, List<SqlTopic> topics) {
+    public static void showKnowledge(Node owner, List<SqlTopic> topics) {
         Dialog<Void> dialog = createDialog(owner, "ความรู้ SQL สำหรับด่านนี้",
                 "เปิดอ่านระหว่างเขียน Query ได้โดยไม่เสียคะแนน ตัวอย่างใช้ตารางสมมติ");
         chooseEntry(dialog, topics, 0, SqlTopic::getTitle, topic -> new VBox(10,
@@ -60,11 +60,11 @@ final class MissionSupportDialog {
         dialog.show();
     }
 
-    static void showFieldNotes(Node owner, List<FieldNote> notes) {
+    public static void showFieldNotes(Node owner, List<FieldNote> notes) {
         showFieldNotes(owner, notes, () -> {});
     }
 
-    static void showFieldNotes(Node owner, List<FieldNote> notes, Runnable onClose) {
+    public static void showFieldNotes(Node owner, List<FieldNote> notes, Runnable onClose) {
         Dialog<Void> dialog = createDialog(owner, "สมุดภาคสนาม",
                 "เอกสารที่อ่านและเบาะแสที่กู้ได้ของสถานีนี้");
         if (!notes.isEmpty()) {
@@ -117,7 +117,7 @@ final class MissionSupportDialog {
         dialog.getDialogPane().setContent(new VBox(12, picker, scroll));
     }
 
-    static Dialog<Void> createDialog(Node owner, String title, String instructions) {
+    public static Dialog<Void> createDialog(Node owner, String title, String instructions) {
         Dialog<Void> dialog = new Dialog<>();
         dialog.initOwner(owner.getScene().getWindow());
         dialog.setTitle(title);
@@ -147,7 +147,7 @@ final class MissionSupportDialog {
         return new VBox(3, label(title, "support-section-title"), label(body, style));
     }
 
-    static Label paragraph(String text) {
+    public static Label paragraph(String text) {
         return label(text, "support-copy");
     }
 

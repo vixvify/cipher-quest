@@ -1,4 +1,8 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.mission;
+
+import com.cipherquest.ui.ScreenNavigator;
+import com.cipherquest.ui.shared.Feedback;
+import com.cipherquest.ui.shared.GameAudio;
 
 import com.cipherquest.core.AnswerResult;
 import javafx.animation.ScaleTransition;
@@ -36,7 +40,7 @@ public class PasskeyScreenController extends BaseMissionController {
     @FXML
     private void initialize() {
         initializeMissionHeader();
-        ScreenNavigator.SESSION.passkeyBrief().ifPresent(brief -> ciphertext = brief.ciphertext());
+        ScreenNavigator.session().passkeyBrief().ifPresent(brief -> ciphertext = brief.ciphertext());
         if (ciphertext != null) {
             for (int index = 0; index < ciphertext.length(); index++) {
                 Region slot = new Region();
@@ -104,7 +108,7 @@ public class PasskeyScreenController extends BaseMissionController {
             return;
         }
 
-        AnswerResult result = ScreenNavigator.SESSION.submit(input);
+        AnswerResult result = ScreenNavigator.session().submit(input);
         Feedback.show(feedbackLabel, result.getMessage(), result.isCorrect(), !result.isCorrect());
         if (result.isCorrect()) {
             passkeyField.setDisable(true);
