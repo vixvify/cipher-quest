@@ -1,4 +1,8 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.mission;
+
+import com.cipherquest.ui.ScreenNavigator;
+import com.cipherquest.ui.shared.Feedback;
+import com.cipherquest.ui.shared.ScreenMotion;
 
 import com.cipherquest.core.AnswerResult;
 import com.cipherquest.core.GameSession;
@@ -62,7 +66,7 @@ public class TerminalScreenController extends BaseMissionController {
         Task<GameSession.TerminalSubmission> task = new Task<>() {
             @Override
             protected GameSession.TerminalSubmission call() {
-                return ScreenNavigator.SESSION.runCommand(command);
+                return ScreenNavigator.session().runCommand(command);
             }
         };
         task.setOnSucceeded(event -> showSubmission(task.getValue()));
@@ -121,7 +125,7 @@ public class TerminalScreenController extends BaseMissionController {
     }
 
     private void updatePrompt() {
-        String directory = ScreenNavigator.SESSION.terminalPath();
+        String directory = ScreenNavigator.session().terminalPath();
         promptLabel.setText(directory + " $");
         promptLabel.getTooltip().setText("agent@cipherquest:" + directory);
     }

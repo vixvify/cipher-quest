@@ -31,6 +31,11 @@ public record FieldNote(String id, int checkpoint, ArchiveMap.Position position,
                     split(properties, id + ".rows"),
                     Arrays.stream(properties.getProperty(id + ".target").split(",")).map(Integer::parseInt).toList(),
                     Boolean.parseBoolean(properties.getProperty(id + ".ordered")));
+            case "signal" -> new FieldActivity.Signal(properties.getProperty(id + ".task"),
+                    Integer.parseInt(properties.getProperty(id + ".frequency")),
+                    Integer.parseInt(properties.getProperty(id + ".phase")));
+            case "circuit" -> new FieldActivity.Circuit(properties.getProperty(id + ".task"),
+                    Arrays.stream(properties.getProperty(id + ".tiles").split(",")).map(Integer::parseInt).toList());
             case "power", "vault" -> {
                 boolean vault = properties.getProperty(id + ".activity").equals("vault");
                 var kind = vault ? RoomWorkshop.Kind.VAULT : RoomWorkshop.Kind.POWER;

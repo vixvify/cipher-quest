@@ -1,4 +1,7 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.menu;
+
+import com.cipherquest.ui.ScreenNavigator;
+import com.cipherquest.ui.shared.ThaiTypography;
 
 import com.cipherquest.core.GameEngine;
 import com.cipherquest.player.Player;

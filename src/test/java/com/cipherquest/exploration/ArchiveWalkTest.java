@@ -34,9 +34,25 @@ class ArchiveWalkTest {
     @Test
     void triangulationAndOrderedEvidenceRejectIncorrectSelections() {
         assertRecordDesk(1, List.of(3), List.of(2));
-        assertRecordDesk(3, List.of(4), List.of(0));
         assertRecordDesk(4, List.of(3, 5, 1), List.of(5, 3, 1));
-        assertRecordDesk(6, List.of(6, 4), List.of(4, 3));
+    }
+
+    @Test
+    void receiverRequiresBothFrequencyAndPhase() {
+        var signal = activityAt(3);
+        assertFalse(signal.solvedBy(new FieldActivity.Attempt.Tune(4, 0)));
+        assertFalse(signal.solvedBy(new FieldActivity.Attempt.Tune(3, 3)));
+        assertTrue(signal.solvedBy(new FieldActivity.Attempt.Tune(4, 3)));
+    }
+
+    @Test
+    void circuitRequiresAContinuousPathAndAnEastFacingOutput() {
+        var circuit = (FieldActivity.Circuit) activityAt(6);
+        assertFalse(circuit.solvedBy(new FieldActivity.Attempt.Wire(java.util.Collections.nCopies(16, 0))));
+        var turns = new java.util.ArrayList<>(List.of(0, 3, 2, 0, 1, 2, 1, 2, 0, 0, 0, 2, 0, 0, 0, 0));
+        assertTrue(circuit.solvedBy(new FieldActivity.Attempt.Wire(turns)));
+        turns.set(11, 1);
+        assertFalse(circuit.solvedBy(new FieldActivity.Attempt.Wire(turns)));
     }
 
     @Test

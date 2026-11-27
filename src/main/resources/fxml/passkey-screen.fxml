@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <StackPane fx:id="missionRoot" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.cipherquest.ui.PasskeyScreenController" styleClass="mission-root, workstation-root, passkey-root">
+           fx:controller="com.cipherquest.ui.mission.PasskeyScreenController" styleClass="mission-root, workstation-root, passkey-root">
     <VBox spacing="20" maxWidth="1090" maxHeight="-Infinity" styleClass="mission-shell">
         <HBox alignment="CENTER_LEFT" spacing="12" styleClass="mission-bar">
             <Region styleClass="signal-mark" />

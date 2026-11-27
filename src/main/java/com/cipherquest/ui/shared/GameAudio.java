@@ -1,4 +1,4 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.shared;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-final class GameAudio {
+public final class GameAudio {
     private static final ExecutorService PLAYER = Executors.newSingleThreadExecutor(
             Thread.ofPlatform().name("cipherquest-audio").daemon().factory());
     private static final Map<Effect, Clip> effects = new EnumMap<>(Effect.class);
@@ -28,11 +28,11 @@ final class GameAudio {
     private GameAudio() {
     }
 
-    static void start() {
+    public static void start() {
         updateMusic();
     }
 
-    static void toggle(Button button) {
+    public static void toggle(Button button) {
         muted = !muted;
         updateButton(button);
         updateMusic();
@@ -43,14 +43,14 @@ final class GameAudio {
         });
     }
 
-    static void updateButton(Button button) {
+    public static void updateButton(Button button) {
         String action = muted ? "เปิดเพลงและเสียงเอฟเฟกต์" : "ปิดเพลงและเสียงเอฟเฟกต์";
         button.setText(muted ? "เสียงปิด" : "เสียงเปิด");
         button.setAccessibleText(action);
         button.setTooltip(new Tooltip(action));
     }
 
-    static void play(Effect effect) {
+    public static void play(Effect effect) {
         PLAYER.execute(() -> {
             if (muted) {
                 return;
@@ -120,7 +120,7 @@ final class GameAudio {
         }
     }
 
-    static void shutdown() {
+    public static void shutdown() {
         if (music != null) {
             music.dispose();
             music = null;
@@ -129,7 +129,7 @@ final class GameAudio {
         PLAYER.shutdown();
     }
 
-    enum Effect {
+    public enum Effect {
         CONNECT("connect.wav"), PICKUP("pickup.wav"), CLEAR("clear.wav"), DENIED("denied.wav");
 
         private final String filename;

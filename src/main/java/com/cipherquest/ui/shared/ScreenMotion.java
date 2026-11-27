@@ -1,4 +1,4 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.shared;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -8,10 +8,10 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.util.Duration;
 
-final class ScreenMotion {
+public final class ScreenMotion {
     private ScreenMotion() {}
 
-    static void reveal(Node node, double rise, double opacity, int milliseconds) {
+    public static void reveal(Node node, double rise, double opacity, int milliseconds) {
         if (node.getScene() == null || !Platform.isFxApplicationThread() || Platform.getPreferences().isReducedMotion()) {
             return;
         }

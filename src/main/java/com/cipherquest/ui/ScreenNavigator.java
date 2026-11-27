@@ -1,5 +1,8 @@
 package com.cipherquest.ui;
 
+import com.cipherquest.ui.shared.GameAudio;
+import com.cipherquest.ui.shared.ScreenMotion;
+
 import com.cipherquest.core.GameEngine;
 import com.cipherquest.core.AnswerResult;
 import com.cipherquest.core.GameSession;
@@ -17,9 +20,13 @@ import java.io.IOException;
 
 public class ScreenNavigator {
 
-    static final GameSession SESSION = new GameSession(GameEngine.getInstance());
+    private static final GameSession SESSION = new GameSession(GameEngine.getInstance());
     private static Stage primaryStage;
     private static ArchiveWalk archiveWalk;
+
+    public static GameSession session() {
+        return SESSION;
+    }
 
     public static void setPrimaryStage(Stage stage) {
         primaryStage = stage;
@@ -42,17 +49,17 @@ public class ScreenNavigator {
         loadScene("/fxml/main-menu.fxml", "/css/main-menu.css", "CipherQuest - Main Menu");
     }
 
-    static void startExploration() {
+    public static void startExploration() {
         SESSION.start();
         archiveWalk = new ArchiveWalk(ArchiveMap.load());
         navigateToArchive();
     }
 
-    static ArchiveWalk archiveWalk() {
+    public static ArchiveWalk archiveWalk() {
         return archiveWalk;
     }
 
-    static void navigateToArchive() {
+    public static void navigateToArchive() {
         if (archiveWalk == null) {
             navigateToMainMenu();
             return;
@@ -86,7 +93,7 @@ public class ScreenNavigator {
         }
     }
 
-    static String checkpointText(GameSession.Mission mission) {
+    public static String checkpointText(GameSession.Mission mission) {
         return "CHECKPOINT " + mission.checkpoint() + " / " + mission.total();
     }
 
@@ -98,7 +105,7 @@ public class ScreenNavigator {
         );
     }
 
-    static void continueAfterFeedback(Node screenControl, AnswerResult answer, Duration delay) {
+    public static void continueAfterFeedback(Node screenControl, AnswerResult answer, Duration delay) {
         PauseTransition pause = new PauseTransition(delay);
         pause.setOnFinished(event -> {
             if (screenControl.getScene() == null) {

@@ -1,4 +1,8 @@
-package com.cipherquest.ui;
+package com.cipherquest.ui.menu;
+
+import com.cipherquest.ui.ScreenNavigator;
+import com.cipherquest.ui.shared.GameAudio;
+import com.cipherquest.ui.shared.MissionSupportDialog;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
