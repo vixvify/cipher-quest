@@ -92,7 +92,7 @@ public final class ArchiveMap {
     public static int gateCheckpoint(char tile) {
         return switch (tile) {
             case 'A' -> 3;
-            case 'G' -> 7;
+            case 'G', 'H' -> 7;
             default -> 0;
         };
     }
@@ -101,7 +101,7 @@ public final class ArchiveMap {
         char tile = tileAt(column, row);
         return switch (tile) {
             case '.', ':', '@' -> true;
-            case 'A', 'G' -> isUnlocked.test(gateCheckpoint(tile));
+            case 'A', 'G', 'H' -> isUnlocked.test(gateCheckpoint(tile));
             default -> false;
         };
     }

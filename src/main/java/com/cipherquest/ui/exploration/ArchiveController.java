@@ -14,6 +14,7 @@ import com.cipherquest.exploration.FieldActivity;
 import com.cipherquest.exploration.RoomWorkshop;
 import com.cipherquest.util.ResourceLoader;
 import javafx.animation.AnimationTimer;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -24,6 +25,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -38,6 +40,7 @@ public class ArchiveController {
     @FXML private StackPane archiveRoot;
     @FXML private StackPane mapPane;
     @FXML private Canvas mapCanvas;
+    @FXML private Label archiveUpdate;
     @FXML private HBox progressTrack;
     @FXML private Label scoreLabel;
     @FXML private Button journalButton;
@@ -86,7 +89,17 @@ public class ArchiveController {
             }
         });
 
-        ArchiveRenderer renderer = new ArchiveRenderer(mapCanvas);
+        int justCleared = ScreenNavigator.takeArchiveArrival();
+        ArchiveRenderer renderer = new ArchiveRenderer(mapCanvas, justCleared == 2);
+        String announcement = switch (justCleared) {
+            case 2 -> "ไฟทางเดินกลับมาแล้ว · ตามแนวไฟไปยังสถานีถัดไป";
+            case 6 -> "ประตูด้านล่างเปิดแล้ว · ทางลัดไปห้องนิรภัย";
+            default -> "";
+        };
+        archiveUpdate.setText(announcement);
+        archiveUpdate.setVisible(!announcement.isEmpty());
+        PauseTransition updateDisplay = new PauseTransition(Duration.seconds(4.5));
+        updateDisplay.setOnFinished(event -> archiveUpdate.setVisible(false));
         AnimationTimer animation = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -96,10 +109,14 @@ public class ArchiveController {
         archiveRoot.sceneProperty().addListener((property, before, scene) -> {
             if (scene == null) {
                 animation.stop();
+                updateDisplay.stop();
                 clearKeys();
                 lastFrame = 0;
             } else {
                 animation.start();
+                if (archiveUpdate.isVisible()) {
+                    updateDisplay.playFromStart();
+                }
                 Platform.runLater(archiveRoot::requestFocus);
             }
         });

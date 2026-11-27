@@ -234,6 +234,13 @@
 .mission-support .combo-box .arrow { -fx-background-color: #d2fb86; }
 .support-title { -fx-font-size: 23px; -fx-font-weight: bold; -fx-text-fill: #fff8ff; }
 .support-copy { -fx-font-size: 14px; -fx-line-spacing: 2px; -fx-text-fill: #ded2ed; }
+.field-note-use {
+  -fx-font-size: 13px;
+  -fx-text-fill: #bcecf1;
+  -fx-background-color: #23344a;
+  -fx-background-radius: 4px;
+  -fx-padding: 4px 7px;
+}
 .support-section-title { -fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #c8a7fc; }
 .support-code {
   -fx-font-family: "Kanit";

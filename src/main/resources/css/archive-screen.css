@@ -63,6 +63,16 @@
   -fx-border-radius: 5px;
   -fx-text-fill: #c7edf5;
 }
+.archive-update {
+  -fx-translate-y: 10px;
+  -fx-padding: 6px 14px;
+  -fx-background-color: #1b3744;
+  -fx-background-radius: 6px;
+  -fx-border-color: #6098a0;
+  -fx-border-radius: 6px;
+  -fx-text-fill: #dafff1;
+  -fx-font-size: 14px;
+}
 
 .archive-prompt-title {
   -fx-font-weight: bold;

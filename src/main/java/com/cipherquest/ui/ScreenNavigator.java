@@ -23,6 +23,7 @@ public class ScreenNavigator {
     private static final GameSession SESSION = new GameSession(GameEngine.getInstance());
     private static Stage primaryStage;
     private static ArchiveWalk archiveWalk;
+    private static int archiveArrival;
 
     public static GameSession session() {
         return SESSION;
@@ -46,17 +47,25 @@ public class ScreenNavigator {
 
     public static void navigateToMainMenu() {
         archiveWalk = null;
+        archiveArrival = 0;
         loadScene("/fxml/main-menu.fxml", "/css/main-menu.css", "CipherQuest - Main Menu");
     }
 
     public static void startExploration() {
         SESSION.start();
         archiveWalk = new ArchiveWalk(ArchiveMap.load());
+        archiveArrival = 0;
         navigateToArchive();
     }
 
     public static ArchiveWalk archiveWalk() {
         return archiveWalk;
+    }
+
+    public static int takeArchiveArrival() {
+        int checkpoint = archiveArrival;
+        archiveArrival = 0;
+        return checkpoint;
     }
 
     public static void navigateToArchive() {
@@ -113,12 +122,17 @@ public class ScreenNavigator {
             }
             if (answer.getStatus() == AnswerResult.Status.GAME_CLEARED) {
                 navigateToVictoryScreen();
-            } else if (SESSION.advance()) {
-                if (archiveWalk == null) {
-                    navigateToCurrentLevel();
-                } else {
-                    navigateToArchive();
-                }
+                return;
+            }
+            int clearedCheckpoint = SESSION.currentMission().map(GameSession.Mission::checkpoint).orElse(0);
+            if (!SESSION.advance()) {
+                return;
+            }
+            if (archiveWalk == null) {
+                navigateToCurrentLevel();
+            } else {
+                archiveArrival = clearedCheckpoint;
+                navigateToArchive();
             }
         });
         pause.play();
